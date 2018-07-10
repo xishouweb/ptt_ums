@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MatchItem;
+use Illuminate\Support\Facades\Log;
 
 class MatchItemController extends Controller
 {
@@ -26,11 +27,11 @@ class MatchItemController extends Controller
 
 	public function store(Request $request)
 	{
+	    //todo auth
+
 		if ($request->get('content')) {
 			$data = [
-				'content' => $request->get('content'),	
-				'rant' => rand(0, 100) / 100,
-				'count' => rand(10000, 99999)
+				'content' => $request->get('content'),
 			];
 			MatchItem::create($data);
 		}

@@ -14,7 +14,7 @@ class AddUserIdAndStatusToMatchItemsTable extends Migration
     public function up()
     {
         Schema::table('match_items', function (Blueprint $table) {
-            $table->integer('user_id');
+            $table->integer('user_id')->nullable();
             $table->integer('status')->default(0);
         });
     }
