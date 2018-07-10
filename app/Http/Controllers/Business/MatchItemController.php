@@ -29,10 +29,10 @@ class MatchItemController extends Controller
 		if ($request->get('content')) {
 			$data = [
 				'content' => $request->get('content'),	
-				'rant' => rand(10000, 99999) / 100, 
+				'rant' => rand(0, 100) / 100,
 				'count' => rand(10000, 99999)
 			];
-			MatchItem::create($data);	
+			MatchItem::create($data);
 		}
 		return response()->json(['msg' => 'success']);
 	}
