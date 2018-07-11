@@ -44,8 +44,14 @@ class MatchItem extends Model
 		return $data;	
 	}
 
-	public static function transferFormat($data)
+	public static function transferFormat($item)
     {
-
+        $content = json_decode($item);
+        $condition = [];
+        foreach ($content->conditions as $data) {
+            $condition[] = $data->condition;
+        }
+        $result = array_unique($condition);
+        return $result;
     }
 }
