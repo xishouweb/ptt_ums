@@ -19,7 +19,7 @@ class MatchItem extends Model
         static::created(function ($model) {
             //插入队列去区块链获取信息
             Log::info('created');
-            QueryBlockChain::dispatch($model)->delay(60);
+            QueryBlockChain::dispatch($model);
         });
     }
 
@@ -36,7 +36,7 @@ class MatchItem extends Model
 	{
 		$data = json_decode($item->content, true);
 		$data_t_id = ['id' => $item->id];
-		$data['projectCount'] = rand(5, 10);
+		$data['projectCount'] = 5;
 		$data['matchingDegree'] = $item->rant;
 		$data['matchingPeople'] = $item->count;
 		$data['date'] = (string)$item->created_at;

@@ -39,6 +39,7 @@ class QueryBlockChain implements ShouldQueue
      */
     public function handle()
     {
+        Log::info('handle');
         //获取创建合约内容
         $content = MatchItem::transferFormat($this->match_item->content);
 
@@ -48,7 +49,7 @@ class QueryBlockChain implements ShouldQueue
         $qualified_count = 0;                                   //合格数据的个数
 
         //根据匹配的bc_id，从链上查询IPFS HASH
-        $i_hashs = array_unique(self::getIHash($bc_ids));
+        $i_hashs = self::getIHash($bc_ids);
 
 
         //根据IPFS HASH去IPFS上查询原始数据
@@ -68,6 +69,7 @@ class QueryBlockChain implements ShouldQueue
                 'rant' => $qualified_count / $count,
                 'count' => $count
             ]);
+        Log::info('over');
     }
 
     public static function getQualifiedHash($conditions)
@@ -106,8 +108,9 @@ class QueryBlockChain implements ShouldQueue
         $client = new Client();
         $i_hashs = [];
         foreach ($bc_ids as $bc_id) {
+
             $res = $client->request('GET', self::BLOCK_CHAIN_URL . $bc_id);
-            $i_hashs[] = $res->getBody();
+            $i_hashs[] = (string)$res->getBody();
         }
         return $i_hashs;
     }
@@ -117,8 +120,8 @@ class QueryBlockChain implements ShouldQueue
         $client = new Client();
         $json_list = [];
         foreach ($i_hashs as $i_hash) {
-            $res = $client->request('GET', self::BLOCK_CHAIN_URL . $i_hash);
-            $json_list[] = $res->getBody();
+            $res = $client->request('GET', self::IPFS_URL . $i_hash);
+            $json_list[] = (string)$res->getBody();
         }
         return $json_list;
     }
@@ -126,7 +129,7 @@ class QueryBlockChain implements ShouldQueue
     public static function checkJson($conditions, $json)
     {
         foreach ($conditions as $condition) {
-            if (!strpos($condition, $json)) {
+            if (mb_strpos($json, $condition) === false) {
                 return false;
             }
         }
