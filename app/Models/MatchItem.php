@@ -19,7 +19,7 @@ class MatchItem extends Model
         static::created(function ($model) {
             //插入队列去区块链获取信息
             Log::info('created');
-            QueryBlockChain::dispatch($model);
+            QueryBlockChain::dispatch($model)->delay(60);
         });
     }
 
@@ -47,11 +47,19 @@ class MatchItem extends Model
 	public static function transferFormat($item)
     {
         $content = json_decode($item);
-        $condition = [];
+        $summary = [];
+        $conditions = [];
+        $details = [];
         foreach ($content->conditions as $data) {
-            $condition[] = $data->condition;
+            $summary[] = $data->condition;
+            $conditions[$data->condition][] = $data->detail;
+            $details[] = $data->detail;
         }
-        $result = array_unique($condition);
+        $result = [
+            'summary' => array_unique($summary),
+            'conditions' => $conditions,
+            'details' => $details
+        ];
         return $result;
     }
 }

@@ -39,14 +39,35 @@ class QueryBlockChain implements ShouldQueue
      */
     public function handle()
     {
-        Log::info('handle');
-        Log::info($this->match_item);
-        $res = MatchItem::transferFormat($this->match_item->content);
-        Log::info($res);
-        $bc_ids = self::getQualifiedHash($res);
-        $i_hashs = self::getIHash($bc_ids);
+        //获取创建合约内容
+        $content = MatchItem::transferFormat($this->match_item->content);
+
+        //根据内容查出匹配数据
+        $bc_ids = self::getQualifiedHash($content['summary']);
+        $count = count($bc_ids);                                //总匹配数据的个数
+        $qualified_count = 0;                                   //合格数据的个数
+
+        //根据匹配的bc_id，从链上查询IPFS HASH
+        $i_hashs = array_unique(self::getIHash($bc_ids));
+
+
+        //根据IPFS HASH去IPFS上查询原始数据
         $json_list = self::getFullJson($i_hashs);
-        count();
+
+        //根据原始数据，匹配出合格的数据
+        foreach ($json_list as $json) {
+            if (self::checkJson($content['details'], $json)) {
+                $qualified_count += 1;
+            }
+        }
+
+        //将比对结果存储
+        DB::table('match_items')
+            ->where('id', $this->match_item->id)
+            ->update([
+                'rant' => $qualified_count / $count,
+                'count' => $count
+            ]);
     }
 
     public static function getQualifiedHash($conditions)
@@ -100,5 +121,15 @@ class QueryBlockChain implements ShouldQueue
             $json_list[] = $res->getBody();
         }
         return $json_list;
+    }
+
+    public static function checkJson($conditions, $json)
+    {
+        foreach ($conditions as $condition) {
+            if (!strpos($condition, $json)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
