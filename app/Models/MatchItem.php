@@ -11,6 +11,13 @@ class MatchItem extends Model
 {
 	use SoftDeletes;
 
+	const QUERYING = 0;
+	const COMPLETED = 1;
+	const STATUS_TEXT = [
+	    self::QUERYING => '正在查询',
+        self::COMPLETED => '成功',
+    ];
+
 	protected $guarded = ['id'];
 
     protected static function boot()
@@ -35,12 +42,12 @@ class MatchItem extends Model
 	public static function format($item)
 	{
 		$data = json_decode($item->content, true);
-		$data_t_id = ['id' => $item->id];
+		$data['id'] = $item->id;
+        $data['status'] = self::STATUS_TEXT[$item->status];
 		$data['projectCount'] = 5;
 		$data['matchingDegree'] = $item->rant;
 		$data['matchingPeople'] = $item->count;
 		$data['date'] = (string)$item->created_at;
-		$data = array_merge($data_t_id, $data);
 		return $data;	
 	}
 

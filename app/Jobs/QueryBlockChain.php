@@ -66,6 +66,7 @@ class QueryBlockChain implements ShouldQueue
         DB::table('match_items')
             ->where('id', $this->match_item->id)
             ->update([
+                'status' => MatchItem::COMPLETED,
                 'rant' => $qualified_count / $count,
                 'count' => $count
             ]);
