@@ -11,7 +11,12 @@ class BusinessUserController extends Controller
 
 	public function login(Request $request)
 	{
-		return response()->json(BusinessUser::login($request->get('address')));			
+		return response()->json(BusinessUser::login($request->get('address')));
 	}
+
+    public function scanLogin(Request $request)
+    {
+        return response()->json(BusinessUser::scanLogin($request->get('phone')));
+    }
 
 }

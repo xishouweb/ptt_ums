@@ -19,12 +19,13 @@ Route::get('/', function () {
 Route::prefix('api/business')->group(function () {
 
 	Route::namespace('Business')->group(function () {
-	
+
 		Route::resource('/match_items', 'MatchItemController')->only([
 				'index', 'show', 'store'
 		]);
-		
+
 		Route::post('/users/login', 'BusinessUserController@login');
+		Route::post('/users/scanin', 'BusinessUserController@scanLogin');
 
 	});
 
@@ -34,7 +35,7 @@ Route::prefix('api/business')->group(function () {
 Route::prefix('api/vendor')->group(function () {
 
 	Route::namespace('Vendor')->group(function () {
-	
+
 		Route::get('/data/record', 'DataController@index');
 		Route::post('/data/record', 'DataController@record');
 		Route::get('/data/create', 'DataController@create');
