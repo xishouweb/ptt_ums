@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 
-Route::prefix('api')->group(function () {
+Route::prefix('api/business')->group(function () {
 
 	Route::namespace('Business')->group(function () {
 	
@@ -26,7 +26,8 @@ Route::prefix('api')->group(function () {
 				'index', 'show', 'store'
 		]);
 		
-		Route::post('/login', 'BusinessUserController@login');
+		Route::post('/users/login', 'BusinessUserController@login');
+        Route::post('/users/captcha', 'CaptchaController@send');
 
         Route::group(['middleware' => 'auth:api'], function() {
             Route::get('V1/test/passport', 'BusinessUserController@passport');
