@@ -11,12 +11,14 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 
-Route::prefix('api/business')->group(function () {
+Route::prefix('api')->group(function () {
 
 	Route::namespace('Business')->group(function () {
 	
@@ -24,8 +26,11 @@ Route::prefix('api/business')->group(function () {
 				'index', 'show', 'store'
 		]);
 		
-		Route::post('/users/login', 'BusinessUserController@login');
+		Route::post('/login', 'BusinessUserController@login');
 
+        Route::group(['middleware' => 'auth:api'], function() {
+            Route::get('V1/test/passport', 'BusinessUserController@passport');
+        });
 	});
 
 
