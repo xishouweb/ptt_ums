@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\Controller;
+use App\Models\Captcha;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\BusinessUser;
@@ -21,12 +22,12 @@ class BusinessUserController extends Controller
         if ($result) {
             $user = Auth::user();
             $this->content['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
-            $this->content['msg'] = '登录成功';
-            $this->content['status'] = 200;
             $this->content['address'] = $user->address ?: 'Address';
             $this->content['nickname'] = $user->nickname ?: 'User';
             $this->content['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
             $this->content['coins'] = $user->coins;
+            $this->content['msg'] = '登录成功';
+            $this->content['status'] = 200;
         } else {
             $this->content['msg'] = '账户不存在或密码错误';
             $this->content['status'] = 401;
@@ -36,20 +37,28 @@ class BusinessUserController extends Controller
 
     public function register(Request $request)
     {
-        $result = User::where('phone', $request->input('phone'))->count();
+        $phone = $request->input('phone');
+        $password = $request->input('password');
+        $captcha = $request->input('captcha');
+        $c_result = Captcha::pre_valid($phone, $captcha);
+        if (!$c_result) {
+            $this->content['msg'] = '验证码错误或过期';
+            $this->content['status'] = 401;
+            return response()->json($this->content);
+        }
+        $result = User::where('phone', $phone)->count();
         if (!$result) {
-            $user = User::create([
-                'phone' => $request->input('phone'),
-                'password' => Hash::make($request->input('password')),
+            User::create([
+                'phone' => $phone,
+                'password' => Hash::make($password),
             ]);
-            $this->content['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
             $this->content['msg'] = '注册成功';
-            $status = 200;
+            $this->content['status'] = 200;
         } else {
             $this->content['msg'] = '该手机号已被注册';
-            $status = 200;
+            $this->content['status'] = 401;
         }
-        return response()->json($this->content, $status);
+        return response()->json($this->content);
     }
 
     public function passport()
