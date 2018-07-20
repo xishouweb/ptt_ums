@@ -72,7 +72,7 @@ class Captcha extends Model
         $model->country    = $country;
         $model->code       = $code;
         $model->status     = 0;
-        $model->expired_at = date('Y-m-d H:i:s', time() + config('app.captcha_live_time'));
+        $model->expired_at = date('Y-m-d H:i:s', time() + 180);
         $model->save();
 		Log::info('[captcha]: phone is ' . $mobile . ', code is ' . $code);
         //$model->dispatch((new SendSMS($mobile, $code, $country))->onQueue('sms'));
