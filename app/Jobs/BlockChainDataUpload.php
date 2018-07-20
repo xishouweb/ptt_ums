@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\BusinessUser;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class BlockChainDataUpload implements ShouldQueue 
 {
@@ -45,7 +46,7 @@ class BlockChainDataUpload implements ShouldQueue
 		]);
 		
 		$bodys  = (string) $res->getBody();	
-		\Log::info($bodys);
+		Log::info($bodys);
 		//$result = json_decode($bodys);
 		
 	}
