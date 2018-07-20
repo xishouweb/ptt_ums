@@ -25,6 +25,10 @@ Route::prefix('api/business')->group(function () {
 		Route::resource('/match_items', 'MatchItemController')->only([
 				'index', 'show', 'store'
 		]);
+
+		Route::resource('/user_applications', 'UserApplicationController')->only([
+				'index', 'show', 'store'
+		]);
 		
 		Route::post('/users/login', 'BusinessUserController@login');
         Route::post('/users/register', 'BusinessUserController@register');

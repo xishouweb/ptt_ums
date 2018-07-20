@@ -60,7 +60,7 @@ class Captcha extends Model
         //            return false;
         //        }
 		
-		if (starts_with($mobile, '170') || starts_with($mobile, '171') || ($mobile == '18618328615'))
+		if (starts_with($mobile, '170') || starts_with($mobile, '171'))
 		{
 			return self::voice_sms($mobile, $country);	
 		}
