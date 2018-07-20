@@ -76,7 +76,14 @@
                     @endauth
                 </div>
             @endif
-
+            <?php
+//                $arr = [];
+//                $client = new \GuzzleHttp\Client();
+//                $res = $client->request('GET', 'http://p1.analytab.net:8888/gethash/20');
+//                $arr[] = $res->getBody();
+//                var_dump($arr);
+//                \Illuminate\Support\Facades\Log::info($arr);
+            ?>
             <div class="content">
                 <div class="title m-b-md">
                     Laravel

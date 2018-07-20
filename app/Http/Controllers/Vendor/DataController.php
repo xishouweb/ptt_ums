@@ -11,11 +11,11 @@ use App\Models\DataRecord;
 use App\Jobs\CreateBlockChainAccount;
 use App\Jobs\BlockChainDataUpload;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Log;
 
 
 class DataController extends Controller
 {
-
 	use DispatchesJobs;
 
 	public function examples_address()
@@ -35,7 +35,7 @@ class DataController extends Controller
 
 	public function record(Request $request)
 	{
-		\Log::info('callback');
+		Log::info('callback');
 
 		$address = $request->get('address');
 		$dataid = $request->get('dataid');

@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\BusinessUser;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class CreateBlockChainAccount implements ShouldQueue 
 {
@@ -42,7 +43,7 @@ class CreateBlockChainAccount implements ShouldQueue
 		
 		$bodys  = (string) $res->getBody();	
 
-		\Log::info($bodys);
+		Log::info($bodys);
 
 		$result = json_decode($bodys);
 		if (BusinessUser::where("phone", $result->phone)->count() <= 0)	

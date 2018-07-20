@@ -11,6 +11,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -25,7 +27,12 @@ Route::prefix('api/business')->group(function () {
 		]);
 		
 		Route::post('/users/login', 'BusinessUserController@login');
+        Route::post('/users/register', 'BusinessUserController@register');
+        Route::post('/users/captcha', 'CaptchaController@send');
 
+        Route::group(['middleware' => 'auth:api'], function() {
+            Route::get('V1/test/passport', 'BusinessUserController@passport');
+        });
 	});
 
 
