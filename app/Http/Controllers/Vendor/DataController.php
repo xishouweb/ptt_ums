@@ -45,7 +45,7 @@ class DataController extends Controller
 		$txhash = $request->get('txhash');
 		$hashid = $request->get('hashid');
 
-		if ($data_record = DataRecord::where('id', $dataid)->first()) {
+		if ($data_record = DataRecord::where('id', $dataid)->where('txhash', 't')->first()) {
 			$data_record->txhash = $txhash;
 			$data_record->bc_id = $hashid;
 			$data_record->save();
@@ -69,9 +69,7 @@ class DataController extends Controller
 		$address = $request->get('address');
 		$apikey = $request->get('apikey');
 		$user_application_id = $request->get('user_application_id');
-		$vendor = null;
 
-		$vendor = User::whereAddress($address)->where('update_key', $apikey)->first();
 
 		$content = $request->get('content');
 		$content_array = json_decode($content);
@@ -91,6 +89,13 @@ class DataController extends Controller
 
 		$data = [];
 		$data['user_application_id'] = $user_application_id;
+
+		if ($vendor = User::whereAddress($address)->where('update_key', $apikey)->first()) {
+			$data['user_id'] = $vendor->id;
+		} else {
+			$data['user_id'] = 0;
+		}
+
 		$data['UID'] = $uid_obj->id;
 
 		$data['txhash'] = 't';

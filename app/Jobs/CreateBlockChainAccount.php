@@ -48,12 +48,17 @@ class CreateBlockChainAccount implements ShouldQueue
 		$result = json_decode($bodys);
 		if (User::where("phone", $result->phone)->count() <= 0)	
 		{
-			User::create([
-				'address' => $result->address,
+			$user = User::create([
 				'phone' => $result->phone,
-				'address_password' => $result->password,
 				'password' => Hash::make('888888'),
 			]);		
+
+			if ($user) {
+				$user_exist = User::find($user->id);
+				$user_exist->address = $result->address;
+				$user_exist->address_password = $result->password;
+				$user_exist->save();
+			}
 		}
 	}
 

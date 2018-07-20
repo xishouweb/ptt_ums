@@ -50,7 +50,7 @@ button {
 
 		<form action="/api/vendor/data" method="post">
 		<label for="name" class="col-lg-2 control-label">apikey</label>
-		<input id="name" name="address" type="text" value="woaixuexi">
+		<input id="name" name="apikey" type="text" value="woaixuexi">
 		<label for="name" class="col-lg-2 control-label">公钥</label>
 		<input id="name" name="address" type="text" value="0x0428e150f72797bdfef7135b11b0953639494f15">
 		<label for="name" class="col-lg-2 control-label">数据源</label>
