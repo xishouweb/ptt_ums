@@ -7,8 +7,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\BusinessUser;
-
+use App\User;
+use Illuminate\Support\Facades\Hash;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
@@ -46,12 +46,13 @@ class CreateBlockChainAccount implements ShouldQueue
 		Log::info($bodys);
 
 		$result = json_decode($bodys);
-		if (BusinessUser::where("phone", $result->phone)->count() <= 0)	
+		if (User::where("phone", $result->phone)->count() <= 0)	
 		{
-			BusinessUser::create([
+			User::create([
 				'address' => $result->address,
 				'phone' => $result->phone,
 				'address_password' => $result->password,
+				'password' => Hash::make('888888'),
 			]);		
 		}
 	}

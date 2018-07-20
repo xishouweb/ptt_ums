@@ -8,10 +8,13 @@ use App\Models\MatchItem;
 use GuzzleHttp\Client;
 use App\Models\BusinessUser;
 use App\Models\DataRecord;
+use App\Models\DataUid;
+use App\Models\UserApplication;
 use App\Jobs\CreateBlockChainAccount;
 use App\Jobs\BlockChainDataUpload;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Log;
+use App\User;
 
 
 class DataController extends Controller
@@ -46,6 +49,11 @@ class DataController extends Controller
 			$data_record->txhash = $txhash;
 			$data_record->bc_id = $hashid;
 			$data_record->save();
+
+			$application = UserApplication::where('id', $data_record->user_application_id)->first();
+			$application->count += 1;
+			$application->latest_tx = $txhash;
+			$application->save();
 		}
 		
 		return response()->json(['msg' => 'success']);
@@ -59,27 +67,32 @@ class DataController extends Controller
 	public function store(Request $request)
 	{
 		$address = $request->get('address');
+		$apikey = $request->get('apikey');
+		$user_application_id = $request->get('user_application_id');
 		$vendor = null;
 
-		if (BusinessUser::whereAddress($address)->count() <= 0)	
-		{
-			$vendor = BusinessUser::create([
-				'address' => $address,
-				'type' => 'vendor'
-			]);		
-		} else {
-			$vendor = BusinessUser::whereAddress($address)->first();	
-		}
+		$vendor = User::whereAddress($address)->where('update_key', $apikey)->first();
 
 		$content = $request->get('content');
 		$content_array = json_decode($content);
 
-		if (BusinessUser::where('phone', $content_array->phone)->count() <= 0) {
+		if (User::where('phone', $content_array->phone)->count() <= 0) {
 			$this->dispatch((new CreateBlockChainAccount($content_array->phone))->onQueue('create_block_chain_account'));
+		} 
+
+		$uid_obj = null;
+		if (DataUid::where('phone', $content_array->phone)->count() <= 0) {
+			$uid_obj = DataUid::create([
+				'phone' => $content_array->phone,
+			]);		
+		} else {
+			$uid_obj = DataUid::wherePhone($content_array->phone)->first();	
 		}
 
 		$data = [];
-		$data['b_user_id'] = $vendor->id;
+		$data['user_application_id'] = $user_application_id;
+		$data['UID'] = $uid_obj->id;
+
 		$data['txhash'] = 't';
 		if ($content_array->gender) {
 			$data['gender'] = 1;	

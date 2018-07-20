@@ -49,8 +49,12 @@ button {
         <h1>数据测试</h1>
 
 		<form action="/api/vendor/data" method="post">
+		<label for="name" class="col-lg-2 control-label">apikey</label>
+		<input id="name" name="address" type="text" value="woaixuexi">
 		<label for="name" class="col-lg-2 control-label">公钥</label>
 		<input id="name" name="address" type="text" value="0x0428e150f72797bdfef7135b11b0953639494f15">
+		<label for="name" class="col-lg-2 control-label">数据源</label>
+		<input id="name" name="user_application_id" type="text" value="1">
 		<label for="name" class="col-lg-2 control-label">原数据</label>
 	<textarea style="margin: 0px;
     width: 361px;
