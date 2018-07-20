@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddPasswordToBusinessUsersTable extends Migration
+class AlterRecordTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddPasswordToBusinessUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('business_users', function (Blueprint $table) {
-            $table->string('password')->unique();
+        Schema::table('data_records', function (Blueprint $table) {
+            //
+			$table->renameColumn('b_user_id', 'user_application_id');
+			$table->integer('UID')->default(0);
         });
     }
 
@@ -25,9 +27,8 @@ class AddPasswordToBusinessUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('business_users', function (Blueprint $table) {
-            $table->dropUnique('business_users_password_unique');
-            $table->dropColumn('password');
+        Schema::table('data_records', function (Blueprint $table) {
+            //
         });
     }
 }
