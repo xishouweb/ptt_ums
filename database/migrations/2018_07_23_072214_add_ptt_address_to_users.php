@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddEthAddressToUsers extends Migration
+class AddPttAddressToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AddEthAddressToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-			$table->string('eth_address')->nullable();
+			$table->string('ptt_address')->nullable();
         });
     }
 
@@ -28,7 +28,7 @@ class AddEthAddressToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-			$table->dropColumn('eth_address');
+			$table->dropColumn('ptt_address');
         });
     }
 }
