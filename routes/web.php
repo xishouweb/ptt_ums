@@ -35,7 +35,8 @@ Route::prefix('api/business')->group(function () {
         Route::post('/users/captcha', 'CaptchaController@send');
 
         Route::group(['middleware' => 'auth:api'], function() {
-            Route::get('V1/test/passport', 'BusinessUserController@passport');
+            Route::get('/users/detail', 'BusinessUserController@detail');
+            Route::post('/users/update', 'BusinessUserController@update');
         });
 	});
 

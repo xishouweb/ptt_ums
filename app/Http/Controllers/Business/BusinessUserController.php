@@ -10,6 +10,7 @@ use App\Models\BusinessUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class BusinessUserController extends Controller
 {
@@ -51,6 +52,8 @@ class BusinessUserController extends Controller
             User::create([
                 'phone' => $phone,
                 'password' => Hash::make($password),
+                'update_key' => md5($phone . env('APP_KEY')),
+                'type' => 'vendor',
             ]);
             $this->content['msg'] = '注册成功';
             $this->content['status'] = 200;
@@ -61,8 +64,24 @@ class BusinessUserController extends Controller
         return response()->json($this->content);
     }
 
-    public function passport()
+    public function detail()
     {
-        return response()->json(['user' => Auth::user()]);
+        $user = Auth::user();
+        $user->address = $user->address ?: '';
+        $user->nickname = $user->nickname ?: 'User';
+        $user->email = $user->email ?: '';
+        $user->avatar = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+        return response()->json(Auth::user());
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        $data = $request->only(['nickname', 'email', 'avatar', 'phone', 'eth_address', 'api_key']);
+        $user->nickname = $user->nickname == $data['nickname'] ? $user->nickname : $data['nickname'];
+        $user->email = $user->email == $data['email'] ? $user->email : $data['email'];
+        $user->address = $user->address == $data['eth_address'] ? $user->address : $data['eth_address'];
+        $user->save();
+        return response()->json(['status' => 200, 'msg' => '更新成功']);
     }
 }

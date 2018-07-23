@@ -51,6 +51,7 @@ class BusinessUser extends Model
         return static::create([
             'phone' => $phone,
             'password' => $pwd,
+            'update_key' => md5($phone . env('APP_KEY')),
         ]);
     }
 }
