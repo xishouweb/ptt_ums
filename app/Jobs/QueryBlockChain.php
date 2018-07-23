@@ -50,17 +50,16 @@ class QueryBlockChain implements ShouldQueue
         $uids = DataRecord::where('user_application_id', $app->id)->select('UID')->get()->pluck('UID')->toArray();
 
          //根据内容查出匹配数据
+        $source_count = UserApplication::count() - 1;
+        $qualified_count = 0;                                   //合格数据的个数
+
         $bc_ids = [];
         foreach ($uids as $uid) {
             $bc_ids[] = self::getQualifiedBcId($content['summary'], $app->id, $uid);
         }
 
-        $source_count = UserApplication::count() - 1;
-        $qualified_count = 0;                                   //合格数据的个数
-
         //根据匹配的bc_id，从链上查询IPFS HASH
         $i_hashs = self::getIHash($bc_ids);
-
 
         //根据IPFS HASH去IPFS上查询原始数据
         $json_list = self::getFullJson($i_hashs);
