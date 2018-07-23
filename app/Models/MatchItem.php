@@ -26,7 +26,9 @@ class MatchItem extends Model
         static::created(function ($model) {
             //插入队列去区块链获取信息
             Log::info('created');
-            QueryBlockChain::dispatch($model);
+            if ($user = Auth::user()) {
+                QueryBlockChain::dispatch($model, $user->id);
+            }
         });
     }
 
@@ -48,7 +50,7 @@ class MatchItem extends Model
 		$data['matchingDegree'] = $item->rant;
 		$data['matchingPeople'] = $item->count;
 		$data['date'] = (string)$item->created_at;
-		return $data;	
+		return $data;
 	}
 
 	public static function transferFormat($item)

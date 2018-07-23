@@ -20,7 +20,7 @@ class MatchItemController extends Controller
 	{
 		$data = [];
 		if ($item = MatchItem::where('id', $id)->first()) {
-			$data = MatchItem::format($item);			
+			$data = MatchItem::format($item);
 		}
 		return response()->json($data);
 	}

@@ -15,17 +15,16 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class BusinessUserController extends Controller
 {
-
 	use DispatchesJobs;
 
     protected $content = [];
-	
+
 	// 产品公钥
 	public function generate_public_key(Request $request)
 	{
 		$user = Auth::user();
 		$password = $request->get('password');
-		$this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account')));
+		$this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account'));
 	}
 
     public function login(Request $request)
