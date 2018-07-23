@@ -16,11 +16,10 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class BusinessUserController extends Controller
 {
-
 	use DispatchesJobs;
 
     protected $content = [];
-	
+
 	// 产品公钥
 	public function generate_public_key(Request $request)
 	{
@@ -35,6 +34,7 @@ class BusinessUserController extends Controller
             $data['msg'] = '生成失败';
         }
 		return response()->json($data);
+
 	}
 
     public function login(Request $request)

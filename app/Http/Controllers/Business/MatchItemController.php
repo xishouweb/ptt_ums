@@ -20,7 +20,7 @@ class MatchItemController extends Controller
 	{
 		$data = [];
 		if ($item = MatchItem::where('id', $id)->first()) {
-			$data = MatchItem::format($item);			
+			$data = MatchItem::format($item);
 		}
 		return response()->json($data);
 	}
@@ -28,13 +28,17 @@ class MatchItemController extends Controller
 	public function store(Request $request)
 	{
 	    //todo auth
-
-		if ($request->get('content')) {
-			$data = [
-				'content' => $request->get('content'),
-			];
-			MatchItem::create($data);
+		try{
+			if ($request->get('content')) {
+				$data = [
+					'content' => $request->get('content'),
+				];
+				MatchItem::create($data);
+			}
+			return response()->json(['msg' => 'success']);
+		} catch(Exception $e) {
+			\Log::error('合约创建失败!', [$e->getMessage()]);
+			return response()->json(['msg' => 'failed !']);
 		}
-		return response()->json(['msg' => 'success']);
 	}
 }

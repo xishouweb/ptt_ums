@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\DataRecord;
 use App\Models\MatchItem;
+use App\Models\UserApplication;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -18,6 +19,7 @@ class QueryBlockChain implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $match_item;
+    protected $user_id;
 
     const BLOCK_CHAIN_URL = 'http://p1.analytab.net:8888/gethash/';
     const IPFS_URL = 'http://ipfs.analytab.net/ipfs/';
@@ -27,9 +29,10 @@ class QueryBlockChain implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(MatchItem $match_item)
+    public function __construct(MatchItem $match_item, $user_id)
     {
         $this->match_item = $match_item;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -43,14 +46,21 @@ class QueryBlockChain implements ShouldQueue
         //获取创建合约内容
         $content = MatchItem::transferFormat($this->match_item->content);
 
-        //根据内容查出匹配数据
-        $bc_ids = self::getQualifiedHash($content['summary']);
-        $count = count($bc_ids);                                //总匹配数据的个数
+        $source = json_decode($this->match_item->content, true)['source'];
+        $app = UserApplication::where('name', $source)->where('user_id', $this->user_id)->first();
+        $uids = DataRecord::where('user_application_id', $app->id)->select('UID')->get()->pluck('UID')->toArray();
+
+         //根据内容查出匹配数据
+        $source_count = UserApplication::count() - 1;
         $qualified_count = 0;                                   //合格数据的个数
+
+        $bc_ids = [];
+        foreach ($uids as $uid) {
+            $bc_ids[] = self::getQualifiedBcId($content['summary'], $app->id, $uid);
+        }
 
         //根据匹配的bc_id，从链上查询IPFS HASH
         $i_hashs = self::getIHash($bc_ids);
-
 
         //根据IPFS HASH去IPFS上查询原始数据
         $json_list = self::getFullJson($i_hashs);
@@ -67,15 +77,19 @@ class QueryBlockChain implements ShouldQueue
             ->where('id', $this->match_item->id)
             ->update([
                 'status' => MatchItem::COMPLETED,
-                'rant' => $qualified_count / $count,
-                'count' => $count
+                'rant' => $qualified_count / count($uids),
+                'count' => $source_count
             ]);
         Log::info('over');
     }
 
-    public static function getQualifiedHash($conditions)
+    public static function getQualifiedBcId($conditions, $unexcept_app_id, $uid)
     {
-        $model = DB::table('data_records')->select('bc_id');
+        $model = DB::table('data_records')
+            ->where('user_application_id', '!=', $unexcept_app_id)
+            ->where('UID', $uid)
+            ->select('bc_id');
+
         if (in_array('性别', $conditions)) {
             $model = $model->where('gender' , 1);
         }
@@ -100,8 +114,8 @@ class QueryBlockChain implements ShouldQueue
         if (in_array('手机号', $conditions)) {
             $model = $model->where('phone' , 1);
         }
-        $bc_ids = $model->pluck('bc_id');
-        return $bc_ids;
+        $bc_ids = $model->pluck('bc_id')->toArray();
+        return $bc_ids[0] ?? null;
     }
 
     public static function getIHash($bc_ids)
@@ -124,7 +138,7 @@ class QueryBlockChain implements ShouldQueue
             $res = $client->request('GET', self::IPFS_URL . $i_hash);
             $json_list[] = (string)$res->getBody();
         }
-        return $json_list;
+        return strrev($json_list);
     }
 
     public static function checkJson($conditions, $json)

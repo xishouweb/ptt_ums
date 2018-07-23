@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::prefix('api/business')->group(function () {
 
 	Route::namespace('Business')->group(function () {
-	
+
 		Route::resource('/match_items', 'MatchItemController')->only([
 				'index', 'show', 'store'
 		]);
@@ -29,10 +29,11 @@ Route::prefix('api/business')->group(function () {
 		Route::resource('/user_applications', 'UserApplicationController')->only([
 				'index', 'show'
 		]);
-		
+
 		Route::post('/users/login', 'BusinessUserController@login');
         Route::post('/users/register', 'BusinessUserController@register');
         Route::post('/users/captcha', 'CaptchaController@send');
+
 
         Route::group(['middleware' => 'auth:api'], function() {
             Route::get('/users/detail', 'BusinessUserController@detail');
@@ -49,7 +50,7 @@ Route::prefix('api/business')->group(function () {
 Route::prefix('api/vendor')->group(function () {
 
 	Route::namespace('Vendor')->group(function () {
-	
+
 		Route::get('/data/record', 'DataController@index');
 		Route::post('/data/record', 'DataController@record');
 		Route::get('/data/create', 'DataController@create');
