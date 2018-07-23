@@ -26,8 +26,7 @@ class BusinessUserController extends Controller
 	{
 		$user = Auth::user();
 		$password = $request->get('password');
-		$flag = Hash::check($password, $user->password);
-		if ($flag) {
+		if ($password) {
             $this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account'));
             $data['status'] = 200;
             $data['msg'] = '生成成功';
