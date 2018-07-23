@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateBlockChainAccount;
 use App\Models\Captcha;
 use App\User;
 use Illuminate\Http\Request;
@@ -24,7 +25,16 @@ class BusinessUserController extends Controller
 	{
 		$user = Auth::user();
 		$password = $request->get('password');
-		$this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account'));
+		if ($password) {
+            $this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account'));
+            $data['status'] = 200;
+            $data['msg'] = '生成成功';
+        } else {
+            $data['status'] = 401;
+            $data['msg'] = '生成失败';
+        }
+		return response()->json($data);
+
 	}
 
     public function login(Request $request)
@@ -81,6 +91,7 @@ class BusinessUserController extends Controller
         $user->nickname = $user->nickname ?: 'User';
         $user->email = $user->email ?: '';
         $user->avatar = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+        $user->ptt_address = $user->ptt_address ?: '';
         return response()->json(Auth::user());
     }
 
