@@ -37,7 +37,7 @@ class MatchItemController extends Controller
 			}
 			return response()->json(['msg' => 'success']);
 		} catch(Exception $e) {
-			\Log::error('合约创建失败!', [$e->getMessage()])
+			\Log::error('合约创建失败!', [$e->getMessage()]);
 			return response()->json(['msg' => 'failed !']);
 		}
 	}
