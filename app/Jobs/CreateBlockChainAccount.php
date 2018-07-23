@@ -7,8 +7,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\BusinessUser;
-
+use App\User;
+use Illuminate\Support\Facades\Hash;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
@@ -17,10 +17,12 @@ class CreateBlockChainAccount implements ShouldQueue
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 	protected $phone;
+	protected $password;
 	
-	public function __construct($phone)
+	public function __construct($phone, $password = null)
 	{
 	    $this->phone = $phone;
+	    $this->password = $password;
 	}
 
 	public function handle() 
@@ -34,25 +36,47 @@ class CreateBlockChainAccount implements ShouldQueue
 
 		$client = new Client();		
 
-		$res = $client->request('POST', $url, [
-			'form_params' => [
-				'phone' => $this->phone,
-				'password'   => $this->phone . rand(100000, 999999),
-			],
-		]);
+		if ($this->password) {
+			$res = $client->request('POST', $url, [
+				'form_params' => [
+					'phone' => $this->phone,
+					'password'   => $this->phone . rand(100000, 999999),
+				],
+			]);
+		} else {
+			$res = $client->request('POST', $url, [
+				'form_params' => [
+					'phone' => $this->phone,
+					'password'   => $this->password,
+				],
+			]);
+		}
 		
 		$bodys  = (string) $res->getBody();	
 
 		Log::info($bodys);
 
 		$result = json_decode($bodys);
-		if (BusinessUser::where("phone", $result->phone)->count() <= 0)	
+		if (User::where("phone", $result->phone)->count() <= 0)	
 		{
-			BusinessUser::create([
-				'address' => $result->address,
+			$user = User::create([
 				'phone' => $result->phone,
-				'address_password' => $result->password,
+				'password' => Hash::make('888888'),
 			]);		
+
+			if ($user && empty($user->address)) {
+				$user_exist = User::find($user->id);
+				$user_exist->address = $result->address;
+				$user_exist->address_password = $result->password;
+				$user_exist->save();
+			}
+		} else {
+			$user = User::where("phone", $result->phone)->first();
+			if ($user && empty($user->address)) {
+				$user->address = $result->address;
+				$user->address_password = $result->password;
+				$user->save();
+			}
 		}
 	}
 

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\DataRecord;
 use App\Models\MatchItem;
+use App\Models\UserApplication;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
