@@ -25,13 +25,20 @@ Route::prefix('api/business')->group(function () {
 		Route::resource('/match_items', 'MatchItemController')->only([
 				'index', 'show', 'store'
 		]);
+
+		Route::resource('/user_applications', 'UserApplicationController')->only([
+				'index', 'show', 'store'
+		]);
 		
 		Route::post('/users/login', 'BusinessUserController@login');
         Route::post('/users/register', 'BusinessUserController@register');
         Route::post('/users/captcha', 'CaptchaController@send');
 
         Route::group(['middleware' => 'auth:api'], function() {
-            Route::get('V1/test/passport', 'BusinessUserController@passport');
+            Route::get('/users/detail', 'BusinessUserController@detail');
+            Route::post('/users/update', 'BusinessUserController@update');
+            Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
+            Route::get('/data_records', 'DataRecordController@index');
         });
 	});
 
