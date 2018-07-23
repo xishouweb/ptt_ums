@@ -42,45 +42,49 @@ class QueryBlockChain implements ShouldQueue
      */
     public function handle()
     {
-        Log::info('handle');
+        try {
+            Log::info('handle');
         //获取创建合约内容
-        $content = MatchItem::transferFormat($this->match_item->content);
+            $content = MatchItem::transferFormat($this->match_item->content);
 
-        $source = json_decode($this->match_item->content, true)['source'];
-        $app = UserApplication::where('name', $source)->where('user_id', $this->user_id)->first();
-        $uids = DataRecord::where('user_application_id', $app->id)->select('UID')->get()->pluck('UID')->toArray();
+            $source = json_decode($this->match_item->content, true)['source'];
+            $app = UserApplication::where('name', $source)->where('user_id', $this->user_id)->first();
+            $uids = DataRecord::where('user_application_id', $app->id)
+                ->where('user_id', $this->user_id)
+                ->select('UID')->get()->pluck('UID')->toArray();
 
-         //根据内容查出匹配数据
-        $source_count = UserApplication::count() - 1;
-        $qualified_count = 0;                                   //合格数据的个数
-
-        $bc_ids = [];
-        foreach ($uids as $uid) {
-            $bc_ids[] = self::getQualifiedBcId($content['summary'], $app->id, $uid);
-        }
-
-        //根据匹配的bc_id，从链上查询IPFS HASH
-        $i_hashs = self::getIHash($bc_ids);
-
-        //根据IPFS HASH去IPFS上查询原始数据
-        $json_list = self::getFullJson($i_hashs);
-
-        //根据原始数据，匹配出合格的数据
-        foreach ($json_list as $json) {
-            if (self::checkJson($content['details'], $json)) {
-                $qualified_count += 1;
+            $qualified_count = 0;                                   //合格数据的个数
+             //根据内容查出匹配数据
+            $bc_ids = [];
+            foreach ($uids as $uid) {
+                $bc_ids[] = self::getQualifiedBcId($content['summary'], $app->id, $uid);
             }
-        }
 
-        //将比对结果存储
-        DB::table('match_items')
-            ->where('id', $this->match_item->id)
-            ->update([
-                'status' => MatchItem::COMPLETED,
-                'rant' => $qualified_count / count($uids),
-                'count' => $source_count
-            ]);
-        Log::info('over');
+            //根据匹配的bc_id，从链上查询IPFS HASH
+            $i_hashs = self::getIHash($bc_ids);
+
+            //根据IPFS HASH去IPFS上查询原始数据
+            $json_list = self::getFullJson($i_hashs);
+
+            //根据原始数据，匹配出合格的数据
+            foreach ($json_list as $json) {
+                if (self::checkJson($content['details'], $json)) {
+                    $qualified_count += 1;
+                }
+            }
+
+            //将比对结果存储
+            DB::table('match_items')
+                ->where('id', $this->match_item->id)
+                ->update([
+                    'status' => MatchItem::COMPLETED,
+                    'rant' => $qualified_count / count($uids),
+                    'count' => count($uids),
+                ]);
+            Log::info('query block chain macth over');
+        } catch (Exception $e) {
+            Log::error('query block chain macth error', [$e->getMessage()]);
+        }
     }
 
     public static function getQualifiedBcId($conditions, $unexcept_app_id, $uid)
@@ -125,7 +129,8 @@ class QueryBlockChain implements ShouldQueue
         foreach ($bc_ids as $bc_id) {
 
             $res = $client->request('GET', self::BLOCK_CHAIN_URL . $bc_id);
-            $i_hashs[] = (string)$res->getBody();
+            //反转了hash
+            $i_hashs[] = strrev((string)$res->getBody());
         }
         return $i_hashs;
     }
@@ -138,7 +143,7 @@ class QueryBlockChain implements ShouldQueue
             $res = $client->request('GET', self::IPFS_URL . $i_hash);
             $json_list[] = (string)$res->getBody();
         }
-        return strrev($json_list);
+        return $json_list;
     }
 
     public static function checkJson($conditions, $json)
