@@ -11,11 +11,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class BusinessUserController extends Controller
 {
 
+	use DispatchesJobs;
+
     protected $content = [];
+	
+	// 产品公钥
+	public function generate_public_key(Request $request)
+	{
+		if ($user = User::find($request->get('user_id')) {
+			$this->dispatch((new CreateBlockChainAccount($user->phone))->onQueue('create_block_chain_account'));
+		}
+	}
 
     public function login(Request $request)
     {

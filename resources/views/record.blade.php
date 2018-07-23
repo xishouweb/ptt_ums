@@ -18,6 +18,7 @@
 		<th>数据源</th>
         <th>txhash</th>
 		<th>bc_id</th>
+		<th>UID</th>
 		<th>时间</th>
     </tr>
 </thead>
@@ -25,9 +26,10 @@
 	@foreach($records as $record)	
     <tr>
         <td>{{$record->id}}</td>
-        <td>{{$record->b_user_id}}</td>
+        <td>{{App\Models\UserApplication::find($record->user_application_id)->name}}</td>
         <td><a href="http://p1.analytab.net:9000/#/transaction/{{$record->txhash}}" target="_blank">{{$record->txhash}}</a></td>
         <td>{{$record->bc_id}} <br/> 从链上查询：<a href="http://p1.analytab.net:8888/gethash/{{$record->bc_id}}" target="_blank">查询</a></td>
+        <td>{{$record->UID}}</td>
         <td>{{$record->created_at}}</td>
     </tr>
    @endforeach

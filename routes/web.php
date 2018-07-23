@@ -37,6 +37,7 @@ Route::prefix('api/business')->group(function () {
         Route::group(['middleware' => 'auth:api'], function() {
             Route::get('/users/detail', 'BusinessUserController@detail');
             Route::post('/users/update', 'BusinessUserController@update');
+            Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
         });
 	});
 
