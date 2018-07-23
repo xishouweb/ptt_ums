@@ -17,10 +17,12 @@ class CreateBlockChainAccount implements ShouldQueue
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 	protected $phone;
+	protected $password;
 	
-	public function __construct($phone)
+	public function __construct($phone, $password = null)
 	{
 	    $this->phone = $phone;
+	    $this->password = $password;
 	}
 
 	public function handle() 
@@ -34,12 +36,21 @@ class CreateBlockChainAccount implements ShouldQueue
 
 		$client = new Client();		
 
-		$res = $client->request('POST', $url, [
-			'form_params' => [
-				'phone' => $this->phone,
-				'password'   => $this->phone . rand(100000, 999999),
-			],
-		]);
+		if ($this->password) {
+			$res = $client->request('POST', $url, [
+				'form_params' => [
+					'phone' => $this->phone,
+					'password'   => $this->phone . rand(100000, 999999),
+				],
+			]);
+		} else {
+			$res = $client->request('POST', $url, [
+				'form_params' => [
+					'phone' => $this->phone,
+					'password'   => $this->password,
+				],
+			]);
+		}
 		
 		$bodys  = (string) $res->getBody();	
 

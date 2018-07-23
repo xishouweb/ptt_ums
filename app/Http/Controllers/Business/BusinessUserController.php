@@ -24,7 +24,8 @@ class BusinessUserController extends Controller
 	public function generate_public_key(Request $request)
 	{
 		if ($user = User::find($request->get('user_id')) {
-			$this->dispatch((new CreateBlockChainAccount($user->phone))->onQueue('create_block_chain_account'));
+			$password = $request->get('password');
+			$this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account')));
 		}
 	}
 
