@@ -46,7 +46,7 @@ class MatchItem extends Model
 		$data = json_decode($item->content, true);
 		$data['id'] = $item->id;
         $data['status'] = self::STATUS_TEXT[$item->status];
-		$data['projectCount'] = 5;
+		$data['projectCount'] = UserApplication::count() - 1;
 		$data['matchingDegree'] = $item->rant;
 		$data['matchingPeople'] = $item->count;
 		$data['date'] = (string)$item->created_at;
