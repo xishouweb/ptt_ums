@@ -138,7 +138,7 @@ class QueryBlockChain implements ShouldQueue
             $res = $client->request('GET', self::IPFS_URL . $i_hash);
             $json_list[] = (string)$res->getBody();
         }
-        return $json_list;
+        return strrev($json_list);
     }
 
     public static function checkJson($conditions, $json)
