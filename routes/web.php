@@ -23,7 +23,7 @@ Route::prefix('api/business')->group(function () {
 	Route::namespace('Business')->group(function () {
 
 		Route::resource('/match_items', 'MatchItemController')->only([
-				'index', 'show', 'store'
+				'index', 'show'
 		]);
 
 		Route::resource('/user_applications', 'UserApplicationController')->only([
@@ -41,6 +41,7 @@ Route::prefix('api/business')->group(function () {
             Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
             Route::post('/user_applications', 'UserApplicationController@store');
             Route::get('/data_records', 'DataRecordController@index');
+            Route::post('/match_items', 'MatchItemController@store');
         });
 	});
 
