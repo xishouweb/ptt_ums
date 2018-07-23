@@ -86,7 +86,7 @@ class QueryBlockChain implements ShouldQueue
     public static function getQualifiedBcId($conditions, $unexcept_app_id, $uid)
     {
         $model = DB::table('data_records')
-            ->whereNot('user_application_id', $unexcept_app_id)
+            ->where('user_application_id', '!=', $unexcept_app_id)
             ->where('UID', $uid)
             ->select('bc_id');
 

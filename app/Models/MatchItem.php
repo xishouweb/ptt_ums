@@ -26,7 +26,7 @@ class MatchItem extends Model
         static::created(function ($model) {
             //插入队列去区块链获取信息
             Log::info('created');
-            if ($user = Auth::user();) {
+            if ($user = Auth::user()) {
                 QueryBlockChain::dispatch($model, $user->id);
             }
         });
