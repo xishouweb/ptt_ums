@@ -28,7 +28,6 @@ class UserApplicationController extends Controller
 
 	public function store(Request $request)
 	{
-	    //todo auth
         $user = Auth::user();
 		if ($request->get('name')) {
 			$data = [
@@ -36,9 +35,13 @@ class UserApplicationController extends Controller
 				'user_id' => $user->id,
 			];
 			UserApplication::create($data);
-		}
-		$data['status'] = 200;
-		$data['msg'] = '创建成功';
+            $data['status'] = 200;
+            $data['msg'] = '创建成功';
+		} else {
+            $data['status'] = 401;
+            $data['msg'] = '创建失败';
+        }
+
 		return response()->json($data);
 	}
 }

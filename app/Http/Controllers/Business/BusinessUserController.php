@@ -23,10 +23,9 @@ class BusinessUserController extends Controller
 	// 产品公钥
 	public function generate_public_key(Request $request)
 	{
-		if ($user = Auth::user()) {
-			$password = $request->get('password');
-			$this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account'));
-		}
+		$user = Auth::user();
+		$password = $request->get('password');
+		$this->dispatch((new CreateBlockChainAccount($user->phone, $password))->onQueue('create_block_chain_account'));
 	}
 
     public function login(Request $request)
