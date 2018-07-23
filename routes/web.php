@@ -27,7 +27,7 @@ Route::prefix('api/business')->group(function () {
 		]);
 
 		Route::resource('/user_applications', 'UserApplicationController')->only([
-				'index', 'show', 'store'
+				'index', 'show'
 		]);
 		
 		Route::post('/users/login', 'BusinessUserController@login');
@@ -38,6 +38,7 @@ Route::prefix('api/business')->group(function () {
             Route::get('/users/detail', 'BusinessUserController@detail');
             Route::post('/users/update', 'BusinessUserController@update');
             Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
+            Route::post('/user_applications', 'UserApplicationController@store');
         });
 	});
 
