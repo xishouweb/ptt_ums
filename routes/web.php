@@ -41,6 +41,9 @@ Route::prefix('api/business')->group(function () {
             Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
             Route::post('/user_applications', 'UserApplicationController@store');
             Route::get('/data_records', 'DataRecordController@index');
+            Route::post('/data_records', 'DataRecordController@store');
+            Route::post('/data_records/upload_file', 'DataRecordController@uploadFile');
+            Route::post('/data_records/multiple', 'DataRecordController@multipleDataUpload');
             Route::post('/match_items', 'MatchItemController@store');
         });
 	});

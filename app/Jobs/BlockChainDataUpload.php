@@ -16,6 +16,9 @@ class BlockChainDataUpload implements ShouldQueue
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+	//TODO
+    //该队列中address无用，待删
+
 	protected $id;
 	protected $content;
 	protected $address;
