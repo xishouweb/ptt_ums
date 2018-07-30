@@ -9,7 +9,6 @@ use App\Jobs\HandleUploadFiles;
 use App\Models\DataRecord;
 use App\Models\DataUid;
 use App\User;
-use function GuzzleHttp\Psr7\str;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +25,8 @@ class DataRecordController extends Controller
 		$items = DataRecord::join('user_applications', 'data_records.user_application_id', '=', 'user_applications.id')
             ->where('data_records.user_id', $user->id)
             ->orderBy('data_records.id', 'desc')
-            ->paginate(20);
+            ->select('data_records.id', 'data_records.txhash', 'data_records.created_at', 'data_records.bc_id', 'user_applications.name')
+            ->paginate(10);
 		return response()->json(['data' => $items]);
 	}
 
