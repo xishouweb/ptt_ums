@@ -23,11 +23,11 @@ Route::prefix('api/business')->group(function () {
 	Route::namespace('Business')->group(function () {
 
 		Route::resource('/match_items', 'MatchItemController')->only([
-				'index', 'show'
+			'show'
 		]);
 
 		Route::resource('/user_applications', 'UserApplicationController')->only([
-				'index', 'show'
+		    'show'
 		]);
 
 		Route::post('/users/login', 'BusinessUserController@login');
@@ -39,11 +39,13 @@ Route::prefix('api/business')->group(function () {
             Route::get('/users/detail', 'BusinessUserController@detail');
             Route::post('/users/update', 'BusinessUserController@update');
             Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
+            Route::get('/user_applications', 'UserApplicationController@index');
             Route::post('/user_applications', 'UserApplicationController@store');
             Route::get('/data_records', 'DataRecordController@index');
             Route::post('/data_records', 'DataRecordController@store');
             Route::post('/data_records/upload_file', 'DataRecordController@uploadFile');
             Route::post('/data_records/multiple', 'DataRecordController@multipleDataUpload');
+            Route::get('/match_items', 'MatchItemController@index');
             Route::post('/match_items', 'MatchItemController@store');
         });
 	});

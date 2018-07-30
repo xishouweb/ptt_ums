@@ -13,7 +13,18 @@ class UserApplicationController extends Controller
 
 	public function index(Request $request)
 	{
-        $data = UserApplication::orderBy('id', 'desc')->paginate(10);
+	    $user = Auth::user();
+	    if ($request->input('page')) {
+            $data = UserApplication::where('user_id', $user->id)
+                ->orderBy('id', 'desc')
+                ->select('id', 'name', 'count', 'created_at', 'latest_tx')
+                ->paginate(10);
+        } else {
+	        $data = UserApplication::where('user_id', $user->id)
+                ->orderBy('id', 'desc')
+                ->select('id', 'name')
+                ->get();
+        }
 		return response()->json(['data' => $data]);
 	}
 

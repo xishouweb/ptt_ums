@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MatchItem;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class MatchItemController extends Controller
@@ -12,8 +13,17 @@ class MatchItemController extends Controller
 
 	public function index(Request $request)
 	{
-		$items = MatchItem::orderBy('id', 'desc')->paginate(10);
-		return response()->json(['all' => MatchItem::format_list($items)]);
+	    $user = Auth::user();
+		$items = MatchItem::where('user_id', $user->id)
+            ->orderBy('id', 'desc')
+            ->select('id', 'status', 'content', 'created_at')
+            ->paginate(10);
+		foreach ($items as $item) {
+		    $item->name = property_exists(json_decode($item->content), 'name') ? json_decode($item->content)->name : '';
+            $item->status = MatchItem::STATUS_TEXT[$item->status];
+            unset($item->content);
+        }
+		return response()->json(['data' => $items]);
 	}
 
 	public function show($id)
@@ -27,10 +37,11 @@ class MatchItemController extends Controller
 
 	public function store(Request $request)
 	{
-	    //todo auth
+	    $user = Auth::user();
 		try{
 			if ($request->get('content')) {
 				$data = [
+				    'user_id' => $user->id,
 					'content' => $request->get('content'),
 				];
 				MatchItem::create($data);
