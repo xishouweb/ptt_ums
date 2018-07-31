@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Jobs\BlockChainDataUpload;
 use App\Jobs\CreateBlockChainAccount;
 use App\Jobs\HandleUploadFiles;
+use App\Models\Dashboard;
 use App\Models\DataRecord;
 use App\Models\DataUid;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
@@ -129,9 +131,26 @@ class DataRecordController extends Controller
                 BlockChainDataUpload::dispatch('0x0428e150f72797bdfef7135b11b0953639494f15', $content, $data_result->id)->onQueue('block_chain_data_upload');
             }
 
+            //相应数据源中的数据数量+1
             $user_application = UserApplication::where('id', $user_application_id)->first();
             $user_application->count += 1;
             $user_application->save();
+
+            //记录当天上传数据量
+            $upload_record = Dashboard::where('user_id', $vendor->id)
+                ->where('created_at', '>=', date('Y-m-d 00:00:00'))
+                ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                ->first();
+            if ($upload_record) {
+                $upload_record->value += 1;
+                $upload_record->save();
+            } else {
+                Dashboard::create([
+                    'user_id' => $vendor->id,
+                    'type' => Dashboard::UPLOAD_DATA,
+                    'value' => 1,
+                ]);
+            }
 
             $response_data['status'] = 200;
             $response_data['msg'] = '上传成功';
