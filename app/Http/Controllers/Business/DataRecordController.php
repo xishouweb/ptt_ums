@@ -77,8 +77,12 @@ class DataRecordController extends Controller
 
     public static function  processingData ($vendor, $user_application_id, $content, $content_array) {
 	    try {
-            if (!$content_array || !array_key_exists('phone',$content_array) || !$content_array['phone']) {
-                throw new Exception('JSON数据中必须含有手机');
+            if (!$content_array ||
+                !array_key_exists('phone',$content_array) ||
+                !$content_array['phone'] ||
+                strlen((int)$content_array['phone']) != 11
+            ) {
+                throw new Exception('JSON数据中必须含有正确的手机');
             }
 
             if (User::where('phone', $content_array['phone'])->count() <= 0) {

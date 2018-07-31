@@ -42,9 +42,16 @@ class HandleUploadFiles implements ShouldQueue
         $flag = false;
         $fh = fopen($file_path, 'r');
         while (!feof($fh)) {
-            $line = fgets($fh);
-            if (!is_null(json_decode($line))) {
-                DataRecordController::processingData($this->vendor, $this->user_application_id, $line, json_decode($line, true));
+            $arr = explode(',', mb_convert_encoding(fgets($fh), "UTF-8"));
+            if (count($arr) != 8) {
+                continue;
+            }
+            $line = '{"phone": ' . $arr[0] . ',"gender": ' . $arr[1] . ',"age": ' . $arr[2] . ', "user_address": ' . $arr[3] . ', "industry": ' . $arr[4] . ', "hobby": ' . $arr[5] . ', "interest": ' . $arr[6] . ', "model": ' . $arr[7] . '}';
+            if (is_null(json_decode($line))) {
+                continue;
+            }
+            $res = DataRecordController::processingData($this->vendor, $this->user_application_id, $line, json_decode($line, true));
+            if ($res['status'] == 200) {
                 $flag = true;
             }
         }
@@ -52,6 +59,8 @@ class HandleUploadFiles implements ShouldQueue
         if ($flag) {
             unlink($file_path);
             Log::info('上传成功，已删除文件：' . $this->file_name);
+        } else {
+            Log::info('上传失败，未删除文件：' . $this->file_name);
         }
     }
 }
