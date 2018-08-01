@@ -11,5 +11,4 @@ class UserApplication extends Model
 
 	protected $guarded = ['id'];
 
-	
 }
