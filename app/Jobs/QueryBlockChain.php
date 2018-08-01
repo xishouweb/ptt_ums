@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Mockery\Exception;
 
 class QueryBlockChain implements ShouldQueue
 {
@@ -44,28 +45,38 @@ class QueryBlockChain implements ShouldQueue
     {
         try {
             Log::info('handle');
-        //获取创建合约内容
+            //获取创建合约内容
             $content = MatchItem::transferFormat($this->match_item->content);
 
             $source = json_decode($this->match_item->content, true)['source'];
-            $app = UserApplication::where('name', $source)->where('user_id', $this->user_id)->first();
+            $app = UserApplication::where('id', $source)->where('user_id', $this->user_id)->first();
             $uids = DataRecord::where('user_application_id', $app->id)
                 ->where('user_id', $this->user_id)
                 ->select('UID')->get()->pluck('UID')->toArray();
 
-            $qualified_count = 0;                                   //合格数据的个数
-             //根据内容查出匹配数据
+            //根据内容查出匹配数据
             $bc_ids = [];
             foreach ($uids as $uid) {
-                $bc_ids[] = self::getQualifiedBcId($content['summary'], $app->id, $uid);
+                $bc_id = self::getQualifiedBcId($content['summary'], $app->id, $uid);
+                if ($bc_id) {
+                    $bc_ids[] = $bc_id;
+                }
             }
 
             //根据匹配的bc_id，从链上查询IPFS HASH
-            $i_hashs = self::getIHash($bc_ids);
+            $i_hashs = [];
+            if ($bc_ids) {
+                $i_hashs = self::getIHash($bc_ids);
+            }
 
             //根据IPFS HASH去IPFS上查询原始数据
-            $json_list = self::getFullJson($i_hashs);
+            $json_list = [];
+            if ($i_hashs) {
+                $json_list = self::getFullJson($i_hashs);
+            }
 
+            //合格数据的个数
+            $qualified_count = 0;
             //根据原始数据，匹配出合格的数据
             foreach ($json_list as $json) {
                 if (self::checkJson($content['details'], $json)) {
@@ -92,6 +103,8 @@ class QueryBlockChain implements ShouldQueue
         $model = DB::table('data_records')
             ->where('user_application_id', '!=', $unexcept_app_id)
             ->where('UID', $uid)
+            ->whereNotNull('bc_id')
+            ->where('bc_id', '!=', '')
             ->select('bc_id');
 
         if (in_array('性别', $conditions)) {
@@ -127,7 +140,6 @@ class QueryBlockChain implements ShouldQueue
         $client = new Client();
         $i_hashs = [];
         foreach ($bc_ids as $bc_id) {
-
             $res = $client->request('GET', self::BLOCK_CHAIN_URL . $bc_id);
             //反转了hash
             $i_hashs[] = strrev((string)$res->getBody());

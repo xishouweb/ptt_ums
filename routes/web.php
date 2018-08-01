@@ -47,6 +47,8 @@ Route::prefix('api/business')->group(function () {
             Route::post('/data_records/multiple', 'DataRecordController@multipleDataUpload');
             Route::get('/match_items', 'MatchItemController@index');
             Route::post('/match_items', 'MatchItemController@store');
+            Route::get('/dashboard/chart_data', 'DashboardController@chartData');
+            Route::get('/dashboard/summary', 'DashboardController@summary');
         });
 	});
 
