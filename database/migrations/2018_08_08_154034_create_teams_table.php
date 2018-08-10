@@ -19,6 +19,7 @@ class CreateTeamsTable extends Migration
             $table->string('logo');
             $table->string('info');
             $table->integer('creater_user_id');
+            $table->integer('campaign_id');
             $table->timestamps();
             $table->softDeletes();
         });

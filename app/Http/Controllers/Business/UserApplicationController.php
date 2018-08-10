@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
 use Illuminate\Support\Facades\Log;
-use App\Models\UserApplication;
+
 
 class UserApplicationController extends Controller
 {

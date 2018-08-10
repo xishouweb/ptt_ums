@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
-use Illuminate\Support\Facades\Log;
 use App\Models\DatRecord;
 
 class DataRecordController extends Controller

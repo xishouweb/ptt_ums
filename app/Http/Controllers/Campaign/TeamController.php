@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\Photo;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,7 +16,8 @@ class TeamController extends Controller
      */
     public function index()
     {
-        echo 'string';
+        $a = config('alioss.networkType');
+        dd($a);
     }
 
     /**
@@ -35,6 +38,22 @@ class TeamController extends Controller
      */
     public function store(Request $request)
     {
+        $model = $request->only(['team_name', 'logo', 'info', 'campaign_id']);
+        $photo = Photo::upload($request, 'logo');
+        if (!$photo) {
+            return $this->apiResponse([], '图片上传失败!', 1);
+        }
+
+        $team = new Team();
+        $team->team_name = $model['team_name'];
+        $team->info = $model['info'];
+        $team->logo = $photo->url;
+        $team->creater_user_id = 1;
+        $team->campaign_id = $model['campaign_id'];
+
+        $team->save();
+
+        return $this->apiResponse($team, '团队创建成功');
 
     }
 
@@ -82,4 +101,9 @@ class TeamController extends Controller
     {
         //
     }
+
+    public function join($team_id){
+
+    }
+
 }

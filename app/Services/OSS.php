@@ -18,9 +18,10 @@ class OSS {
      * 私有初始化 API，非 API，不用关注
      * @param boolean 是否使用内网
      */
-    public function __construct($isInternal = false)
+    public function __construct()
     {
-        if ($this->networkType == 'VPC' && !$isInternal) {
+        $isInternal = config('isInternal');
+        if (config('alioss.networkType') == 'VPC' && !$isInternal) {
             throw new Exception("VPC 网络下不提供外网上传、下载等功能");
         }
         $this->ossClient = AliyunOSS::boot(
