@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 
@@ -13,8 +14,19 @@ class UserApplicationController extends Controller
 
 	public function index(Request $request)
 	{
-		$items = UserApplication::orderBy('id', 'desc')->paginate(10);
-		return response()->json(['items' => $items]);
+	    $user = Auth::user();
+	    if ($request->input('page')) {
+            $data = UserApplication::where('user_id', $user->id)
+                ->orderBy('id', 'desc')
+                ->select('id', 'name', 'count', 'created_at', 'latest_tx')
+                ->paginate(10);
+        } else {
+	        $data = UserApplication::where('user_id', $user->id)
+                ->orderBy('id', 'desc')
+                ->select('id', 'name')
+                ->get();
+        }
+		return response()->json(['data' => $data]);
 	}
 
 	public function show($id)
@@ -28,15 +40,20 @@ class UserApplicationController extends Controller
 
 	public function store(Request $request)
 	{
-	    //todo auth
-
+        $user = Auth::user();
 		if ($request->get('name')) {
 			$data = [
-				'name' => $request->get('content'),
-				'user_id' => $request->get('user_id'),
+				'name' => $request->get('name'),
+				'user_id' => $user->id,
 			];
 			UserApplication::create($data);
-		}
-		return response()->json(['msg' => 'success']);
+            $data['status'] = 200;
+            $data['msg'] = '创建成功';
+		} else {
+            $data['status'] = 401;
+            $data['msg'] = '创建失败';
+        }
+
+		return response()->json($data);
 	}
 }
