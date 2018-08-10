@@ -61,4 +61,15 @@ Route::prefix('api/vendor')->group(function () {
 
 });
 
+Route::prefix('api/campaign')->group(function() {
+    Route::namespace('Campaign')->group(function () {
+
+         Route::group(['middleware' => 'auth:api'], function() {
+
+         });
+
+         Route::resource('team', 'TeamController');
+    });
+});
+
 
