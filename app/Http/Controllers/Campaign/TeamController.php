@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Campaign;
 
 use App\Models\Photo;
 use App\Models\Team;
+use App\Models\TeamUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -102,8 +103,23 @@ class TeamController extends Controller
         //
     }
 
-    public function join($team_id){
+    public function join(Request $request, $team_id)
+    {
+        $user = auth()->user();
 
+        if (!$team = Team::find($team_id)) {
+            return $this->apiResponse([], '未找到该团队', 1);
+        }
+
+        $teamUser = new TeamUser();
+
+        $teamUser->user_id = $user->id;
+        $teamUser->team_id = $team_id;
+        $teamUser->campaign_id = $request->get('campaign_id');
+
+        $teamUser->save();
+
+        return $this->apiResponse($teamUser, '加入成功');
     }
 
 }

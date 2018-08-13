@@ -76,7 +76,7 @@ Route::prefix('api/campaign')->group(function() {
         Route::post('/team/{team_id}/join', 'TeamController@join');
         Route::resource('team', 'TeamController');
 
-        
+
         Route::group(['middleware' => 'auth:api'], function() {
 
         });
