@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Campaign;
 use App\Models\Photo;
 use App\Models\Team;
 use App\Models\TeamUser;
+use App\Services\QrCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -17,8 +18,7 @@ class TeamController extends Controller
      */
     public function index()
     {
-        $a = config('alioss.networkType');
-        dd($a);
+        return QrCode::getQrCodeUrl("0x923139d93f305Ad6272ae9E80B2467bf1a630673", 600,121);
     }
 
     /**

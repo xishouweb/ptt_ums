@@ -22,7 +22,7 @@ class Photo extends Model
             $user_id = 0;
         }
         $fileName  =  date('Y_m_d_H_i_s') . '_' . $user_id . '_' . rand(1000, 9999) .'.'.$extension;
-        OSS::upload($sub_path . $fileName, $file);
+        OSS::upload($sub_path . '/' . $fileName, $file);
 
         $photo = new Photo();
         $photo->extension = $extension;
@@ -34,5 +34,15 @@ class Photo extends Model
 
         $photo->save();
         return $photo;
+    }
+
+    public static function simpleUpload($file, $sub_path, $user_id = 0)
+    {
+        $extension = "png";
+
+        $fileName  =  date('Y_m_d_H_i_s') . '_' . $user_id . '_' . rand(1000, 9999) .'.'.$extension;
+        OSS::upload($sub_path . '/' . $fileName, $file);
+
+        return config('alioss.ossURL') . '/' . $sub_path . '/' . $fileName;
     }
 }
