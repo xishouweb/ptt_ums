@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Team extends Model
+class Team extends BaseModel implements FormatInterface
 {
-    //
+    public function format($source = [])
+    {
+
+        return $data;
+    }
 }

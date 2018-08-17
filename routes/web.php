@@ -73,9 +73,12 @@ Route::prefix('api/vendor')->group(function () {
 Route::prefix('api/campaign')->group(function() {
     Route::namespace('Campaign')->group(function () {
 
-        Route::post('/team/{team_id}/join', 'TeamController@join');
-        Route::resource('team', 'TeamController');
+        Route::get('detail/{id}', 'CampaignController@show');
 
+        Route::post('/team/join', 'TeamController@join');
+        Route::get('/team/ranks', 'TeamController@ranks');
+        Route::resource('team', 'TeamController');
+        Route::get('account/detail', 'UserController@detail');
 
         Route::group(['middleware' => 'auth:api'], function() {
 

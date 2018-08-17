@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Models\RentRecord;
+use App\Models\Team;
+use App\Models\TeamUser;
 use App\Services\QrCode;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -43,4 +46,38 @@ class User extends Authenticatable
             $model->save();
         });
     }
+
+    public function token($type, $action)
+    {
+         return RentRecord::where('user_id', $this->id)->where('token_type', $type)->whereAction($action)->sum('token_amount') ?? 0;
+    }
+
+    public function campaign($campaign_id, $token_type)
+    {
+        $data['user_id'] = $this->id;
+        $data['expected_income'] = 3000;
+        $data['expected_income_unit'] = strtoupper($token_type);
+
+        $data['my_ranking'] = RentRecord::ranking($campaign_id, $token_type, ['self_in_' . $this->id])['self_in_' . $this->id];
+        $data['has_rent'] = $this->getHasRent($campaign_id, $token_type);
+        $data['credit'] = $data['has_rent'] * 1;
+        return $data;
+    }
+
+    public function getHasRent($campaign_id, $token_type)
+    {
+        return RentRecord::where('user_id', $this->id)
+                ->whereAction(RentRecord::ACTION_JOIN_TEAM)
+                ->where('campaign_id', $campaign_id)
+                ->where('token_type', $token_type)
+                ->sum('token_amount') ?? 0;
+    }
+
+    public function teamsRinking()
+    {
+        $team_ids = TeamUser::where('user_id', $this->id)->get()->pluck('team_id');
+        $teams = Team::find($team_ids);
+
+    }
+
 }

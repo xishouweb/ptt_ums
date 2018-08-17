@@ -17,7 +17,8 @@ class CreateRentRecordsTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->string('team_id', 20);
-            $table->decimal('amount', 10, 2);
+            $table->decimal('token_amount', 10, 2);
+            $table->string('token_type', 50);
             $table->string('action');
             $table->tinyInteger('status')->default(0);
             $table->decimal('settlement_amount', 10, 2)->nullable();
