@@ -12,11 +12,14 @@ use App\Models\DataUid;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
+
+use App\Models\DatRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
+
 
 class DataRecordController extends Controller
 {
