@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Campaign;
 
-use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -93,5 +92,19 @@ class UserController extends Controller
         }
 
         return $this->apiResponse($user->campaign($request->get('campaign_id'), $request->get('token_type')));
+    }
+
+    public function teams()
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            return $this->apiResponse([], '未登录', 1);
+        }
+
+        $teams = $this->format_list($user->teams);
+        $teams[] = $user->campaign();
+
+        return $this->apiResponse($teams);
     }
 }

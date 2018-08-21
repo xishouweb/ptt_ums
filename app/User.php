@@ -76,8 +76,7 @@ class User extends Authenticatable
     public function teamsRinking()
     {
         $team_ids = TeamUser::where('user_id', $this->id)->get()->pluck('team_id');
-        $teams = Team::find($team_ids);
-
+        return Team::find($team_ids) ?? [];
     }
 
 }

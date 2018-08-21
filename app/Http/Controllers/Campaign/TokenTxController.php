@@ -39,14 +39,14 @@ class TokenTxController extends Controller
     {
         try{
             DB::beginTransaction();
-            $data =
+            $data = [];
             if (!$user_id || !$user = User::find($user_id)) {
                 throw new \Exception('未找到该用户');
             }
 
             TokenTransaction::create($data);
 
-        } catch () {
+        } catch (\Exception $e) {
 
         }
     }
