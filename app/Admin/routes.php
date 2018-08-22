@@ -13,4 +13,9 @@ Route::group([
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
     $router->get('/wallet/notice', 'NoticeController@index');
+    $router->post('/wallet/notice', 'NoticeController@create');
+    $router->get('/wallet/notice/create', 'NoticeController@createForm');
+    $router->get('/wallet/notice/{id}/edit', 'NoticeController@edit');
+    $router->put('/wallet/notice/{id}', 'NoticeController@update');
+    $router->delete('/wallet/notice/{id}', 'NoticeController@delete');
 });
