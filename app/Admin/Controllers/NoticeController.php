@@ -121,7 +121,6 @@ class NoticeController extends Controller
             $notice->status = Notice::ENABLED;
         }
         $notice->save();
-        return ['status'=>1, 'text'=>'添加场馆成功'];
     }
 
     /**
