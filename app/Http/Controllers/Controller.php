@@ -53,11 +53,11 @@ class Controller extends BaseController
         return $format->format();
     }
 
-    public function format_list($data, $from = [])
+    public function format_list($data, $form = [])
     {
         $result = [];
         foreach($data as $d) {
-            $result[] = $d->format($from);
+            $result[] = $d->format($form);
         }
         return $result;
     }

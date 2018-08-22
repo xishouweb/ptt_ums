@@ -79,6 +79,7 @@ Route::prefix('api/campaign')->group(function() {
         Route::get('/team/ranks', 'TeamController@ranks');
         Route::resource('team', 'TeamController');
         Route::get('account/detail', 'UserController@detail');
+        Route::get('user/teams', 'UserController@teams');
 
         Route::group(['middleware' => 'auth:api'], function() {
 

@@ -47,7 +47,7 @@ class RentRecord extends Model
         return $rentRcord;
     }
 
-    public static function ranking($campaign_id, $token_type, array $indexs)
+    public static function ranking($campaign_id, $token_type, $team_id)
     {
         $ranks = RentRecord::where('campaign_id', $campaign_id)
             ->where('token_type', $token_type)
@@ -58,13 +58,13 @@ class RentRecord extends Model
             ->get();
 
         foreach ($ranks as $key => $rank) {
-            foreach ($indexs as  $index) {
-                if ($rank->team_id == $index) {
-                    $data[$index] = $key +1;
-                }
+
+            if ($rank->team_id == $team_id) {
+                $rank['ranking_id'] = $key + 1;
+                return $rank;
             }
         }
 
-        return $data;
+        return [];
     }
 }

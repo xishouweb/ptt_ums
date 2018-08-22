@@ -58,7 +58,7 @@ class User extends Authenticatable
         $data['expected_income'] = 3000;
         $data['expected_income_unit'] = strtoupper($token_type);
 
-        $data['my_ranking'] = RentRecord::ranking($campaign_id, $token_type, ['self_in_' . $this->id])['self_in_' . $this->id];
+        $data['my_ranking'] = RentRecord::ranking($campaign_id, $token_type, 'self_in_' . $this->id);
         $data['has_rent'] = $this->getHasRent($campaign_id, $token_type);
         $data['credit'] = $data['has_rent'] * 1;
         return $data;
@@ -73,7 +73,7 @@ class User extends Authenticatable
                 ->sum('token_amount') ?? 0;
     }
 
-    public function teamsRinking()
+    public function teams()
     {
         $team_ids = TeamUser::where('user_id', $this->id)->get()->pluck('team_id');
         return Team::find($team_ids) ?? [];
