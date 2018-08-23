@@ -58,7 +58,7 @@ class NoticeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect('admin/wallet/notice/create')
+            return redirect("admin/wallet/notice/$id/edit")
                 ->withErrors($validator)
                 ->withInput();
         }
