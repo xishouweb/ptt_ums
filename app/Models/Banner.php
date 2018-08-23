@@ -12,6 +12,13 @@ class Banner extends Model
     const NOT_ENABLED = 0;
     const ENABLED = 1;
 
+    const TYPE_WEB = 0;
+    const TYPE_APP = 1;
+    const TYPE_TEXT = [
+        self::TYPE_WEB => 'Web页面',
+        self::TYPE_APP => 'App页面',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
