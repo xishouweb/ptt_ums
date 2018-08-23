@@ -170,7 +170,7 @@ class TeamController extends Controller
 
         $count = \DB::select("select count(1) as total_size from (select team_id, sum(token_amount) as total from rent_records where campaign_id = 1 GROUP BY team_id order by total DESC ) as rank ");
 
-        $data = $this->paginate($ranks, $count[0]->total_size ?? 0);
+        $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], $count[0]->total_size ?? 0);
 
 
         return $this->apiResponse($data);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class RentRecord extends Model
@@ -22,7 +23,7 @@ class RentRecord extends Model
         }
 
 
-        if ($token_amount > $token->amount){
+        if ($token_amount > $token->amount) {
             throw new \Exception('token额度不足');
         }
 
@@ -66,5 +67,33 @@ class RentRecord extends Model
         }
 
         return [];
+    }
+
+    public function format($source = [])
+    {
+
+        if (substr($this->team_id, 0, 8) == self::ACTION_SELF_IN) {
+            $user_id = intval(substr($this->team_id, 8));
+
+            if ($user = User::where("id", $user_id)->first()) {
+                $rank = self::ranking($source['campaign_id'], $source['token_type'], $this->team_id);
+                $old_model = DataCache::getRanking($this->team_id);
+                $status = $rank['ranking_id'] >= $old_model['ranking_id'] ? 'up' : 'down';
+
+                return [
+                    'team_name' => $user->nickname,
+                    'logo' => $user->avatar,
+                    'info' => null,
+                    'type' => 'personal',
+                    'credit' => $rank['total'] * 1,
+                    'ranking_id' => $rank['ranking_id'],
+                    'status' => $status,
+                ];
+            } else {
+                throw new \Exception('未找到该用户');
+            }
+
+        }
+        return Team::find($this->team_id)->format($source);
     }
 }

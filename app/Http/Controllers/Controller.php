@@ -16,7 +16,7 @@ class Controller extends BaseController
     protected $page_size  = 10;
     protected $total_size = 100;
 
-    public function paginate($builder, $total_size = null, $page = null,$page_size = null)
+    public function paginate($builder, $form = [], $total_size = null, $page = null,$page_size = null)
     {
         if (request()->get('page')) {
             $this->page = (int) request()->get('page');
@@ -38,7 +38,7 @@ class Controller extends BaseController
 
         $data = $builder->skip(($this->page - 1) * $this->page_size)->take($this->page_size)->get();
         $responseData = [
-            'data'    => $data,
+            'data'    => $this->format_list($data, $form),
             'page'    => $this->page,
             'page_size'    => $this->page_size,
             'total_size'    => $this->total_size,

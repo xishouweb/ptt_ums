@@ -74,7 +74,7 @@ class TokenTxController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->apiResponse([], $e->getMessage(), 1);
         }
     }
