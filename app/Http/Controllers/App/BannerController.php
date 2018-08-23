@@ -19,9 +19,10 @@ class BannerController extends Controller
         $banners = DB::table('banners')
             ->where('status', Banner::ENABLED)
             ->select(['id', 'title', 'type', 'image', 'content', 'created_at'])
-            ->orderBy('id', 'desc')
-            ->paginate(10);
-        return $this->response($banners);
+            ->orderBy('sort')
+            ->take(5)
+            ->get();
+        return $this->response(['data' => $banners]);
     }
 
     /**
