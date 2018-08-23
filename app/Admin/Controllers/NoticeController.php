@@ -131,7 +131,7 @@ class NoticeController extends Controller
     protected function grid()
     {
         return Admin::grid(Notice::class, function (Grid $grid) {
-            $grid->model()->orderBy('id', 'desc');
+            $grid->model()->orderBy('status', 'desc')->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->column('title', '标题');
             $grid->column('status', '状态')->display(function ($status) {
