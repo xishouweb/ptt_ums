@@ -130,6 +130,10 @@ class UserController extends Controller
         try{
             DB::beginTransaction();
             TokenVote::record($team_id, $user->id, $amount);
+
+            $userToken->votes -= $amount;
+            $userToken->save();
+            
             DB::commit();
 
             return $this->apiResponse();
