@@ -80,6 +80,7 @@ Route::prefix('api/campaign')->group(function() {
         Route::resource('team', 'TeamController');
         Route::get('account/detail', 'UserController@detail');
         Route::get('user/teams', 'UserController@teams');
+        Route::post('user/vote/{team_id}', 'UserController@voteTo');
 
         Route::group(['middleware' => 'auth:api'], function() {
 

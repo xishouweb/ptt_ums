@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class TokenVote extends Model
 {
+    protected $guarded = ['id'];
+
     public static function record($team_id, $user_id, $amount)
     {
         return static::create([
@@ -24,6 +26,6 @@ class TokenVote extends Model
             return $model->consecutive_days + 1;
         }
 
-        return 0;
+        return 1;
     }
 }

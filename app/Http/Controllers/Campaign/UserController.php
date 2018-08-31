@@ -112,12 +112,16 @@ class UserController extends Controller
         return $this->apiResponse($teams);
     }
 
-    public function votoTo($team_id, $amount)
+    public function voteTo(Request $request, $team_id)
     {
         $user = auth()->user();
 
         if (!$user) {
             return $this->apiResponse([], '未登录', 1);
+        }
+
+        if (!$amount = $request->get('amount', 0)) {
+            return $this->apiResponse([], '请填写正确的票数', 1);
         }
 
         if (!$userToken = $user->user_tokens('ptt')) {
@@ -133,7 +137,7 @@ class UserController extends Controller
 
             $userToken->votes -= $amount;
             $userToken->save();
-            
+
             DB::commit();
 
             return $this->apiResponse();
