@@ -5,6 +5,7 @@ namespace App;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
+use App\Models\UserToken;
 use App\Services\QrCode;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -78,5 +79,11 @@ class User extends Authenticatable
         $team_ids = TeamUser::where('user_id', $this->id)->get()->pluck('team_id');
         return Team::find($team_ids) ?? [];
     }
+
+    public function user_tokens($type)
+    {
+        return UserToken::where('token_type', $type)->where('user_id', $this->id)->first() ?? [];
+    }
+
 
 }

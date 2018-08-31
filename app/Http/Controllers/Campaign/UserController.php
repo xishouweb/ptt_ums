@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\TokenVote;
+use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 class UserController extends Controller
 {
@@ -107,4 +111,33 @@ class UserController extends Controller
 
         return $this->apiResponse($teams);
     }
+
+    public function votoTo($team_id, $amount)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return $this->apiResponse([], '未登录', 1);
+        }
+
+        if (!$userToken = $user->user_tokens('ptt')) {
+            return $this->apiResponse([], '未找到投票信息', 1);
+        }
+
+        if ($amount > $userToken->votes) {
+            return $this->apiResponse([], '票数不足', 1);
+        }
+        try{
+            DB::beginTransaction();
+            TokenVote::record($team_id, $user->id, $amount);
+            DB::commit();
+
+            return $this->apiResponse();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse([], $e->getMessage(), 1);
+        }
+
+    }
+
 }

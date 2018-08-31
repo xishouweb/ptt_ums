@@ -76,6 +76,39 @@ class Controller extends BaseController
         return response()->json(['code' => $code, 'message' => $message, 'data' => $data]);
     }
 
+    protected function _not_found_json($resource)
+    {
+        $json = array(
+            "error" => $resource . " 不存在",
+        );
+        return response()->json($json, 404);
+    }
 
+    protected function _forbidden_json()
+    {
+        $json = array(
+            "error" => "权限失败",
+        );
+        return response()->json($json, 403);
+    }
+
+    protected function _bad_json($msg, $code = 0)
+    {
+        $json = array(
+            'code' => $code,
+            "error" => $msg,
+        );
+        return response()->json($json, 400);
+    }
+
+    protected function _success_json($data = [], $msg = '操作成功', $code = 1)
+    {
+        $json = array(
+            'data' => $data,
+            "msg" => $msg,
+            'code' => $code,
+        );
+        return response()->json($json, 200);
+    }
 
 }
