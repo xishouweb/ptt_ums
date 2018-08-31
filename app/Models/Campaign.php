@@ -8,6 +8,8 @@ class Campaign extends BaseModel implements FormatInterface
 {
     use SoftDeletes;
 
+    const STATUS_NORMAL = 1;
+
     public function format($source = [])
     {
         $data = $this;

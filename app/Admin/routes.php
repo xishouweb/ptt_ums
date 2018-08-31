@@ -26,4 +26,9 @@ Route::group([
     $router->get('/wallet/banner/{id}/edit', 'BannerController@edit');
     $router->put('/wallet/banner/{id}', 'BannerController@update');
     $router->delete('/wallet/banner/{id}', 'BannerController@delete');
+
+    //Campaign
+
+    $router->resource('user/tokens', 'UserTokenController');
+    $router->resource('campaign', 'CampaignController');
 });

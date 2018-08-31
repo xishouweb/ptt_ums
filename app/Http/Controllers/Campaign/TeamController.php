@@ -19,7 +19,7 @@ class TeamController extends Controller
      */
     public function index()
     {
-        return QrCode::getQrCodeUrl("0x923139d93f305Ad6272ae9E80B2467bf1a630673", 600,121);
+
     }
 
     /**
