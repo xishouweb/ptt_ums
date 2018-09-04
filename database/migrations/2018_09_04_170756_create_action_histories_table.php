@@ -21,6 +21,7 @@ class CreateActionHistoriesTable extends Migration
             $table->integer('data')->nullable();
             $table->string('note')->nullable();
             $table->string('payload')->nullable();
+            $table->tinyInteger('count_flag')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
