@@ -17,7 +17,7 @@ class CreateTokenVotesTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('amount');
-            $table->integer('team_id');
+            $table->string('team_id');
             $table->integer('consecutive_days')->default(0);
             $table->timestamps();
         });

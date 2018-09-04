@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\RentRecord;
 use App\Models\TokenVote;
 use App\Models\UserToken;
 use App\User;
@@ -120,8 +121,16 @@ class UserController extends Controller
             return $this->apiResponse([], '未登录', 1);
         }
 
+        if (!$team_id) {
+            return $this->apiResponse([], '请选择正确的团队', 1);
+        }
+
         if (!$amount = $request->get('amount', 0)) {
             return $this->apiResponse([], '请填写正确的票数', 1);
+        }
+
+        if ($team_id === RentRecord::ACTION_SELF_IN . $user->id  && !(UserToken::where('user_id', $user->id)->where('token_type', 'ptt')->first())) {
+            return $this->apiResponse([], '请先充值', 1);
         }
 
         if (!$userToken = $user->user_tokens('ptt')) {
