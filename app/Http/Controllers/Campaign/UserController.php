@@ -89,6 +89,54 @@ class UserController extends Controller
         //
     }
 
+    public function login(Request $request)
+    {
+        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
+        if ($result) {
+            $user = Auth::user();
+            $this->content['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+            $this->content['address'] = $user->address ?: 'Address';
+            $this->content['nickname'] = $user->nickname ?: 'User';
+            $this->content['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+            $this->content['coins'] = $user->coins;
+            $this->content['msg'] = '登录成功';
+            $this->content['status'] = 200;
+        } else {
+            $this->content['msg'] = '账户不存在或密码错误';
+            $this->content['status'] = 401;
+        }
+        return response()->json($this->content);
+    }
+
+    public function register(Request $request)
+    {
+        $phone = $request->input('phone');
+        $password = $request->input('password');
+        $captcha = $request->input('captcha');
+        $c_result = Captcha::pre_valid($phone, $captcha);
+        if (!$c_result) {
+            $this->content['msg'] = '验证码错误或过期';
+            $this->content['status'] = 401;
+            return response()->json($this->content);
+        }
+        $result = User::where('phone', $phone)->count();
+        if (!$result) {
+            User::create([
+                'phone' => $phone,
+                'password' => Hash::make($password),
+                'update_key' => md5($phone . env('APP_KEY')),
+                'type' => 'vendor',
+            ]);
+            $this->content['msg'] = '注册成功';
+            $this->content['status'] = 200;
+        } else {
+            $this->content['msg'] = '该手机号已被注册';
+            $this->content['status'] = 401;
+        }
+        return response()->json($this->content);
+    }
+
+
     public function detail(Request $request)
     {
         $user = auth()->user();

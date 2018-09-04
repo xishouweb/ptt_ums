@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddLastLoginToUserTable extends Migration
+class AddLastLoginAndInviteCodeToUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,6 +15,7 @@ class AddLastLoginToUserTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('last_login')->nullable();
+            $table->string('invite_code')->nullable();
         });
     }
 
@@ -27,6 +28,7 @@ class AddLastLoginToUserTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('last_login');
+            $table->dropColumn('invite_code');
         });
     }
 }
