@@ -62,6 +62,7 @@ class User extends Authenticatable
         $data['my_ranking'] = RentRecord::ranking($campaign_id, $token_type, RentRecord::ACTION_SELF_IN . $this->id);
         $data['has_rent'] = $this->getHasRent($campaign_id, $token_type);
         $data['credit'] = $data['has_rent'] * 1;
+        $data['invite_code'] = $this->invite_code;
         return $data;
     }
 
@@ -85,5 +86,28 @@ class User extends Authenticatable
         return UserToken::where('token_type', $type)->where('user_id', $this->id)->first() ?? [];
     }
 
+    public  static function getInviteCode()
+    {
+        $attemps = true;
+        while ($attemps) {
+            $code = rand(10000000, 99999999);
+            $count = User::where("invite_code", $code)->count() ?? 0;
+            if ($count == 0) {
+                return $code;
+            }
+        }
+    }
+
+    public function increaseVotes($type, $votes)
+    {
+        $token = UserToken::where('user_id', $this->id)->where('token_type', $type)->first();
+
+        if (!$token){
+            UserToken::record($this->id, 0, $type, 0, $votes);
+        } else {
+            $token->votes += $votes;
+            $token->save();
+        }
+    }
 
 }

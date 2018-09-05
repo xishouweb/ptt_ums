@@ -18,7 +18,7 @@ class CreateActionHistoriesTable extends Migration
             $table->integer('user_id');
             $table->string('type', 60)->nullable();
             $table->string('action', 60)->nullable();
-            $table->integer('data')->nullable();
+            $table->string('data')->nullable();
             $table->string('note')->nullable();
             $table->string('payload')->nullable();
             $table->tinyInteger('count_flag')->default(0);

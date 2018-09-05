@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\ActionHistory;
 use App\Models\RentRecord;
 use App\Models\TokenVote;
 use App\Models\UserToken;
@@ -115,25 +116,47 @@ class UserController extends Controller
         $captcha = $request->input('captcha');
         $c_result = Captcha::pre_valid($phone, $captcha);
         if (!$c_result) {
-            $this->content['msg'] = '验证码错误或过期';
-            $this->content['status'] = 401;
-            return response()->json($this->content);
+            return $this->apiResponse([], '验证码错误或过期', 1);
+
         }
         $result = User::where('phone', $phone)->count();
-        if (!$result) {
-            User::create([
-                'phone' => $phone,
-                'password' => Hash::make($password),
-                'update_key' => md5($phone . env('APP_KEY')),
-                'type' => 'vendor',
-            ]);
-            $this->content['msg'] = '注册成功';
-            $this->content['status'] = 200;
-        } else {
-            $this->content['msg'] = '该手机号已被注册';
-            $this->content['status'] = 401;
+
+        if ($invite_code = $request->get('invite_code')) {
+            $inviter = User::where('invite_code', $invite_code)->first();
+            if (!$inviter) {
+                return $this->apiResponse([], 'invalid invite code', 1);
+            }
         }
-        return response()->json($this->content);
+
+        try {
+            DB::beginTransaction();
+
+            if (!$result) {
+                $user = User::create([
+                    'phone' => $phone,
+                    'password' => Hash::make($password),
+                    'update_key' => md5($phone . env('APP_KEY')),
+                    'type' => 'vendor',
+                    'invite_code' => User::getInviteCode(),
+                ]);
+
+                $inviter->increaseVotes('ptt');
+                ActionHistory::record($user->id, null, 'register', null, '用户注册');
+                ActionHistory::record($->id, null, 'register', null, '用户注册');
+
+            } else {
+
+            }
+
+
+            DB::commit();
+            return $this->apiResponse($user->campaign(1, 'ptt'), '注册成功');
+
+        } catch (\Exception $e) {
+
+
+        }
+
     }
 
 
@@ -177,7 +200,7 @@ class UserController extends Controller
             return $this->apiResponse([], '请填写正确的票数', 1);
         }
 
-        if ($team_id === RentRecord::ACTION_SELF_IN . $user->id  && !(UserToken::where('user_id', $user->id)->where('token_type', 'ptt')->first())) {
+        if ($team_id === RentRecord::ACTION_SELF_IN . $user->id  && !$user->checkVote()) {
             return $this->apiResponse([], '请先充值', 1);
         }
 
