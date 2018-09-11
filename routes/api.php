@@ -23,6 +23,9 @@ Route::prefix('app')->group(function () {
     Route::namespace('App')->group(function (Router $router) {
         $router->get('/banner', 'BannerController@index');
         $router->get('/notice', 'NoticeController@index');
-        Route::group(['middleware' => 'auth:api'], function() {});
+        $router->post('/user/login', 'UserController@login');
+        Route::group(['middleware' => 'auth:api'], function(Router $router) {
+            $router->get('/user/detail', 'UserController@detail');
+        });
     });
 });
