@@ -100,10 +100,10 @@ class UserController extends Controller
             return response()->json(['error' => '手机号和国家区号不能为空'], 401);
         }
         //验证码
-//        $c_result = Captcha::pre_valid($phone, $captcha);
-//        if (!$c_result) {
-//            return response()->json(['error' => '验证码错误或过期'], 401);
-//        }
+        $c_result = Captcha::pre_valid($phone, $captcha);
+        if (!$c_result) {
+            return response()->json(['error' => '验证码错误或过期'], 401);
+        }
 
         //判断用户是否存在
         $user = User::where('phone', $phone)->first();
