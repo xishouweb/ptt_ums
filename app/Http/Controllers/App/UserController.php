@@ -5,6 +5,7 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Captcha;
+use App\Models\Photo;
 use App\User;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -97,12 +98,12 @@ class UserController extends Controller
         $captcha = $request->input('captcha');
 
         if (!$phone || !$country) {
-            return response()->json(['error' => '手机号和国家区号不能为空'], 401);
+            return response()->json(['message' => '手机号和国家区号不能为空'], 401);
         }
         //验证码
         $c_result = Captcha::pre_valid($phone, $captcha);
         if (!$c_result) {
-            return response()->json(['error' => '验证码错误或过期'], 401);
+            return response()->json(['message' => '验证码错误或过期'], 401);
         }
 
         //判断用户是否存在
@@ -118,7 +119,7 @@ class UserController extends Controller
         }
 
         $content['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
-        $content['data'] = '登录成功';
+        $content['message'] = '登录成功';
 
         return response()->json($content);
     }
@@ -130,5 +131,32 @@ class UserController extends Controller
         $data['nickname'] = $user->nickname ?: 'User_' . md5($user->phone);
         $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
         return response()->json($data);
+    }
+
+    public function updateNickname(Request $request)
+    {
+        if (!$request->input('nickname')) {
+            return response()->json(['message' => '昵称不能为空'], 401);
+        }
+        $user = Auth::user();
+        $user->nickname = $request->input('nickname');
+        $user->save();
+        return response()->json(['message' => '修改成功']);
+    }
+
+    //todo
+    public function updateAvatar(Request $request)
+    {
+        if (!$request->input('avatar')) {
+            return response()->json(['message' => '请上传头像'], 401);
+        }
+        $photo = Photo::upload($request, 'avatar');
+        if (!$photo) {
+            return $this->apiResponse([], '图片上传失败!', 1);
+        }
+        $user = Auth::user();
+        $user->avatar = $photo->url;
+        $user->save();
+        return response()->json(['message' => '上传成功']);
     }
 }
