@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use App\Models\Banner;
 use App\Models\Captcha;
 use App\Models\Photo;
 use App\User;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
