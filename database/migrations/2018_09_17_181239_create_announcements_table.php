@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAnnouncementTable extends Migration
+class CreateAnnouncementsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateAnnouncementTable extends Migration
      */
     public function up()
     {
-        Schema::create('announcement', function (Blueprint $table) {
+        Schema::create('announcements', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('status')->default(0);
             $table->string('title');
@@ -30,6 +30,6 @@ class CreateAnnouncementTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('announcement');
+        Schema::dropIfExists('announcements');
     }
 }
