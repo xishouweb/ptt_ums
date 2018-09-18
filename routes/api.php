@@ -23,6 +23,12 @@ Route::prefix('app')->group(function () {
     Route::namespace('App')->group(function (Router $router) {
         $router->get('/banner', 'BannerController@index');
         $router->get('/notice', 'NoticeController@index');
-        Route::group(['middleware' => 'auth:api'], function() {});
+        $router->post('/user/login', 'UserController@login');
+        $router->get('/price', 'ToolController@getPrice');
+        $router->get('/search_token', 'ToolController@searchToken');
+        $router->get('/announcement', 'AnnouncementController@index');
+        Route::group(['middleware' => 'auth:api'], function(Router $router) {
+            $router->get('/user/detail', 'UserController@detail');
+        });
     });
 });

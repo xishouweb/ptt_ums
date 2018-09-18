@@ -24,7 +24,7 @@ use Mockery\Exception;
 class DataRecordController extends Controller
 {
 
-	public function index(Request $request)
+	public function index()
 	{
 		$user = Auth::user();
 		$items = DataRecord::join('user_applications', 'data_records.user_application_id', '=', 'user_applications.id')

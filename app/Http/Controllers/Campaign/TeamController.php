@@ -9,6 +9,7 @@ use App\Models\TeamUser;
 use App\Services\QrCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
@@ -165,10 +166,10 @@ class TeamController extends Controller
             ->where('token_type', $token_type)
             ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
             ->groupBy('team_id')
-            ->select('team_id', \DB::raw("SUM(token_amount) as total"))
+            ->select('team_id', DB::raw("SUM(token_amount) as total"))
             ->orderBy('total', 'desc');
 
-        $count = \DB::select("select count(1) as total_size from (select team_id, sum(token_amount) as total from rent_records where campaign_id = 1 GROUP BY team_id order by total DESC ) as rank ");
+        $count = DB::select("select count(1) as total_size from (select team_id, sum(token_amount) as total from rent_records where campaign_id = 1 GROUP BY team_id order by total DESC ) as rank ");
 
         $data = $this->paginate($ranks, $count[0]->total_size ?? 0);
 
