@@ -43,8 +43,8 @@ class ToolController extends Controller
     {
         $token_name = request()->input('name') ?: 'ETH';
         $response_data = DB::table('contracts')
-            ->where('name', 'like', "%$token_name%")
-            ->orWhere('symbol', 'like', "%$token_name%")
+            ->where('symbol', 'like', "%$token_name%")
+            ->orWhere('name', 'like', "%$token_name%")
             ->select(['verified', 'enabled', '_id', 'address', 'symbol', 'decimals', 'totalSupply', 'name'])
             ->orderBy('id')
             ->get()
@@ -55,6 +55,8 @@ class ToolController extends Controller
             $response_data = json_decode((string)$response->getBody(), true);
             foreach ($response_data as $data) {
                 Contract::firstOrCreate([
+                    'address'     => $data['address'],
+                ], [
                     'verified'    => $data['verified'],
                     'enabled'     => $data['enabled'],
                     '_id'         => $data['_id'],
