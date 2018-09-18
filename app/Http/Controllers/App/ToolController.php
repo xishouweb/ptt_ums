@@ -10,7 +10,9 @@ namespace App\Http\Controllers\App;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\Contract;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use QL\QueryList;
@@ -40,9 +42,31 @@ class ToolController extends Controller
     public function searchToken()
     {
         $token_name = request()->input('name') ?: 'ETH';
-        $http = new Client(['verify' => false]);
-        $response = $http->get(self::OTHER_SEARCH_TOKEN . $token_name);
-        $response_data = json_decode((string)$response->getBody(), true);
+        $response_data = DB::table('contracts')
+            ->where('name', 'like', "%$token_name%")
+            ->orWhere('symbol', 'like', "%$token_name%")
+            ->select(['verified', 'enabled', '_id', 'address', 'symbol', 'decimals', 'totalSupply', 'name'])
+            ->orderBy('id')
+            ->get()
+            ->toArray();
+        if (!$response_data) {
+            $http = new Client(['verify' => false]);
+            $response = $http->get(self::OTHER_SEARCH_TOKEN . $token_name);
+            $response_data = json_decode((string)$response->getBody(), true);
+            foreach ($response_data as $data) {
+                Contract::firstOrCreate([
+                    'verified'    => $data['verified'],
+                    'enabled'     => $data['enabled'],
+                    '_id'         => $data['_id'],
+                    'address'     => $data['address'],
+                    'symbol'      => $data['symbol'],
+                    'decimals'    => $data['decimals'],
+                    'totalSupply' => $data['totalSupply'],
+                    'name'        => $data['name'],
+                ]);
+            }
+        }
+
         return response()->json($response_data);
     }
 
