@@ -140,9 +140,9 @@ class UserController extends Controller
                     'invite_code' => User::getInviteCode(),
                 ]);
 
-                $inviter->increaseVotes('ptt');
-                ActionHistory::record($user->id, null, 'register', null, '用户注册');
-                ActionHistory::record($->id, null, 'register', null, '用户注册');
+                $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES);
+                ActionHistory::record($user->id, User::TYPE_SYSTEM, User::ACTION_REGISTER, null, '用户注册');
+                ActionHistory::record($inviter->id, 'system', User::ACTION_INVITE_USER, $user->id, '邀请用户');
 
             } else {
 
