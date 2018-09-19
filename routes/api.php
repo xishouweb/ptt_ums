@@ -32,3 +32,9 @@ Route::prefix('app')->group(function () {
         });
     });
 });
+
+Route::prefix('proton')->group(function() {
+    Route::namespace('Proton')->group(function () {
+       Route::resource('news', 'NewController');
+    });
+});

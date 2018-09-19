@@ -15,7 +15,14 @@ class NewController extends Controller
      */
     public function index()
     {
-        //
+        if (!$type = request()->get('type')) {
+            return $this->apiResponse([], 'Regional illegality', 1);
+        }
+
+        $news = ProtonNew::whereStatus(ProtonNew::STASUS_NOMAL)->whereType($type);
+        $news = $this->paginate($news);
+
+        return $this->apiResponse($news);
     }
 
     /**
