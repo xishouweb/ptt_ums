@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\Models\Notice;
+use App\Models\Announcement;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Facades\Admin;
@@ -12,7 +12,7 @@ use Encore\Admin\Controllers\ModelForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class NoticeController extends Controller
+class AnnouncementController extends Controller
 {
     use ModelForm;
 
@@ -24,7 +24,7 @@ class NoticeController extends Controller
     public function index()
     {
         return Admin::content(function (Content $content) {
-            $content->header('资讯列表');
+            $content->header('公告列表');
             $content->body($this->grid());
         });
     }
@@ -58,17 +58,17 @@ class NoticeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect("admin/wallet/notice/$id/edit")
+            return redirect("admin/wallet/announcement/$id/edit")
                 ->withErrors($validator)
                 ->withInput();
         }
 
-        $notice = Notice::find($id);
-        $notice->title = $request->input('title');
-        $notice->url = $request->input('url');
-        $notice->save();
+        $announcement = Announcement::find($id);
+        $announcement->title = $request->input('title');
+        $announcement->url = $request->input('url');
+        $announcement->save();
 
-        return redirect('admin/wallet/notice');
+        return redirect('admin/wallet/announcement');
     }
 
     /**
@@ -79,32 +79,32 @@ class NoticeController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|unique:notices',
-            'url' => 'required|unique:notices',
+            'title' => 'required|unique:announcements',
+            'url' => 'required|unique:announcements',
         ], [
             'required' => ':attribute必须填写',
             'unique' => ':attribute数据库中已存在',
         ]);
 
         if ($validator->fails()) {
-            return redirect('admin/wallet/notice/create')
+            return redirect('admin/wallet/announcement/create')
                 ->withErrors($validator)
                 ->withInput();
         }
 
-        Notice::create([
+        Announcement::create([
             'title'  => $request->input('title'),
             'url'    => $request->input('url'),
-            'status' => Notice::ENABLED,
+            'status' => Announcement::ENABLED,
         ]);
 
-        return redirect('admin/wallet/notice');
+        return redirect('admin/wallet/announcement');
     }
 
     public function createForm()
     {
         return Admin::content(function (Content $content) {
-            $content->header('创建资讯');
+            $content->header('创建公告');
             $content->body($this->form());
         });
     }
@@ -116,15 +116,15 @@ class NoticeController extends Controller
      */
     public function delete($id)
     {
-        $notice = Notice::find($id);
-        if ($notice->status) {
-            $notice->status = Notice::NOT_ENABLED;
+        $announcement = Announcement::find($id);
+        if ($announcement->status) {
+            $announcement->status = Announcement::NOT_ENABLED;
         } else {
-            $notice->status = Notice::ENABLED;
+            $announcement->status = Announcement::ENABLED;
         }
-        $notice->save();
+        $announcement->save();
 
-        return redirect('admin/wallet/notice');
+        return redirect('admin/wallet/announcement');
     }
 
     /**
@@ -134,12 +134,12 @@ class NoticeController extends Controller
      */
     protected function grid()
     {
-        return Admin::grid(Notice::class, function (Grid $grid) {
+        return Admin::grid(Announcement::class, function (Grid $grid) {
             $grid->model()->orderBy('status', 'desc')->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->column('title', '标题');
             $grid->column('status', '状态')->display(function ($status) {
-                if ($status == Notice::ENABLED) {
+                if ($status == Announcement::ENABLED) {
                     return "<span class='label label-success'>启用</span>";
                 }
                 return "<span class='label label-danger'>未启用</span>";
@@ -162,7 +162,7 @@ class NoticeController extends Controller
      */
     protected function form()
     {
-        return Admin::form(Notice::class, function (Form $form) {
+        return Admin::form(Announcement::class, function (Form $form) {
             $form->display('id', 'ID');
             //todo rules不起作用
             $form->text('title', '标题')->rules('required', [

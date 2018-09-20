@@ -12,7 +12,7 @@ Route::group([
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
-    //公告相关路由
+    //资讯相关路由
     $router->get('/wallet/notice', 'NoticeController@index');
     $router->post('/wallet/notice', 'NoticeController@create');
     $router->get('/wallet/notice/create', 'NoticeController@createForm');
@@ -27,8 +27,19 @@ Route::group([
     $router->put('/wallet/banner/{id}', 'BannerController@update');
     $router->delete('/wallet/banner/{id}', 'BannerController@delete');
 
+
     //Campaign
 
     $router->resource('user/tokens', 'UserTokenController');
     $router->resource('campaign', 'CampaignController');
+
+    //公告相关路由
+    $router->get('/wallet/announcement', 'AnnouncementController@index');
+    $router->post('/wallet/announcement', 'AnnouncementController@create');
+    $router->get('/wallet/announcement/create', 'AnnouncementController@createForm');
+    $router->get('/wallet/announcement/{id}/edit', 'AnnouncementController@edit');
+    $router->put('/wallet/announcement/{id}', 'AnnouncementController@update');
+    $router->delete('/wallet/announcement/{id}', 'AnnouncementController@delete');
+    $router->resource('news', 'ProtonNewController');
+
 });

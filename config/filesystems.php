@@ -71,6 +71,14 @@ return [
             'url' => env('APP_URL').'/uploads',
         ],
 
+        'oss' => [
+            'driver'  => 'oss',
+            'endpoint'   => env('OSS_SERVER', 'oss-cn-hangzhou.aliyuncs.com'), //你的云存储域名
+            'access_id'=> env('OSS_KEY_ID', 'PNT702y47BBk78d6'),  //AccessKey
+            'access_key'=> env('OSS_KEY_SECRET', 'Ta6sUmuR7byCnpPuyEaugzPO7zGguj'),  //SecretKey
+            'bucket'    => env('OSS_BUCKET_NAME', 'btkverifiedfiles'),  //Bucket名字
+        ],
+
     ],
 
 ];

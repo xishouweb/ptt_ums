@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\MatchItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Mockery\Exception;
 
 class MatchItemController extends Controller
 {
 
-	public function index(Request $request)
+	public function index()
 	{
 	    $user = Auth::user();
 		$items = MatchItem::where('user_id', $user->id)
@@ -48,7 +49,7 @@ class MatchItemController extends Controller
 			}
 			return response()->json(['msg' => 'success']);
 		} catch(Exception $e) {
-			\Log::error('合约创建失败!', [$e->getMessage()]);
+			Log::error('合约创建失败!', [$e->getMessage()]);
 			return response()->json(['msg' => 'failed !']);
 		}
 	}

@@ -11,13 +11,15 @@
         "fideloper/proxy": "^4.0",
         "guzzle/http": "^3.9",
         "guzzlehttp/guzzle": "^6.3",
+        "jaeger/querylist": "^4.0",
         "johnlui/aliyun-oss": "^2.2",
         "laravel/framework": "5.6.*",
         "laravel/passport": "^6.0",
         "laravel/tinker": "^1.0",
         "predis/predis": "^1.1",
+        "simplesoftwareio/simple-qrcode": "~2",
         "yunpian/yunpian-php-sdk": "~1.0",
-        "simplesoftwareio/simple-qrcode": "~2"
+        "jacobcyl/ali-oss-storage": "^2.1"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

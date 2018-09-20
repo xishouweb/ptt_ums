@@ -68,10 +68,10 @@ return [
      */
     'upload' => [
 
-        'disk' => 'admin',
+        'disk' => 'oss',
 
         'directory' => [
-            'image' => 'images',
+            'image' => 'proton_news/img',
             'file'  => 'files',
         ],
     ],

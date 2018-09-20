@@ -46,8 +46,6 @@ class Controller extends BaseController
         return $responseData;
     }
 
-
-
     public function format(FormatInterface $format)
     {
         return $format->format();
@@ -62,7 +60,6 @@ class Controller extends BaseController
         return $result;
     }
 
-
     /**
      * Standardize response
      *
@@ -75,6 +72,7 @@ class Controller extends BaseController
     {
         return response()->json(['code' => $code, 'message' => $message, 'data' => $data]);
     }
+
 
     protected function _not_found_json($resource)
     {
@@ -111,4 +109,19 @@ class Controller extends BaseController
         return response()->json($json, 200);
     }
 
+    public function success($message = '操作成功', $code = 0)
+    {
+        return $this->apiResponse(null, $message, $code);
+    }
+
+    public function error($message = '操作失败', $code = 1)
+    {
+        return $this->apiResponse(null, $message, $code);
+
+    }
+
+    public function response($data = [])
+    {
+        return response()->json($data);
+    }
 }

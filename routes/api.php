@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,4 +17,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::prefix('app')->group(function () {
+    Route::namespace('App')->group(function (Router $router) {
+        $router->get('/banner', 'BannerController@index');
+        $router->get('/notice', 'NoticeController@index');
+        $router->post('/user/login', 'UserController@login');
+        $router->get('/price', 'ToolController@getPrice');
+        $router->get('/search_token', 'ToolController@searchToken');
+        $router->get('/announcement', 'AnnouncementController@index');
+        Route::group(['middleware' => 'auth:api'], function(Router $router) {
+            $router->get('/user/detail', 'UserController@detail');
+        });
+    });
+});
+
+Route::prefix('proton')->group(function() {
+    Route::namespace('Proton')->group(function () {
+       Route::resource('news', 'NewController');
+    });
 });

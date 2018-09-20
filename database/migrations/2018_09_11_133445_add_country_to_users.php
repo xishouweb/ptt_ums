@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ChangeUsersTable extends Migration
+class AddCountryToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -14,10 +14,7 @@ class ChangeUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('name')->nullable()->change();
-            $table->string('email')->nullable()->change();
-            $table->string('address', 100)->nullable()->change();
-            $table->string('update_key')->nullable()->change();
+            $table->string('country')->after('phone')->nullable();
         });
     }
 
@@ -29,10 +26,7 @@ class ChangeUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('name')->change();
-            $table->string('email')->change();
-            $table->string('address', 100)->change();;
-            $table->string('update_key')->change();
+            $table->dropColumn('country');
         });
     }
 }
