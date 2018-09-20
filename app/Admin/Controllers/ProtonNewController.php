@@ -93,6 +93,19 @@ class ProtonNewController extends Controller
             });
             $grid->column('created_at', '创建时间');
             $grid->updated_at('更新时间');
+
+            $grid->filter(function($filter){
+
+                // 去掉默认的id过滤器
+                $filter->disableIdFilter();
+                $filter->equal('type', '语言')->select([
+                                                'zh'  => 'zh',
+                                                'en' => 'en',
+                                                'にほんご' => 'にほんご',
+                                                '한국어' => '한국어'
+                                            ]);
+                $filter->equal('status', '状态')->select(['不显示', '显示']);
+            });
         });
     }
 
