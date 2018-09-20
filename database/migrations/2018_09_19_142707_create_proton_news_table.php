@@ -17,6 +17,7 @@ class CreateProtonNewsTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->string('description')->nullable();
+            $table->string('img_base', 500);
             $table->string('img', 500);
             $table->string('url', 1000);
             $table->string('type', 50);

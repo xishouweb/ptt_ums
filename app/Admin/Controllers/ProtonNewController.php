@@ -77,7 +77,10 @@ class ProtonNewController extends Controller
             $grid->model()->orderBy('status', 'desc')->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->column('title', '标题');
-            $grid->img('图片');
+            $base_url = config('alioss.ossURL');
+            $grid->column('img', '图片')->display(function ($img) use ($base_url) {
+                return "<img src='$base_url/$img' class='kv-preview-data file-preview-image' style='width:auto;height:30px;''>";
+            });
             $grid->column('status', '状态')->display(function ($status) {
                 if ($status == ProtonNew::STASUS_NOMAL) {
                     return "<span class='label label-success'>显示</span>";
@@ -107,6 +110,7 @@ class ProtonNewController extends Controller
             ]);
             $form->text('description', '描述');
 
+            $form->hidden('img_base')->default(config('alioss.ossURL'));
             // 自定义文件名,路径
             $form->image('img', '图片')->name(function ($file) {
                 return date('Y_m_d_H_i_s') . '_' . rand(1000, 9999) . '.' .$file->guessExtension();
