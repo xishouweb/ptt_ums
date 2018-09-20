@@ -16,7 +16,7 @@ class ChangeUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('name')->nullable()->change();
             $table->string('email')->nullable()->change();
-            $table->string('address', 100)->nullable()->change();;
+            $table->string('address', 100)->nullable()->change();
             $table->string('update_key')->nullable()->change();
         });
     }
