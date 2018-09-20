@@ -87,11 +87,25 @@ class ProtonNewController extends Controller
                 }
                 return "<span class='label label-danger'>不显示</span>";
             });
+            $grid->column('type', '语言');
             $grid->column('url', '链接地址')->display(function ($url) {
                 return "<a href='$url' target='_blank'>$url</a>";
             });
             $grid->column('created_at', '创建时间');
             $grid->updated_at('更新时间');
+
+            $grid->filter(function($filter){
+
+                // 去掉默认的id过滤器
+                $filter->disableIdFilter();
+                $filter->equal('type', '语言')->select([
+                                                'zh'  => 'zh',
+                                                'en' => 'en',
+                                                'にほんご' => 'にほんご',
+                                                '한국어' => '한국어'
+                                            ]);
+                $filter->equal('status', '状态')->select(['不显示', '显示']);
+            });
         });
     }
 
@@ -121,8 +135,8 @@ class ProtonNewController extends Controller
             ]);
 
             $language = [
-                '中文'  => 'zh',
-                'EN' => 'en',
+                'zh'  => 'zh',
+                'en' => 'en',
                 'にほんご' => 'にほんご',
                 '한국어' => '한국어'
             ];
