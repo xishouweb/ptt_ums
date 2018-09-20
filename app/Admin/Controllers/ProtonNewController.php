@@ -87,6 +87,7 @@ class ProtonNewController extends Controller
                 }
                 return "<span class='label label-danger'>不显示</span>";
             });
+            $grid->column('type', '语言');
             $grid->column('url', '链接地址')->display(function ($url) {
                 return "<a href='$url' target='_blank'>$url</a>";
             });
@@ -121,8 +122,8 @@ class ProtonNewController extends Controller
             ]);
 
             $language = [
-                '中文'  => 'zh',
-                'EN' => 'en',
+                'zh'  => 'zh',
+                'en' => 'en',
                 'にほんご' => 'にほんご',
                 '한국어' => '한국어'
             ];
