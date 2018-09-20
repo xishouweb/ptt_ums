@@ -70,11 +70,11 @@ class ToolController extends Controller
             }
         } else {
             foreach ($response_data as $key => $data) {
-                if ($data['verified']) {
-                    $response_data[$key]['verified'] = true;
+                if ($data->verified) {
+                    $response_data[$key]->verified = true;
                 }
-                if ($data['enabled']) {
-                    $response_data[$key]['enabled'] = true;
+                if ($data->enabled) {
+                    $response_data[$key]->enabled = true;
                 }
             }
         }
