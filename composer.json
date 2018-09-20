@@ -18,7 +18,8 @@
         "laravel/tinker": "^1.0",
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-qrcode": "~2",
-        "yunpian/yunpian-php-sdk": "~1.0"
+        "yunpian/yunpian-php-sdk": "~1.0",
+        "jacobcyl/ali-oss-storage": "^2.1"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

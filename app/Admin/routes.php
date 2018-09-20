@@ -33,4 +33,5 @@ Route::group([
     $router->get('/wallet/announcement/{id}/edit', 'AnnouncementController@edit');
     $router->put('/wallet/announcement/{id}', 'AnnouncementController@update');
     $router->delete('/wallet/announcement/{id}', 'AnnouncementController@delete');
+    $router->resource('news', 'ProtonNewController');
 });
