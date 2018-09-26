@@ -33,6 +33,7 @@ Route::prefix('api/business')->group(function () {
 		Route::post('/users/login', 'BusinessUserController@login');
         Route::post('/users/register', 'BusinessUserController@register');
         Route::post('/users/captcha', 'CaptchaController@send');
+        Route::post('/oauth/token', 'BusinessUserController@getAuthToken');
 
 
         Route::group(['middleware' => 'auth:api'], function() {
