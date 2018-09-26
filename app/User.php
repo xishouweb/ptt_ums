@@ -79,4 +79,11 @@ class User extends Authenticatable
         return Team::find($team_ids) ?? [];
     }
 
+    /**
+     * 将passport的登录字段改为phone
+     */
+    public function findForPassport($username)
+    {
+        return self::where('phone', $username)->first();
+    }
 }
