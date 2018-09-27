@@ -61,6 +61,12 @@ class TrackController extends Controller
 			die(hex2bin('47494638396101000100900000ff000000000021f90405100000002c00000000010001000002020401003b'));
 		}
 
+		if (isset($data['o']) && !empty($data['o']) && $data['o'] == 'false')
+		{
+			header('Content-Type: image/gif');
+			die(hex2bin('47494638396101000100900000ff000000000021f90405100000002c00000000010001000002020401003b'));
+		}
+
 
 		if (isset($data['o']) && !empty($data['o']))
 		{
