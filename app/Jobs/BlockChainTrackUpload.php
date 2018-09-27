@@ -12,7 +12,7 @@ use App\Models\BusinessUser;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
-class BlockChainDataUpload implements ShouldQueue 
+class BlockChainTrackUpload implements ShouldQueue 
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -21,13 +21,11 @@ class BlockChainDataUpload implements ShouldQueue
 
 	protected $id;
 	protected $content;
-	protected $address;
 	
-	public function __construct($address, $content, $id)
+	public function __construct($id, $content)
 	{
 	    $this->content = $content;
 	    $this->id = $id;
-	    $this->address = $address;
 	}
 
 	public function handle() 
@@ -37,13 +35,12 @@ class BlockChainDataUpload implements ShouldQueue
 			return;
 		}	
 
-		$url = config('app.node_domain') . "/upload";
+		$url = config('app.node_domain') . "/track";
 		$client = new Client();		
 
 		$res = $client->request('POST', $url, [
 			'form_params' => [
-				'address'   => $this->address,
-				'hash'   => $this->content,
+				'content'   => $this->content,
 				'dataid'   => $this->id,
 			],
 		]);

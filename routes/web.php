@@ -17,6 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/api/v1/track', 'Vendor\TrackController@upload');
+Route::post('/api/v1/track_node_call', 'Vendor\TrackController@record');
+Route::get('/track', 'Vendor\TrackController@index');
 
 Route::prefix('api/business')->group(function () {
 
