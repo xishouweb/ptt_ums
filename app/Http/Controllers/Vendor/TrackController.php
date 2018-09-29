@@ -15,7 +15,7 @@ class TrackController extends Controller
 
 	public function index()
 	{
-		$records = TrackItem::orderBy('id', 'desc')->get();			
+		$records = TrackItem::whereNotNull('hx')->orderBy('id', 'desc')->paginate(100);			
 		return view('track')->with(['records' => $records]);
 	}
 
