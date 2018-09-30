@@ -87,11 +87,19 @@ class ProtonNewController extends Controller
                 }
                 return "<span class='label label-danger'>不显示</span>";
             });
+
+            $grid->column('is_top', '置顶')->display(function ($status) {
+                if ($status == ProtonNew::IS_TOP_YES) {
+                    return "<span class='label label-danger'>置顶</span>";
+                }
+
+                return "<span class='label label-success'>正常</span>";
+            });
             $grid->column('type', '语言');
             $grid->column('url', '链接地址')->display(function ($url) {
                 return "<a href='$url' target='_blank'>$url</a>";
             });
-            $grid->column('created_at', '创建时间');
+            $grid->column('release_date', '发布日期');
             $grid->updated_at('更新时间');
 
             $grid->filter(function($filter){
@@ -141,9 +149,10 @@ class ProtonNewController extends Controller
                 '한국어' => '한국어'
             ];
             $form->select('type', '语言')->options($language);
+            $form->datetime('release_date', '日期')->format('YYYY-MM-DD HH:mm:ss');
+            $form->radio('status', '状态')->options(['下线', '上线'])->default(0);
+            $form->radio('is_top', '置顶')->options(['正常', '置顶'])->default(0);
 
-            $status = ['不显示', '显示'];
-            $form->select('status', '状态')->options($status);
         });
     }
 }
