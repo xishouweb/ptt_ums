@@ -149,7 +149,7 @@ class ProtonNewController extends Controller
                 '한국어' => '한국어'
             ];
             $form->select('type', '语言')->options($language);
-            $form->date('release_date', '日期')->format('YYYY-MM-DD');
+            $form->datetime('release_date', '日期')->format('YYYY-MM-DD HH:mm:ss');
             $form->radio('status', '状态')->options(['下线', '上线'])->default(0);
             $form->radio('is_top', '置顶')->options(['正常', '置顶'])->default(0);
 
