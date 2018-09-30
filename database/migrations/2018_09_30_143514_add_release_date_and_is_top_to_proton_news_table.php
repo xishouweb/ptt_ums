@@ -14,7 +14,7 @@ class AddReleaseDateAndIsTopToProtonNewsTable extends Migration
     public function up()
     {
         Schema::table('proton_news', function (Blueprint $table) {
-            $table->timestamp('release_date')->default(date('Y-m-d H:i:s'));
+            $table->timestamp('release_date')->default(date('Y-m-d'));
             $table->tinyInteger('is_top')->default(0);
         });
     }
