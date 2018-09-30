@@ -19,7 +19,10 @@ class NewController extends Controller
             return $this->apiResponse([], 'Regional illegality', 1);
         }
 
-        $news = ProtonNew::whereStatus(ProtonNew::STASUS_NOMAL)->whereType($type)->orderBy('is_top', 'release_date');
+        $news = ProtonNew::whereStatus(ProtonNew::STASUS_NOMAL)
+            ->whereType($type)
+            ->orderBy('is_top', 'desc')
+            ->orderBy('release_date', 'desc');
         $news = $this->paginate($news);
 
         return $this->apiResponse($news);
