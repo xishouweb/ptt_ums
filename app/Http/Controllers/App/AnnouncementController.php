@@ -20,7 +20,7 @@ class AnnouncementController extends Controller
             ->where('status', Notice::ENABLED)
             ->select(['id', 'title', 'url', 'created_at'])
             ->orderBy('id', 'desc')
-            ->first();
+            ->get();
         return $this->response(['data' => $notices]);
     }
 
