@@ -44,21 +44,24 @@ class AnchorUploadData extends Command
     {
         Log::info('开始');
         DB::table('track_items')->whereNull('hx')->orderBy('id')->chunk(100, function ($items){
+            $url = config('app.node_domain') . "/track";
             foreach ($items as $item) {
-                Log::info('anchor数据id : ' . $item->id);
-                $url = config('app.node_domain') . "/track";
-                $client = new Client();
-
-                $res = $client->request('POST', $url, [
-                    'form_params' => [
-                        'dataid'   => $item->id,
-                        'content'   => $item->content,
-                    ],
-                ]);
-
-                $bodys  = (string) $res->getBody();
-                Log::info('node response : ' . $bodys);
-                sleep(0.1);
+                try {
+                    Log::info('anchor数据id : ' . $item->id);
+                    $client = new Client();
+                    $res = $client->request('POST', $url, [
+                        'form_params' => [
+                            'dataid'   => $item->id,
+                            'content'   => $item->content,
+                        ],
+                    ]);
+                    $body = (string) $res->getBody();
+                    Log::info('node response : ' . $body);
+                    sleep(0.1);
+                } catch (\Exception $exception) {
+                    Log::info($exception->getMessage());
+                    Log::info('发送请求失败 , anchor数据id : ' . $item->id);
+                }
             }
         });
         Log::info('结束');
