@@ -7,8 +7,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\TrackItem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Log;
 use App\Jobs\BlockChainTrackUpload;
+use Illuminate\Support\Facades\Log;
 
 class TrackController extends Controller
 {
@@ -21,13 +21,11 @@ class TrackController extends Controller
 
 	public function record(Request $request)
 	{
-		Log::info('track callback');
-		
 		$dataid = $request->get('dataid');
 		$txhash = $request->get('txhash');
-		
 		if ($data_record = TrackItem::where('id', $dataid)->first()) {
-			$data_record->hx	= $txhash;
+            Log::info('track callback dataid:' . $dataid . ' txhash : ' . $txhash . ' hx : ' . $data_record->hx);
+			$data_record->hx = $txhash;
 			$data_record->save();
 		}
 		
