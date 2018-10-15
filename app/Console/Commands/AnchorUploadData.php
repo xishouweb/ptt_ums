@@ -51,8 +51,8 @@ class AnchorUploadData extends Command
 
                 $res = $client->request('POST', $url, [
                     'form_params' => [
-                        'dataid'   => $items->id,
-                        'content'   => $items->content,
+                        'dataid'   => $item->id,
+                        'content'   => $item->content,
                     ],
                 ]);
 
