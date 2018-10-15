@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\BlockChainTrackUpload;
 use App\Models\TrackItem;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +46,19 @@ class AnchorUploadData extends Command
         DB::table('track_items')->whereNull('hx')->orderBy('id')->chunk(100, function ($items){
             foreach ($items as $item) {
                 Log::info('anchor数据id : ' . $item->id);
-                dispatch((new BlockChainTrackUpload($item->id, json_encode($item->content)))->onQueue('block_chain_data_upload'));
+                $url = config('app.node_domain') . "/track";
+                $client = new Client();
+
+                $res = $client->request('POST', $url, [
+                    'form_params' => [
+                        'dataid'   => $items->id,
+                        'content'   => $items->content,
+                    ],
+                ]);
+
+                $bodys  = (string) $res->getBody();
+                Log::info('node response : ' . $bodys);
+                sleep(0.1);
             }
         });
         Log::info('结束');
