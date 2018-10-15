@@ -42,7 +42,7 @@ class AnchorUploadData extends Command
     public function handle()
     {
         Log::info('开始');
-        DB::table('track_items')->whereNotNull('hx')->orderBy('id')->chunk(100, function ($items){
+        DB::table('track_items')->whereNull('hx')->orderBy('id')->chunk(100, function ($items){
             foreach ($items as $item) {
                 Log::info('anchor数据id : ' . $item->id);
                 dispatch((new BlockChainTrackUpload($item->id, json_encode($item->content)))->onQueue('block_chain_data_upload'));
