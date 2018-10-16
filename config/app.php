@@ -67,6 +67,7 @@ return [
 
     'timezone' => 'PRC',
     'node_domain' => 'http://v1.proton.global:8888',
+    'node_hk' => 'http://vhk.proton.global:8888',
 
     /*
     |--------------------------------------------------------------------------
