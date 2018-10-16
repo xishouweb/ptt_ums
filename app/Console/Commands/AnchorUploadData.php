@@ -68,7 +68,7 @@ class AnchorUploadData extends Command
                     }
                 } catch (\Exception $exception) {
                     Log::info($exception->getMessage());
-                    Log::info('发送请求失败 , anchor数据id : ' . $item->id);
+                    Log::info('发送请求失败 , anchor数据id : ' . $item->id . ' host : ' . $urls[$i]);
                 }
             }
         });
