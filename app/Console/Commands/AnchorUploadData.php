@@ -51,21 +51,19 @@ class AnchorUploadData extends Command
             $i = 0;
             foreach ($items as $item) {
                 try {
-                    Log::info('anchor数据id : ' . $item->id);
-                    $client = new Client();
-                    $res = $client->request('POST', $urls[$i], [
-                        'form_params' => [
-                            'dataid'   => $item->id,
-                            'content'   => $item->content,
-                        ],
-                    ]);
-                    $body = (string) $res->getBody();
-                    Log::info('node response : ' . $body);
                     if ($i < count($urls) - 1) {
                         $i++;
                     } else {
                         $i = 0;
                     }
+                    Log::info('anchor数据id : ' . $item->id . ' , host : ' . $urls[$i]);
+                    $client = new Client();
+                    $client->request('POST', $urls[$i], [
+                        'form_params' => [
+                            'dataid'   => $item->id,
+                            'content'   => $item->content,
+                        ],
+                    ]);
                 } catch (\Exception $exception) {
                     Log::info($exception->getMessage());
                     Log::info('发送请求失败 , anchor数据id : ' . $item->id . ' host : ' . $urls[$i]);
