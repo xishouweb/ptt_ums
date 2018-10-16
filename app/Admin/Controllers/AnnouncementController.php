@@ -52,6 +52,7 @@ class AnnouncementController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required',
+            'title_en' => 'required',
             'url' => 'required',
         ], [
             'required' => ':attribute必须填写',
@@ -65,6 +66,7 @@ class AnnouncementController extends Controller
 
         $announcement = Announcement::find($id);
         $announcement->title = $request->input('title');
+        $announcement->title_en = $request->input('title_en');
         $announcement->url = $request->input('url');
         $announcement->save();
 
@@ -80,6 +82,7 @@ class AnnouncementController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|unique:announcements',
+            'title_en' => 'required|unique:announcements',
             'url' => 'required|unique:announcements',
         ], [
             'required' => ':attribute必须填写',
@@ -93,9 +96,10 @@ class AnnouncementController extends Controller
         }
 
         Announcement::create([
-            'title'  => $request->input('title'),
-            'url'    => $request->input('url'),
-            'status' => Announcement::ENABLED,
+            'title'    => $request->input('title'),
+            'title_en' => $request->input('title_en'),
+            'url'      => $request->input('url'),
+            'status'   => Announcement::ENABLED,
         ]);
 
         return redirect('admin/wallet/announcement');
@@ -138,6 +142,7 @@ class AnnouncementController extends Controller
             $grid->model()->orderBy('status', 'desc')->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->column('title', '标题');
+            $grid->column('title_en', '英文标题');
             $grid->column('status', '状态')->display(function ($status) {
                 if ($status == Announcement::ENABLED) {
                     return "<span class='label label-success'>启用</span>";
@@ -168,6 +173,7 @@ class AnnouncementController extends Controller
             $form->text('title', '标题')->rules('required', [
                 'required' => '标题必须填写',
             ]);
+            $form->text('title_en', '英文标题');
             $form->text('url', '链接')->rules('required', [
                 'required' => '链接必须填写',
             ]);

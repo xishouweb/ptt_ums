@@ -52,6 +52,7 @@ class NoticeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required',
+            'title_en' => 'required',
             'url' => 'required',
         ], [
             'required' => ':attribute必须填写',
@@ -65,6 +66,7 @@ class NoticeController extends Controller
 
         $notice = Notice::find($id);
         $notice->title = $request->input('title');
+        $notice->title_en = $request->input('title_en');
         $notice->url = $request->input('url');
         $notice->save();
 
@@ -80,6 +82,7 @@ class NoticeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|unique:notices',
+            'title_en' => 'required|unique:notices',
             'url' => 'required|unique:notices',
         ], [
             'required' => ':attribute必须填写',
@@ -93,9 +96,10 @@ class NoticeController extends Controller
         }
 
         Notice::create([
-            'title'  => $request->input('title'),
-            'url'    => $request->input('url'),
-            'status' => Notice::ENABLED,
+            'title'    => $request->input('title'),
+            'title_en' => $request->input('title_en'),
+            'url'      => $request->input('url'),
+            'status'   => Notice::ENABLED,
         ]);
 
         return redirect('admin/wallet/notice');
@@ -138,6 +142,7 @@ class NoticeController extends Controller
             $grid->model()->orderBy('status', 'desc')->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->column('title', '标题');
+            $grid->column('title_en', '英文标题');
             $grid->column('status', '状态')->display(function ($status) {
                 if ($status == Notice::ENABLED) {
                     return "<span class='label label-success'>启用</span>";
@@ -168,6 +173,7 @@ class NoticeController extends Controller
             $form->text('title', '标题')->rules('required', [
                 'required' => '标题必须填写',
             ]);
+            $form->text('title_en', '英文标题');
             $form->text('url', '链接')->rules('required', [
                 'required' => '链接必须填写',
             ]);
