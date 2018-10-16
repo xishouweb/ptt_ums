@@ -14,13 +14,23 @@ class NoticeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $notices = DB::table('notices')
-            ->where('status', Notice::ENABLED)
-            ->select(['id', 'title', 'url', 'created_at'])
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        $lang = $request->input('lang');
+        if ($lang == 'en') {
+            $notices = DB::table('notices')
+                ->where('status', Notice::ENABLED)
+                ->select(['id', 'title_en as title', 'url', 'created_at'])
+                ->orderBy('id', 'desc')
+                ->paginate(10);
+        } else {
+            $notices = DB::table('notices')
+                ->where('status', Notice::ENABLED)
+                ->select(['id', 'title', 'url', 'created_at'])
+                ->orderBy('id', 'desc')
+                ->paginate(10);
+        }
+
         return $this->response($notices);
     }
 

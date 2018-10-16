@@ -52,6 +52,7 @@ class AnnouncementController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required',
+            'title_en' => 'required',
             'url' => 'required',
         ], [
             'required' => ':attribute必须填写',
@@ -81,6 +82,7 @@ class AnnouncementController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|unique:announcements',
+            'title_en' => 'required|unique:announcements',
             'url' => 'required|unique:announcements',
         ], [
             'required' => ':attribute必须填写',

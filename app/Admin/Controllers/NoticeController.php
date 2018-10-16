@@ -52,6 +52,7 @@ class NoticeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required',
+            'title_en' => 'required',
             'url' => 'required',
         ], [
             'required' => ':attribute必须填写',
@@ -81,6 +82,7 @@ class NoticeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|unique:notices',
+            'title_en' => 'required|unique:notices',
             'url' => 'required|unique:notices',
         ], [
             'required' => ':attribute必须填写',
