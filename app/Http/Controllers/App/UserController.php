@@ -40,18 +40,33 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $phone = $request->input('phone');
+        $country = $request->input('country');
+
+        $user = User::create([
+            'phone'      => $phone,
+            'password'   => Hash::make($phone),
+            'update_key' => md5($phone . env('APP_KEY')),
+            'type'       => 'wallet',
+            'country'    => $country,
+        ]);
+
+        return $user;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        //
+        $user = Auth::user();
+        $data['id'] = $user->id;
+        $data['phone'] = $user->phone;
+        $data['nickname'] = $user->nickname ?: 'User_' . md5($user->phone);
+        $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+        return response()->json($data);
     }
 
     /**
@@ -74,7 +89,19 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = Auth::user();
+        if ($request->input('nickname')) {
+            $user->nickname = $request->input('nickname');
+        }
+        if ($request->file('avatar')) {
+            $photo = Photo::upload($request, 'avatar');
+            if (!$photo) {
+                return response()->json(['message' => '图片上传失败'], 500);
+            }
+            $user->avatar = $photo->url;
+        }
+        $user->save();
+        return response()->json(['message' => '修改成功']);
     }
 
     /**
@@ -88,72 +115,47 @@ class UserController extends Controller
         //
     }
 
+    //密码登录
     public function login(Request $request)
     {
-        $phone = $request->input('phone');
-        $country = $request->input('country');
-        $captcha = $request->input('captcha');
+        if (!$request->input('phone') || !$request->input('country') || !$request->input('password')) {
+            return response()->json(['message' => '手机号，密码和国家区号均不能为空'], 401);
+        }
 
-        if (!$phone || !$country) {
-            return response()->json(['message' => '手机号和国家区号不能为空'], 401);
+        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
+        if (!$result) {
+            return response()->json(['message' => '账户不存在或密码错误'], 403);
+        }
+
+        $user = Auth::user();
+        $content['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
+        $content['message'] = '登录成功';
+        return response()->json($content);
+    }
+
+    //验证码登录
+    public function fastLogin(Request $request)
+    {
+        if (!$request->input('phone') || !$request->input('country') || !$request->input('captcha')) {
+            return response()->json(['message' => '手机号，验证码和国家区号均不能为空'], 401);
         }
         //验证码
-        $c_result = Captcha::pre_valid($phone, $captcha);
+        $c_result = Captcha::valid($request->input('phone'), $request->input('captcha'));
         if (!$c_result) {
-            return response()->json(['message' => '验证码错误或过期'], 401);
+            return response()->json(['message' => '验证码不存在或过期'], 401);
         }
 
         //判断用户是否存在
-        $user = User::where('phone', $phone)->first();
+        $content['is_new'] = false;
+        $user = User::where('phone', $request->input('phone'))->first();
         if (!$user) {
-            $user = User::create([
-                'phone'      => $phone,
-                'password'   => Hash::make($phone),
-                'update_key' => md5($phone . env('APP_KEY')),
-                'type'       => 'wallet',
-                'country'    => $country,
-            ]);
+            $user = $this->store($request);
+            $content['is_new'] = true;
         }
 
         $content['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         $content['message'] = '登录成功';
 
         return response()->json($content);
-    }
-
-    public function detail()
-    {
-        $user = Auth::user();
-        $data['phone'] = $user->phone;
-        $data['nickname'] = $user->nickname ?: 'User_' . md5($user->phone);
-        $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
-        return response()->json($data);
-    }
-
-    public function updateNickname(Request $request)
-    {
-        if (!$request->input('nickname')) {
-            return response()->json(['message' => '昵称不能为空'], 401);
-        }
-        $user = Auth::user();
-        $user->nickname = $request->input('nickname');
-        $user->save();
-        return response()->json(['message' => '修改成功']);
-    }
-
-    //todo
-    public function updateAvatar(Request $request)
-    {
-        if (!$request->input('avatar')) {
-            return response()->json(['message' => '请上传头像'], 401);
-        }
-        $photo = Photo::upload($request, 'avatar');
-        if (!$photo) {
-            return $this->apiResponse([], '图片上传失败!', 1);
-        }
-        $user = Auth::user();
-        $user->avatar = $photo->url;
-        $user->save();
-        return response()->json(['message' => '上传成功']);
     }
 }
