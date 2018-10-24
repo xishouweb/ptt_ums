@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Campaign;
 use App\Models\ActionHistory;
 use App\Models\RentRecord;
 use App\Models\TokenVote;
-use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class UserController extends Controller
@@ -96,18 +96,44 @@ class UserController extends Controller
         $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
         if ($result) {
             $user = Auth::user();
-            $this->content['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
-            $this->content['address'] = $user->address ?: 'Address';
-            $this->content['nickname'] = $user->nickname ?: 'User';
-            $this->content['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
-            $this->content['coins'] = $user->coins;
-            $this->content['msg'] = '登录成功';
-            $this->content['status'] = 200;
-        } else {
-            $this->content['msg'] = '账户不存在或密码错误';
-            $this->content['status'] = 401;
+            $data['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+            $data['address'] = $user->address ?: 'Address';
+            $data['nickname'] = $user->nickname ?: 'User';
+            $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+            $data['coins'] = $user->coins;
+
+            return $this->_success_json($data, '登录成功', 200);
         }
-        return response()->json($this->content);
+
+        return $this->_bad_json('账户不存在或密码错误', 404);
+    }
+
+    public function fastLogin(Request $request)
+    {
+        $phone = $request->input('phone');
+        $captcha = $request->input('captcha');
+
+        if (!$phone || $this->checkPhone($phone)) {
+            return $this->_bad_json('请确认手机号正确');
+        }
+
+        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
+            return $this->_bad_json('验证码错误或过期');
+        }
+
+        $user = User::wherePhone($phone)->first();
+
+        if (!$user) {
+            return $this->_bad_json('该用户不存在');
+        }
+
+        $data['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+        $data['address'] = $user->address ?: 'Address';
+        $data['nickname'] = $user->nickname ?: 'User';
+        $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+        $data['coins'] = $user->coins;
+
+        return $this->_success_json($data);
     }
 
     public function register(Request $request)
@@ -115,61 +141,59 @@ class UserController extends Controller
         $phone = $request->input('phone');
         $password = $request->input('password');
         $captcha = $request->input('captcha');
-        $c_result = Captcha::pre_valid($phone, $captcha);
-        if (!$c_result) {
-            return $this->apiResponse([], '验证码错误或过期', 1);
 
-        }
         $result = User::where('phone', $phone)->count();
 
-        if ($invite_code = $request->get('invite_code')) {
-            $inviter = User::where('invite_code', $invite_code)->first();
-            if (!$inviter) {
-                return $this->apiResponse([], 'invalid invite code', 1);
-            }
+        if ($result) {
+            return $this->_bad_json('该手机号已被注册');
+        }
+
+        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
+            return $this->_bad_json('验证码错误或过期');
         }
 
         try {
             DB::beginTransaction();
+            $user = User::create([
+                'phone' => $phone,
+                'password' => Hash::make($password),
+                'update_key' => md5($phone . env('APP_KEY')),
+                'type' => User::REGISTER_CHANNEL_SUPER_USER,
+                'invite_code' => User::getInviteCode(),
+            ]);
 
-            if (!$result) {
-                $user = User::create([
-                    'phone' => $phone,
-                    'password' => Hash::make($password),
-                    'update_key' => md5($phone . env('APP_KEY')),
-                    'type' => 'vendor',
-                    'invite_code' => User::getInviteCode(),
-                ]);
+            ActionHistory::record($user->id, User::TYPE_SYSTEM, User::ACTION_REGISTER, null, '用户注册');
+
+            if ($invite_code = $request->get('invite_code')) {
+                $inviter = User::where('invite_code', $invite_code)->first();
+                if (!$inviter) {
+                    return $this->apiResponse([], 'invalid invite code', 1);
+                }
 
                 $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES);
-                ActionHistory::record($user->id, User::TYPE_SYSTEM, User::ACTION_REGISTER, null, '用户注册');
                 ActionHistory::record($inviter->id, 'system', User::ACTION_INVITE_USER, $user->id, '邀请用户');
-
-            } else {
-
             }
 
-
             DB::commit();
-            return $this->apiResponse($user->campaign(1, 'ptt'), '注册成功');
+            return $this->_success_json($user->campaign(1, 'ptt'), '注册成功');
 
         } catch (\Exception $e) {
-
-
+            DB::rollBack();
+            Log::error('<'.$phone .'>注册失败--超级广告主' . $e->getMessage());
+            return $this->_bad_json('注册失败');
         }
 
     }
-
 
     public function detail(Request $request)
     {
         $user = auth()->user();
 
         if (!$user) {
-            return $this->apiResponse([], '未登录', 1);
+            return $this->_bad_json('未登录');
         }
 
-        return $this->apiResponse($user->campaign($request->get('campaign_id'), $request->get('token_type')));
+        return $this->_success_json($user->campaign($request->get('campaign_id'), $request->get('token_type')));
     }
 
     public function teams(Request $request)
@@ -177,12 +201,12 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->apiResponse([], '未登录', 1);
+            return $this->_bad_json('未登录');
         }
 
         $teams = $this->format_list($user->teams(), ['campaign_id' => $request->get('campaign_id'), 'token_type' => $request->get('token_type')]);
 
-        return $this->apiResponse($teams);
+        return $this->_success_json($teams);
     }
 
     public function voteTo(Request $request, $team_id)
@@ -190,27 +214,27 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->apiResponse([], '未登录', 1);
+            return $this->_bad_json('未登录');
         }
 
         if (!$team_id) {
-            return $this->apiResponse([], '请选择正确的团队', 1);
+            return $this->_bad_json('请选择正确的团队');
         }
 
         if (!$amount = $request->get('amount', 0)) {
-            return $this->apiResponse([], '请填写正确的票数', 1);
+            return $this->_bad_json('请填写正确的票数');
         }
 
         if ($team_id === RentRecord::ACTION_SELF_IN . $user->id  && !$user->checkVote()) {
-            return $this->apiResponse([], '请先充值', 1);
+            return $this->_bad_json('请先充值');
         }
 
         if (!$userToken = $user->user_tokens('ptt')) {
-            return $this->apiResponse([], '未找到投票信息', 1);
+            return $this->_bad_json('未找到投票信息');
         }
 
         if ($amount > $userToken->votes) {
-            return $this->apiResponse([], '票数不足', 1);
+            return $this->_bad_json('票数不足');
         }
         try{
             DB::beginTransaction();
@@ -221,12 +245,28 @@ class UserController extends Controller
 
             DB::commit();
 
-            return $this->apiResponse();
+            return $this->_success_json();
         } catch (Exception $e) {
             DB::rollBack();
-            return $this->apiResponse([], $e->getMessage(), 1);
+            return $this->_bad_json($e->getMessage());
         }
 
     }
 
+    private function checkPhone($phone, $country = '86')
+    {
+        $data['phone'] = (string)$phone;
+        $data['country'] = (string)$country;
+
+        $validator = Validator::make($data, [
+            'phone' => 'required|string|size:11',
+            'country' => 'required|string',
+        ]);
+
+        if($validator->fails()) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -41,6 +41,8 @@ Route::prefix('proton')->group(function() {
 
 
 Route::prefix('campaign')->group(function() {
+    Route::get('captcha', 'CaptchaController@send');
+
     Route::namespace('Campaign')->group(function () {
         Route::post('user/login', 'UserController@login');
 

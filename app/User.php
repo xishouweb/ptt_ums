@@ -43,6 +43,8 @@ class User extends Authenticatable
     const ACTION_REGISTER = 'register';
     const ACTION_INVITE_USER = 'invite_user';
 
+    const REGISTER_CHANNEL_SUPER_USER = 'super_user'; //超级广告主
+
     const TYPE_SYSTEM = 'system';
 
     public static function boot()
