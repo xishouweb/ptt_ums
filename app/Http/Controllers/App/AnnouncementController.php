@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
+use App\Models\Announcement;
 use App\Models\Notice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +15,23 @@ class AnnouncementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $notices = DB::table('announcements')
-            ->where('status', Notice::ENABLED)
-            ->select(['id', 'title', 'url', 'created_at'])
-            ->orderBy('id', 'desc')
-            ->first();
+        $lang = $request->input('lang');
+        if ($lang == 'en') {
+            $notices = DB::table('announcements')
+                ->where('status', Announcement::ENABLED)
+                ->select(['id', 'title_en as title', 'url', 'created_at'])
+                ->orderBy('id', 'desc')
+                ->get();
+        } else {
+            $notices = DB::table('announcements')
+                ->where('status', Announcement::ENABLED)
+                ->select(['id', 'title', 'url', 'created_at'])
+                ->orderBy('id', 'desc')
+                ->get();
+        }
+
         return $this->response(['data' => $notices]);
     }
 

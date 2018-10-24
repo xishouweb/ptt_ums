@@ -105,4 +105,23 @@ class BusinessUserController extends Controller
         $user->save();
         return response()->json(['status' => 200, 'msg' => '更新成功']);
     }
+
+    public function getAuthToken(Request $request)
+    {
+        $phone = $request->input('phone');
+        $api_key = $request->input('api_key');
+        if (!$api_key || !$phone) {
+            $this->content['msg'] = 'phone和api_key均不能为空';
+            return response()->json($this->content, 401);
+        }
+        $user = User::where('phone', $phone)->where('update_key', $api_key)->first();
+        if ($user) {
+            $this->content['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+            return response()->json($this->content);
+        } else {
+            $this->content['msg'] = '账户不存在或api_key错误';
+            return response()->json($this->content, 401);
+        }
+
+    }
 }

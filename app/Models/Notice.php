@@ -22,6 +22,6 @@ class Notice extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'url', 'status',
+        'title', 'title_en', 'url', 'status',
     ];
 }

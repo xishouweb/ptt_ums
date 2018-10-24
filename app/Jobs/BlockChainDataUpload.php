@@ -37,7 +37,7 @@ class BlockChainDataUpload implements ShouldQueue
 			return;
 		}	
 
-		$url = "http://p1.analytab.net:8888/upload";
+		$url = config('app.node_domain') . "/upload";
 		$client = new Client();		
 
 		$res = $client->request('POST', $url, [

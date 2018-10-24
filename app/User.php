@@ -89,6 +89,7 @@ class User extends Authenticatable
         return Team::find($team_ids) ?? [];
     }
 
+
     public function user_tokens($type)
     {
         return UserToken::where('token_type', $type)->where('user_id', $this->id)->first() ?? [];
@@ -116,6 +117,15 @@ class User extends Authenticatable
             $token->votes += $votes;
             $token->save();
         }
+    }
+
+
+    /**
+     * 将passport的登录字段改为phone
+     */
+    public function findForPassport($username)
+    {
+        return self::where('phone', $username)->first();
     }
 
 }

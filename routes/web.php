@@ -17,6 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/api/v1/track', 'Vendor\TrackController@upload');
+Route::post('/api/v1/track_node_call', 'Vendor\TrackController@record');
+Route::get('/track', 'Vendor\TrackController@index');
 
 Route::prefix('api/business')->group(function () {
 
@@ -33,7 +36,10 @@ Route::prefix('api/business')->group(function () {
 		Route::post('/users/login', 'BusinessUserController@login');
         Route::post('/users/register', 'BusinessUserController@register');
         Route::post('/users/captcha', 'CaptchaController@send');
-
+        Route::post('/oauth/token', 'BusinessUserController@getAuthToken');
+        Route::get('/download/data_upload_example', function() {
+            return response()->download(public_path('downloads/data_upload_example.csv'), 'example.csv');
+        });
 
         Route::group(['middleware' => 'auth:api'], function() {
             Route::get('/users/detail', 'BusinessUserController@detail');

@@ -32,7 +32,7 @@ class CreateBlockChainAccount implements ShouldQueue
 			return;
 		}	
 
-		$url = "http://p1.analytab.net:8888/account";
+		$url = config('app.node_domain') . "/account";
 
 		$client = new Client();		
 
