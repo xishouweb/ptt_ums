@@ -49,9 +49,8 @@ Route::prefix('campaign')->group(function() {
 
         Route::get('detail/{id}', 'CampaignController@show');
 
-        Route::post('team/join', 'TeamController@join');
         Route::get('team/ranks', 'TeamController@ranks');
-        Route::resource('team', 'TeamController');
+        Route::get('team', 'TeamController@index');
         Route::get('user/teams', 'UserController@teams');
 
         Route::get('vote/rank', 'TeamController@voteRank');
@@ -59,6 +58,8 @@ Route::prefix('campaign')->group(function() {
         Route::group(['middleware' => 'auth:api'], function() {
             Route::get('account/detail', 'UserController@detail');
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
+            Route::post('team', 'TeamController@store');
+            Route::post('team/join/{team_id}', 'TeamController@join');
 
         });
 

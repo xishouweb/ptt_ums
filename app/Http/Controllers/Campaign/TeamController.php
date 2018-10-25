@@ -55,30 +55,35 @@ class TeamController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->apiResponse([], '用户未登录!', 1);
+            return $this->_bad_json( '用户未登录!');
         }
         $requestData = $request->only(['team_name', 'logo', 'info', 'campaign_id', 'token_amount', 'token_type']);
         $photo = Photo::upload($request, 'logo');
         if (!$photo) {
-            return $this->apiResponse([], '图片上传失败!', 1);
+            return $this->_bad_json('图片上传失败!');
         }
 
         try{
+            DB::beginTransaction();
+
             $team = new Team();
             $team->team_name = $requestData['team_name'];
             $team->info = $requestData['info'];
             $team->logo = $photo->url;
-            $team->creater_user_id = 1;
+            $team->creater_user_id = $user->id;
             $team->campaign_id = $requestData['campaign_id'];
 
             $team->save();
 
             RentRecord::record($user, $team->id, $requestData['token_amount'], $requestData['token_type'], $requestData['campaign_id']);
 
+            DB::commit();
 
-            return $this->apiResponse($team, '团队创建成功');
+            return $this->_success_json($team, '团队创建成功');
         } catch (\Exception $e) {
+            DB::rollBack();
 
+            return $this->_bad_json($e->getMessage());
         }
 
 
@@ -130,21 +135,23 @@ class TeamController extends Controller
         //
     }
 
-    public function join(Request $request)
+    public function join(Request $request, $team_id)
     {
         $user = auth()->user();
-        $team_id = $request->get('team_id');
+
         if (!$team_id || !$team = Team::find($team_id)) {
             return $this->apiResponse([], '未找到该团队', 1);
         }
 
+        $token_type =$request->get('token_type');
+        $campaign_id = $request->get('campaign_id');
+        $token_amount = $request->get('token_amount');
+
+        if (!$token_type || !$campaign_id || !$token_amount) {
+            return $this->_bad_json('参数错误');
+        }
+
         try{
-            $token_type =$request->get('token_type');
-            $campaign_id = $request->get('campaign_id');
-            $token_amount = $request->get('token_amount');
-
-
-
             DB::beginTransaction();
             $teamUser = new TeamUser();
 
@@ -156,9 +163,10 @@ class TeamController extends Controller
 
             RentRecord::record($user, $team_id, $token_amount, $token_type, $campaign_id);
 
+            DB::commit();
             return $this->apiResponse($teamUser, '加入成功');
         } catch (\Exception $e) {
-
+            DB::rollBack();
             return $this->apiResponse([], $e->getMessage(), 1);
         }
     }

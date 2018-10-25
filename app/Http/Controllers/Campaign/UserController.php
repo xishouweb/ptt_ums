@@ -105,6 +105,8 @@ class UserController extends Controller
             $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
             $data['coins'] = $user->coins;
 
+            $user->increaseVotes('ptt', 500, 'login');
+
             return $this->_success_json($data, '登录成功', 200);
         }
 
@@ -160,9 +162,9 @@ class UserController extends Controller
             return $this->_bad_json('该手机号已被注册');
         }
 
-//        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
-//            return $this->_bad_json('验证码错误或过期');
-//        }
+        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
+            return $this->_bad_json('验证码错误或过期');
+        }
 
         try {
             DB::beginTransaction();
@@ -191,7 +193,7 @@ class UserController extends Controller
                     throw new \Exception('invalid invite code');
                 }
 
-                $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES);
+                $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES, 'invite_register');
                 ActionHistory::record($inviter->id, 'system', User::ACTION_INVITE_USER, $user->id, '邀请用户');
             }
 
@@ -250,7 +252,7 @@ class UserController extends Controller
             return $this->_bad_json('请先充值');
         }
 
-        if (!$userToken = $user->user_tokens('ptt')) {
+        if (!$userToken = $user->user_token('ptt')) {
             return $this->_bad_json('未找到投票信息');
         }
 

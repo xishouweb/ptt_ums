@@ -16,14 +16,14 @@ class RentRecord extends Model
 
     public static function record($user, $team_id, $token_amount, $token_type, $campaign_id)
     {
-        $token = $user->token($token_type);
+        $token = $user->user_token('ptt');
 
         if (!$token) {
             throw new \Exception('未找到改类型token');
         }
 
 
-        if ($token_amount > $token->amount) {
+        if ($token_amount > $token->freeze) {
             throw new \Exception('token额度不足');
         }
 
@@ -31,6 +31,11 @@ class RentRecord extends Model
 
         //扣除本身的额度
         static::create($user->id, $team_id, -$token_amount, $token_type, static::ACTION_DEDUCTION, $campaign_id);
+
+        $token->token_amount += $token_amount;
+        $token->freeze -= $token_amount;
+
+        $token->save();
     }
 
 
