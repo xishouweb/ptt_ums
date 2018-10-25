@@ -23,10 +23,6 @@ class CaptchaController extends Controller
             return $this->_bad_json('请输入正确的手机号');
         }
 
-        if (User::where('phone', $data['phone'])->count()) {
-            return $this->_bad_json('该手机号已被注册');
-        }
-
         $captcha = Captcha::send($data['phone'], $data['country']);
         if (!$captcha) {
             return $this->_bad_json('发送失败,请重试');

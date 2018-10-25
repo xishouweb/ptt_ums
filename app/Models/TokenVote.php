@@ -28,4 +28,25 @@ class TokenVote extends Model
 
         return 1;
     }
+
+    public function format($source)
+    {
+        $data['team_id'] = $this->team_id;
+        $data['total'] = $this->total;
+
+        if (substr($this->team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
+            $user_id = intval(substr($this->team_id, 8));
+
+            if ($user = User::where("id", $user_id)->first()) {
+                $data['team_name'] = $user->nick_name;
+            } else {
+                throw new \Exception('未找到该用户');
+            }
+
+        } else {
+            $data['team_name'] = Team::find($this->team_id)->team_name;
+        }
+
+        return $data;
+    }
 }

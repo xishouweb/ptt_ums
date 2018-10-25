@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Campaign;
 
 use App\Models\ActionHistory;
+use App\Models\Captcha;
+use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\TokenVote;
 use App\User;
@@ -10,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
@@ -141,6 +144,15 @@ class UserController extends Controller
         $phone = $request->input('phone');
         $password = $request->input('password');
         $captcha = $request->input('captcha');
+        $nickname = $request->input('nickname');
+
+        if (!$nickname) {
+            return $this->_bad_json('请填写昵称');
+        }
+
+        if (!$password) {
+            return $this->_bad_json('请填写密码');
+        }
 
         $result = User::where('phone', $phone)->count();
 
@@ -148,26 +160,35 @@ class UserController extends Controller
             return $this->_bad_json('该手机号已被注册');
         }
 
-        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
-            return $this->_bad_json('验证码错误或过期');
-        }
+//        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
+//            return $this->_bad_json('验证码错误或过期');
+//        }
 
         try {
             DB::beginTransaction();
-            $user = User::create([
-                'phone' => $phone,
-                'password' => Hash::make($password),
-                'update_key' => md5($phone . env('APP_KEY')),
-                'type' => User::REGISTER_CHANNEL_SUPER_USER,
-                'invite_code' => User::getInviteCode(),
-            ]);
+
+
+            $avatar = Photo::upload($request, 'avatar');
+
+            $user =new User();
+
+            $user->nickname = $nickname;
+            $user->phone = $phone;
+            $user->avatar = $avatar->url;
+            $user->password = Hash::make($password);
+            $user->update_key = md5($phone . env('APP_KEY'));
+            $user->type = User::REGISTER_CHANNEL_SUPER_USER;
+            $user->invite_code = User::getInviteCode();
+
+            $user->save();
+
 
             ActionHistory::record($user->id, User::TYPE_SYSTEM, User::ACTION_REGISTER, null, '用户注册');
 
             if ($invite_code = $request->get('invite_code')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
                 if (!$inviter) {
-                    return $this->apiResponse([], 'invalid invite code', 1);
+                    throw new \Exception('invalid invite code');
                 }
 
                 $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES);
@@ -180,7 +201,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('<'.$phone .'>注册失败--超级广告主' . $e->getMessage());
-            return $this->_bad_json('注册失败');
+            return $this->_bad_json($e->getMessage());
         }
 
     }

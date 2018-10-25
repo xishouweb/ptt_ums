@@ -6,6 +6,7 @@ use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
+use App\Models\TokenVote;
 use App\Services\QrCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -18,9 +19,19 @@ class TeamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $team_name = $request->get('team_name');
+        $campaign_id = $request->get('campaign_id');
+        $token_type = $request->get('token_type');
 
+        $teams = Team::where('team_name', 'like', '%' . $team_name .'%')->get();
+
+        if (!$teams) {
+            return $this->_success_json();
+        }
+
+        return $this->_success_json($this->format_list($teams, ['campaign_id' => $campaign_id, 'token_type' => $token_type ]));
     }
 
     /**
@@ -82,7 +93,7 @@ class TeamController extends Controller
      */
     public function show($id)
     {
-        //
+
     }
 
     /**
@@ -175,6 +186,27 @@ class TeamController extends Controller
 
 
         return $this->apiResponse($data);
+    }
+
+    public function voteRank(Request $request)
+    {
+        if(!$campaign_id = $request->get('campaign_id')){
+            return $this->apiResponse([], '请输入活动ID');
+        }
+
+        if(!$token_type = $request->get('token_type')){
+            return $this->apiResponse([], '未找到token类型');
+        }
+
+        $ranks = TokenVote::groupBy('team_id')
+            ->select('team_id', DB::raw("SUM(amount) as total"))
+            ->orderBy('total', 'desc');
+
+        $count = DB::select("select count(1) as total_size from (select team_id, sum(amount) as total from token_votes GROUP BY team_id order by total DESC ) as vote_rank ");
+
+        $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], $count[0]->total_size ?? 0);
+
+        return $this->_success_json($data);
     }
 
 }
