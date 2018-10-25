@@ -33,6 +33,7 @@ Route::prefix('app')->group(function () {
         Route::group(['middleware' => 'auth:api'], function(Router $router) {
             $router->get('/user', 'UserController@show');
             $router->put('/user', 'UserController@update');
+            $router->post('/user/reset_password', 'UserController@resetPassword');
         });
     });
 });

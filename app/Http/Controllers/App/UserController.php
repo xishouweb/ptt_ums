@@ -87,8 +87,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        if (!$request->input('nickname') && !$request->input('avatar')) {
+            return response()->json(['message' => '昵称和头像至少修改一个'], 403);
+        }
         $user = Auth::user();
         if ($request->input('nickname')) {
             $user->nickname = $request->input('nickname');
@@ -119,7 +122,7 @@ class UserController extends Controller
     public function login(Request $request)
     {
         if (!$request->input('phone') || !$request->input('country') || !$request->input('password')) {
-            return response()->json(['message' => '手机号，密码和国家区号均不能为空'], 401);
+            return response()->json(['message' => '手机号，密码和国家区号均不能为空'], 403);
         }
 
         $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
@@ -137,12 +140,12 @@ class UserController extends Controller
     public function fastLogin(Request $request)
     {
         if (!$request->input('phone') || !$request->input('country') || !$request->input('captcha')) {
-            return response()->json(['message' => '手机号，验证码和国家区号均不能为空'], 401);
+            return response()->json(['message' => '手机号，验证码和国家区号均不能为空'], 403);
         }
         //验证码
         $c_result = Captcha::valid($request->input('phone'), $request->input('captcha'));
         if (!$c_result) {
-            return response()->json(['message' => '验证码不存在或过期'], 401);
+            return response()->json(['message' => '验证码不存在或过期'], 403);
         }
 
         //判断用户是否存在
@@ -157,5 +160,25 @@ class UserController extends Controller
         $content['message'] = '登录成功';
 
         return response()->json($content);
+    }
+
+    //重置密码
+    public function resetPassword(Request $request)
+    {
+        if (!$request->input('phone') || !$request->input('country') || !$request->input('captcha')) {
+            return response()->json(['message' => '请输入正确的参数'], 403);
+        }
+        if (strlen($request->input('password')) < 6 || strlen($request->input('password')) > 16) {
+            return response()->json(['message' => '密码长度需在6-16位'], 403);
+        }
+        //验证码
+        $c_result = Captcha::valid($request->input('phone'), $request->input('captcha'));
+        if (!$c_result) {
+            return response()->json(['message' => '验证码不存在或过期'], 403);
+        }
+        $user = Auth::user();
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+        return response()->json(['message' => '重置成功'], 403);
     }
 }
