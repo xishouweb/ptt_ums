@@ -55,13 +55,7 @@ class Captcha extends Model
      */
     public static function send($mobile, $country = '86')
     {
-        // check interval
-        //        if(self::where('mobile', $mobile)->validity()->count()){
-        //            return false;
-        //        }
-		
-		if (starts_with($mobile, '170') || starts_with($mobile, '171'))
-		{
+		if (starts_with($mobile, '170') || starts_with($mobile, '171')) {
 			return self::voice_sms($mobile, $country);	
 		}
 		
@@ -82,11 +76,11 @@ class Captcha extends Model
 
 	public static function sms($mobile, $code, $country)
 	{
-	    if($country == '86'){
+	    if ($country == '86') {
             $message = '【Proton质子链】您的验证码是'.$code.'，请勿告诉他人。';
             // luosimao
             SMSSender::send($mobile, $message);
-        }else{
+        } else {
             $phone = '+' . $country . $mobile;
             $message = '【Proton Chain】your verification code is: '.$code;
             // yunpian
