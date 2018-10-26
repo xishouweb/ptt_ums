@@ -5,6 +5,7 @@ namespace App;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
+use App\Models\UserLogin;
 use App\Models\UserToken;
 use App\Services\QrCode;
 use Laravel\Passport\HasApiTokens;
@@ -38,12 +39,12 @@ class User extends Authenticatable
     ];
 
 
-    const INVITE_USER_VOTES = 100;
+    const INVITE_USER_VOTES = 200;
 
     const ACTION_REGISTER = 'register';
     const ACTION_INVITE_USER = 'invite_user';
 
-    const REGISTER_CHANNEL_SUPER_USER = 'super_user'; //超级广告主
+    const SRC_SUPER_USER = 'super_user'; //超级广告主
 
     const TYPE_SYSTEM = 'system';
 
@@ -116,14 +117,9 @@ class User extends Authenticatable
         if ($action == 'login') {
             if (!$token){
                 UserToken::record($this->id, 0, $type, 0, 0, $votes);
-            } else {
-
-                if (strtotime($this->last_login) - strtotime('Y-m-d 00:00:00') > 24 * 3600) {
-
-                }
-
-                $token->temp_votes += $votes;
-                $token->save();
+            } else if (!$this->checkTodayLogin()) {
+                    $token->temp_votes = $votes;
+                    $token->save();
             }
         }
 
@@ -135,8 +131,6 @@ class User extends Authenticatable
                 $token->save();
             }
         }
-
-
     }
 
 
@@ -148,4 +142,20 @@ class User extends Authenticatable
         return self::where('phone', $username)->first();
     }
 
+    public function checkYesterdayLogin()
+    {
+        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+        $end = date('Y-m-d 23:59:59', strtotime('-1 day'));
+
+        if ($this->last_login >= $start && $this->last_login <= $end) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function checkTodayLogin()
+    {
+        return UserLogin::where('created_at' , '>=', date('Y-m-d 00:00:00'))->where('user_id', $this->id)->count() > 0 ? true : false;
+    }
 }

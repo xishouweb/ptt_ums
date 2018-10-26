@@ -7,6 +7,8 @@ use App\Models\Captcha;
 use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\TokenVote;
+use App\Models\UserLogin;
+use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -105,14 +107,25 @@ class UserController extends Controller
             $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
             $data['coins'] = $user->coins;
 
+            try {
+                DB::beginTransaction();
             $user->increaseVotes('ptt', 500, 'login');
 
+            UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
             $user->last_login = date('Y-m-d H:i:s');
+            $user->save();
 
-            return $this->_success_json($data, '登录成功', 200);
+                DB::commit();
+                return $this->_success_json($data, '登录成功', 200);
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                \Log::info('用户:' . $user->id . '登陆出错' . $e->getMessage());
+            }
+
+            return $this->_bad_json('账户不存在或密码错误', 404);
         }
 
-        return $this->_bad_json('账户不存在或密码错误', 404);
     }
 
     public function fastLogin(Request $request)
@@ -134,13 +147,28 @@ class UserController extends Controller
             return $this->_bad_json('该用户不存在');
         }
 
-        $data['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
-        $data['address'] = $user->address ?: 'Address';
-        $data['nickname'] = $user->nickname ?: 'User';
-        $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
-        $data['coins'] = $user->coins;
+        try {
+            DB::beginTransaction();
 
-        return $this->_success_json($data);
+            $user->increaseVotes('ptt', 500, 'login');
+
+            UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
+            $user->last_login = date('Y-m-d H:i:s');
+            $user->save();
+
+            $data['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+            $data['address'] = $user->address ?: 'Address';
+            $data['nickname'] = $user->nickname ?: 'User';
+            $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+            $data['coins'] = $user->coins;
+
+            DB::commit();
+            return $this->_success_json($data);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return $this->_bad_json($e->getMessage());
+        }
     }
 
     public function register(Request $request)
@@ -181,7 +209,7 @@ class UserController extends Controller
             $user->avatar = $avatar->url;
             $user->password = Hash::make($password);
             $user->update_key = md5($phone . env('APP_KEY'));
-            $user->type = User::REGISTER_CHANNEL_SUPER_USER;
+            $user->type = User::SRC_SUPER_USER;
             $user->invite_code = User::getInviteCode();
 
             $user->save();
