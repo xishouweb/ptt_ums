@@ -51,17 +51,19 @@ Route::prefix('campaign')->group(function() {
 
         Route::get('team/ranks', 'TeamController@ranks');
         Route::get('team', 'TeamController@index');
-        Route::get('user/teams', 'UserController@teams');
-
-        Route::get('vote/rank', 'TeamController@voteRank');
+        Route::get('team/{team_id}', 'TeamController@show');
 
         Route::group(['middleware' => 'auth:api'], function() {
+            Route::post('photo/upload', 'UserController@photoUpload');
+
+            Route::get('vote/rank', 'TeamController@voteRank');
             Route::get('account/detail', 'UserController@detail');
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
             Route::post('team', 'TeamController@store');
             Route::post('team/join/{team_id}', 'TeamController@join');
-            Route::post('user/{user_id}', 'UserController@update');
-
+            Route::post('user/update', 'UserController@update');
+            Route::get('user/edit', 'UserController@edit');
+            Route::get('user/teams', 'UserController@teams');
         });
 
     });

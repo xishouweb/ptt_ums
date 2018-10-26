@@ -68,9 +68,21 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit()
     {
-        //
+        $user = auth()->user();
+
+        if (!$user) {
+            return $this->_bad_json('请先登录~~~!');
+        }
+
+        $data['nickname'] = $user->nickname;
+        $data['avatar'] = $user->avatar;
+        $data['phone'] = $user->phone;
+        $data['invite_code'] = $user->invite_code;
+
+
+        return $this->_success_json($data);
     }
 
     /**
@@ -80,9 +92,21 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        $user = auth()->user();
 
+        if (!$user) {
+            return $this->_bad_json('请先登录~~~!');
+        }
+
+        $requestData = $request->only(['nickname', 'avatar']);
+
+        if ($user->update($requestData)) {
+            return $this->_success_json();
+        }
+
+        return $this->_bad_json('更新失败');
     }
 
     /**
@@ -177,6 +201,7 @@ class UserController extends Controller
         $password = $request->input('password');
         $captcha = $request->input('captcha');
         $nickname = $request->input('nickname');
+        $avatar = $request->input('avatar');
 
         if (!$nickname) {
             return $this->_bad_json('请填写昵称');
@@ -199,14 +224,11 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-
-            $avatar = Photo::upload($request, 'avatar');
-
             $user =new User();
 
             $user->nickname = $nickname;
             $user->phone = $phone;
-            $user->avatar = $avatar->url;
+            $user->avatar = $avatar;
             $user->password = Hash::make($password);
             $user->update_key = md5($phone . env('APP_KEY'));
             $user->type = User::SRC_SUPER_USER;
@@ -321,5 +343,22 @@ class UserController extends Controller
         }
 
         return true;
+    }
+
+    public function photoUpload(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return $this->_bad_json('请先登录~~~!');
+        }
+
+        $photo = Photo::upload($request);
+
+        if (!$photo) {
+            return $this->_bad_json('上传失败!');
+        }
+
+        return $this->_success_json(['url' => $photo->url]);
     }
 }

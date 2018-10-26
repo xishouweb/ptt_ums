@@ -25,6 +25,10 @@ class TeamController extends Controller
         $campaign_id = $request->get('campaign_id');
         $token_type = $request->get('token_type');
 
+        if (!$token_type || !$campaign_id || !$team_name) {
+            return $this->_bad_json('参数错误');
+        }
+
         $teams = Team::where('team_name', 'like', '%' . $team_name .'%')->get();
 
         if (!$teams) {
@@ -96,9 +100,23 @@ class TeamController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $campaign_id = $request->get('campaign_id');
+        $token_type = $request->get('token_type');
 
+        if (!$token_type || !$campaign_id) {
+            return $this->_bad_json('参数错误');
+        }
+
+
+        $team = Team::find($id);
+
+        if (!$team) {
+            return $this->_bad_json('未找到团队信息');
+        }
+
+        return $this->_success_json($team->format(['campaign_id' => $campaign_id, 'token_type' => $token_type]));
     }
 
     /**
