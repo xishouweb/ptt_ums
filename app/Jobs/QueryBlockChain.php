@@ -22,7 +22,7 @@ class QueryBlockChain implements ShouldQueue
     protected $match_item;
     protected $user_id;
 
-    const BLOCK_CHAIN_URL = config('app.node_domain') . '/gethash/';
+    const BLOCK_CHAIN_URL = 'http://v1.proton.global:8888/gethash/';
     const IPFS_URL = 'http://ipfs.analytab.net/ipfs/';
 
     /**
