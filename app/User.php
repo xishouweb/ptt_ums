@@ -117,6 +117,11 @@ class User extends Authenticatable
             if (!$token){
                 UserToken::record($this->id, 0, $type, 0, 0, $votes);
             } else {
+
+                if (strtotime($this->last_login) - strtotime('Y-m-d 00:00:00') > 24 * 3600) {
+
+                }
+
                 $token->temp_votes += $votes;
                 $token->save();
             }

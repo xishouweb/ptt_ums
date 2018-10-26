@@ -60,6 +60,7 @@ Route::prefix('campaign')->group(function() {
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
             Route::post('team', 'TeamController@store');
             Route::post('team/join/{team_id}', 'TeamController@join');
+            Route::post('user/{user_id}', 'UserController@update');
 
         });
 

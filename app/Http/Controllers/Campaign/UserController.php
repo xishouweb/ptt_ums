@@ -80,7 +80,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
     }
 
     /**
@@ -106,6 +106,8 @@ class UserController extends Controller
             $data['coins'] = $user->coins;
 
             $user->increaseVotes('ptt', 500, 'login');
+
+            $user->last_login = date('Y-m-d H:i:s');
 
             return $this->_success_json($data, '登录成功', 200);
         }
