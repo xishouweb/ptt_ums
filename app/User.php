@@ -72,7 +72,7 @@ class User extends Authenticatable
         $data['credit'] = $data['has_rent'] * 0.1;
         $data['invite_code'] = $this->invite_code;
 
-        $token = $this->user_token('ptt');
+        $token = $this->user_tokens('ptt');
         $data['votes'] = $token ? $token->votes + $token->temp_votes : 0;
         return $data;
     }

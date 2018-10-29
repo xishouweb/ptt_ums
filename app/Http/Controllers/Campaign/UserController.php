@@ -200,12 +200,6 @@ class UserController extends Controller
         $phone = $request->input('phone');
         $password = $request->input('password');
         $captcha = $request->input('captcha');
-        $nickname = $request->input('nickname');
-        $avatar = $request->input('avatar');
-
-        if (!$nickname) {
-            return $this->_bad_json('请填写昵称');
-        }
 
         if (!$password) {
             return $this->_bad_json('请填写密码');
@@ -226,9 +220,7 @@ class UserController extends Controller
 
             $user =new User();
 
-            $user->nickname = $nickname;
             $user->phone = $phone;
-            $user->avatar = $avatar;
             $user->password = Hash::make($password);
             $user->update_key = md5($phone . env('APP_KEY'));
             $user->type = User::SRC_SUPER_USER;
@@ -360,5 +352,18 @@ class UserController extends Controller
         }
 
         return $this->_success_json(['url' => $photo->url]);
+    }
+
+    public function logout()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return $this->_bad_json('请先登录~~~!');
+        }
+
+        Auth::logout();
+
+        return $this->_success_json();
     }
 }

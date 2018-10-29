@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $team_name = $request->get('team_name');

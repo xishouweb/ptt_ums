@@ -64,6 +64,7 @@ Route::prefix('campaign')->group(function() {
             Route::post('user/update', 'UserController@update');
             Route::get('user/edit', 'UserController@edit');
             Route::get('user/teams', 'UserController@teams');
+            Route::get('user/logout', 'UserController@logout');
         });
 
     });
