@@ -23,9 +23,9 @@ class UserLogin extends Model
 
         $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
         $end = date('Y-m-d 23:59:59', strtotime('-1 day'));
-        if ($last_login->created_at >= $start && $last_login->created_at <= $end && !$user->checkTodayLogin()) {
+        if ($last_login && $last_login->created_at >= $start && $last_login->created_at <= $end && !$user->checkTodayLogin()) {
             $login->consecutive_days = $last_login->consecutive_days + 1;
-        } elseif ($user->checkTodayLogin()) {
+        } elseif ($last_login && $user->checkTodayLogin()) {
             $login->consecutive_days = $last_login->consecutive_days;
         }
 

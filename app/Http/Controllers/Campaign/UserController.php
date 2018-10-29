@@ -125,7 +125,7 @@ class UserController extends Controller
         $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
         if ($result) {
             $user = Auth::user();
-            $data['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+            $data['token'] = 'Bearer ' . $user->createToken('super_user')->accessToken;
             $data['address'] = $user->address ?: 'Address';
             $data['nickname'] = $user->nickname ?: 'User';
             $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
@@ -133,11 +133,11 @@ class UserController extends Controller
 
             try {
                 DB::beginTransaction();
-            $user->increaseVotes('ptt', 500, 'login');
+                $user->increaseVotes('ptt', 500, 'login');
 
-            UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
-            $user->last_login = date('Y-m-d H:i:s');
-            $user->save();
+                UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
+                $user->last_login = date('Y-m-d H:i:s');
+                $user->save();
 
                 DB::commit();
                 return $this->_success_json($data, '登录成功', 200);
@@ -180,7 +180,7 @@ class UserController extends Controller
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();
 
-            $data['token'] = 'Bearer ' . $user->createToken('Api')->accessToken;
+            $data['token'] = 'Bearer ' . $user->createToken('super_user')->accessToken;
             $data['address'] = $user->address ?: 'Address';
             $data['nickname'] = $user->nickname ?: 'User';
             $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
@@ -227,7 +227,6 @@ class UserController extends Controller
             $user->invite_code = User::getInviteCode();
 
             $user->save();
-
 
             ActionHistory::record($user->id, User::TYPE_SYSTEM, User::ACTION_REGISTER, null, '用户注册');
 
