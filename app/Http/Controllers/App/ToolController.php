@@ -148,4 +148,14 @@ class ToolController extends Controller
         }
         return response()->json(['message' => '发送失败，请重试'], 500);
     }
+
+    public function latestVersion(Request $request)
+    {
+        if ($request->input('channel') == 'ios_enterprise') {
+            $data = config('setting.ios_latest_version');
+        } else {
+            $data = config('setting.android_latest_version');
+        }
+        return response()->json($data);
+    }
 }
