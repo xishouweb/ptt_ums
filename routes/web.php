@@ -73,5 +73,4 @@ Route::prefix('api/vendor')->group(function () {
 
 	});
 
-
 });
