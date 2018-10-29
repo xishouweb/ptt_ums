@@ -113,7 +113,6 @@ class Captcha extends Model
         return false;
     }
 
-
     public static function pre_valid($mobile, $code)
     {
         $model = self::where('mobile', $mobile)->where('code', $code)->orderBy('created_at', 'desc')->validity()->first();
@@ -122,9 +121,6 @@ class Captcha extends Model
         }
         return false;
     }
-
-
-
 
     public function scopeValidity($query)
     {

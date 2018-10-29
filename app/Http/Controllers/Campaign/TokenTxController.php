@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\RentRecord;
 use App\Models\TokenTransaction;
+use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -39,15 +41,41 @@ class TokenTxController extends Controller
     {
         try{
             DB::beginTransaction();
-            $data = [];
-            if (!$user_id || !$user = User::find($user_id)) {
+            $data = $request->only(['user_id', 'blockchain_tx_hash', 'token_amount', 'token_type', 'campaign_id']);
+
+            if (!isset($data['user_id']) || !$user = User::find($data['user_id'])) {
                 throw new \Exception('未找到该用户');
             }
+            $token = UserToken::where('user_id', $data['user_id'])->where('token_type', $data['toke_type'])->first();
 
+            if (!$token) {
+                $token = UserToken::create([
+                    'user_id' => $data['user_id'],
+                    'token_amount' => $data['token_amount'],
+                    'token_type' => $data['token_type'],
+                ]);
+
+                $data['original_amount'] = 0;
+                $data['after_amount'] = $token->token_amount;
+            } else {
+                $data['original_amount'] = $token->token_amount;
+                $data['after_amount'] = $token->token_amount + $data['token_amount'];
+            }
+
+
+            $data['action'] = TokenTransaction::ACTION_TOP_UP;
             TokenTransaction::create($data);
 
-        } catch (\Exception $e) {
+            RentRecord::record($user, RentRecord::ACTION_SELF_IN . $user->id, $data['token_amount'], $data['token_type'], $data['campaign_id']);
 
+            DB::commit();
+
+            return $this->apiResponse();
+
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return $this->apiResponse([], $e->getMessage(), 1);
         }
     }
 
