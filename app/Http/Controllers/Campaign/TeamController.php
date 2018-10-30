@@ -21,16 +21,16 @@ class TeamController extends Controller
         $token_type = $request->get('token_type');
 
         if (!$token_type || !$campaign_id || !$team_name) {
-            return $this->_bad_json('参数错误');
+            return $this->error('参数错误');
         }
 
         $teams = Team::where('team_name', 'like', '%' . $team_name .'%')->get();
 
         if (!$teams) {
-            return $this->_success_json();
+            return $this->apiResponse();
         }
 
-        return $this->_success_json($this->format_list($teams, ['campaign_id' => $campaign_id, 'token_type' => $token_type ]));
+        return $this->apiResponse($this->format_list($teams, ['campaign_id' => $campaign_id, 'token_type' => $token_type ]));
     }
 
     /**
@@ -54,12 +54,12 @@ class TeamController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json( '用户未登录!');
+            return $this->error( '用户未登录!');
         }
         $requestData = $request->only(['team_name', 'logo', 'info', 'campaign_id', 'token_amount', 'token_type']);
         $photo = Photo::upload($request, 'logo');
         if (!$photo) {
-            return $this->_bad_json('图片上传失败!');
+            return $this->error('图片上传失败!');
         }
 
         try{
@@ -78,11 +78,11 @@ class TeamController extends Controller
 
             DB::commit();
 
-            return $this->_success_json($team, '团队创建成功');
+            return $this->apiResponse($team, '团队创建成功');
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return $this->_bad_json($e->getMessage());
+            return $this->error($e->getMessage());
         }
 
 
@@ -101,17 +101,17 @@ class TeamController extends Controller
         $token_type = $request->get('token_type');
 
         if (!$token_type || !$campaign_id) {
-            return $this->_bad_json('参数错误');
+            return $this->error('参数错误');
         }
 
 
         $team = Team::find($id);
 
         if (!$team) {
-            return $this->_bad_json('未找到团队信息');
+            return $this->error('未找到团队信息');
         }
 
-        return $this->_success_json($team->format(['campaign_id' => $campaign_id, 'token_type' => $token_type]));
+        return $this->apiResponse($team->format(['campaign_id' => $campaign_id, 'token_type' => $token_type]));
     }
 
     /**
@@ -153,7 +153,7 @@ class TeamController extends Controller
         $user = auth()->user();
 
         if (!$team_id || !$team = Team::find($team_id)) {
-            return $this->apiResponse([], '未找到该团队', 1);
+            return $this->error('未找到该团队');
         }
 
         $token_type =$request->get('token_type');
@@ -161,7 +161,7 @@ class TeamController extends Controller
         $token_amount = $request->get('token_amount');
 
         if (!$token_type || !$campaign_id || !$token_amount) {
-            return $this->_bad_json('参数错误');
+            return $this->error('参数错误');
         }
 
         try{
@@ -227,7 +227,7 @@ class TeamController extends Controller
 
         $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], $count[0]->total_size ?? 0);
 
-        return $this->_success_json($data);
+        return $this->apiResponse($data);
     }
 
 }

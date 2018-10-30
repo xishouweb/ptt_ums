@@ -74,7 +74,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('请先登录~~~!');
+            return $this->error('请先登录~~~!');
         }
 
         $data['nickname'] = $user->nickname;
@@ -83,7 +83,7 @@ class UserController extends Controller
         $data['invite_code'] = $user->invite_code;
 
 
-        return $this->_success_json($data);
+        return $this->apiResponse($data);
     }
 
     /**
@@ -98,16 +98,16 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('请先登录~~~!');
+            return $this->error('请先登录~~~!');
         }
 
         $requestData = $request->only(['nickname', 'avatar']);
 
         if ($user->update($requestData)) {
-            return $this->_success_json();
+            return $this->apiResponse();
         }
 
-        return $this->_bad_json('更新失败');
+        return $this->error('更新失败');
     }
 
     /**
@@ -141,14 +141,14 @@ class UserController extends Controller
                 $user->save();
 
                 DB::commit();
-                return $this->_success_json($data, '登录成功', 200);
+                return $this->apiResponse($data, '登录成功', 200);
             } catch (\Exception $e) {
                 DB::rollBack();
 
                 \Log::info('用户:' . $user->id . '登陆出错' . $e->getMessage());
             }
 
-            return $this->_bad_json('账户不存在或密码错误', 404);
+            return $this->error('账户不存在或密码错误', 404);
         }
 
     }
@@ -159,17 +159,17 @@ class UserController extends Controller
         $captcha = $request->input('captcha');
 
         if (!$phone || !$this->checkPhone($phone)) {
-            return $this->_bad_json('请确认手机号正确');
+            return $this->error('请确认手机号正确');
         }
 
         if (!$captcha || !(Captcha::valid($phone, $captcha))) {
-            return $this->_bad_json('验证码错误或过期');
+            return $this->error('验证码错误或过期');
         }
 
         $user = User::wherePhone($phone)->first();
 
         if (!$user) {
-            return $this->_bad_json('该用户不存在');
+            return $this->error('该用户不存在');
         }
 
         try {
@@ -188,11 +188,11 @@ class UserController extends Controller
             $data['coins'] = $user->coins;
 
             DB::commit();
-            return $this->_success_json($data);
+            return $this->apiResponse($data);
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return $this->_bad_json($e->getMessage());
+            return $this->error($e->getMessage());
         }
     }
 
@@ -203,21 +203,21 @@ class UserController extends Controller
         $captcha = $request->input('captcha');
 
         if (!$password) {
-            return $this->_bad_json('请填写密码');
+            return $this->error('请填写密码');
         }
 
         if (!$phone || !$this->checkPhone($phone)) {
-            return $this->_bad_json('请确认手机号正确');
+            return $this->error('请确认手机号正确');
         }
 
         $result = User::where('phone', $phone)->count();
 
         if ($result) {
-            return $this->_bad_json('该手机号已被注册');
+            return $this->error('该手机号已被注册');
         }
 
         if (!$captcha || !(Captcha::valid($phone, $captcha))) {
-            return $this->_bad_json('验证码错误或过期');
+            return $this->error('验证码错误或过期');
         }
 
         try {
@@ -246,12 +246,12 @@ class UserController extends Controller
             }
 
             DB::commit();
-            return $this->_success_json($user->campaign(1, 'ptt'), '注册成功');
+            return $this->apiResponse($user->campaign(1, 'ptt'), '注册成功');
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('<'.$phone .'>注册失败--超级广告主' . $e->getMessage());
-            return $this->_bad_json($e->getMessage());
+            return $this->error($e->getMessage());
         }
 
     }
@@ -261,10 +261,10 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('未登录');
+            return $this->error('未登录');
         }
 
-        return $this->_success_json($user->campaign($request->get('campaign_id'), $request->get('token_type')));
+        return $this->apiResponse($user->campaign($request->get('campaign_id'), $request->get('token_type')));
     }
 
     public function teams(Request $request)
@@ -272,12 +272,12 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('未登录');
+            return $this->error('未登录');
         }
 
         $teams = $this->format_list($user->teams(), ['campaign_id' => $request->get('campaign_id'), 'token_type' => $request->get('token_type')]);
 
-        return $this->_success_json($teams);
+        return $this->apiResponse($teams);
     }
 
     public function voteTo(Request $request, $team_id)
@@ -285,27 +285,27 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('未登录');
+            return $this->error('未登录');
         }
 
         if (!$team_id) {
-            return $this->_bad_json('请选择正确的团队');
+            return $this->error('请选择正确的团队');
         }
 
         if (!$amount = $request->get('amount', 0)) {
-            return $this->_bad_json('请填写正确的票数');
+            return $this->error('请填写正确的票数');
         }
 
         if ($team_id === RentRecord::ACTION_SELF_IN . $user->id  && !$user->checkVote()) {
-            return $this->_bad_json('请先充值');
+            return $this->error('请先充值');
         }
 
         if (!$userToken = $user->user_token('ptt')) {
-            return $this->_bad_json('未找到投票信息');
+            return $this->error('未找到投票信息');
         }
 
         if ($amount > $userToken->votes) {
-            return $this->_bad_json('票数不足');
+            return $this->error('票数不足');
         }
         try{
             DB::beginTransaction();
@@ -316,10 +316,10 @@ class UserController extends Controller
 
             DB::commit();
 
-            return $this->_success_json();
+            return $this->apiResponse();
         } catch (Exception $e) {
             DB::rollBack();
-            return $this->_bad_json($e->getMessage());
+            return $this->error($e->getMessage());
         }
 
     }
@@ -346,16 +346,16 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('请先登录~~~!');
+            return $this->error('请先登录~~~!');
         }
 
         $photo = Photo::upload($request);
 
         if (!$photo) {
-            return $this->_bad_json('上传失败!');
+            return $this->error('上传失败!');
         }
 
-        return $this->_success_json(['url' => $photo->url]);
+        return $this->apiResponse(['url' => $photo->url]);
     }
 
     public function logout()
@@ -363,11 +363,11 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return $this->_bad_json('请先登录~~~!');
+            return $this->error('请先登录~~~!');
         }
 
         Auth::logout();
 
-        return $this->_success_json();
+        return $this->apiResponse();
     }
 }
