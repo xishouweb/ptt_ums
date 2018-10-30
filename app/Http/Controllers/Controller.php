@@ -77,36 +77,38 @@ class Controller extends BaseController
     protected function _not_found_json($resource)
     {
         $json = array(
+            "code" => 404,
             "error" => $resource . " 不存在",
         );
-        return response()->json($json, 404);
+        return response()->json($json);
     }
 
     protected function _forbidden_json()
     {
         $json = array(
+            'code' => 403,
             "error" => "权限失败",
         );
-        return response()->json($json, 403);
+        return response()->json($json);
     }
 
     protected function _bad_json($msg, $code = 0)
     {
         $json = array(
-            'code' => $code,
+            'code' => 400,
             "error" => $msg,
         );
-        return response()->json($json, 400);
+        return response()->json($json);
     }
 
-    protected function _success_json($data = [], $msg = '操作成功', $code = 1)
+    protected function _success_json($data = [], $msg = '操作成功', $code = 200)
     {
         $json = array(
             'data' => $data,
             "msg" => $msg,
             'code' => $code,
         );
-        return response()->json($json, 200);
+        return response()->json($json);
     }
 
     public function response($data = [])
