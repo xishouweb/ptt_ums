@@ -158,7 +158,7 @@ class UserController extends Controller
         $phone = $request->input('phone');
         $captcha = $request->input('captcha');
 
-        if (!$phone || $this->checkPhone($phone)) {
+        if (!$phone || !$this->checkPhone($phone)) {
             return $this->_bad_json('请确认手机号正确');
         }
 
@@ -204,6 +204,10 @@ class UserController extends Controller
 
         if (!$password) {
             return $this->_bad_json('请填写密码');
+        }
+
+        if (!$phone || !$this->checkPhone($phone)) {
+            return $this->_bad_json('请确认手机号正确');
         }
 
         $result = User::where('phone', $phone)->count();
