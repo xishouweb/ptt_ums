@@ -119,15 +119,6 @@ class Captcha extends Model
         return false;
     }
 
-    public static function pre_valid($mobile, $code)
-    {
-        $model = self::where('mobile', $mobile)->where('code', $code)->orderBy('created_at', 'desc')->validity()->first();
-        if ($model) {
-            return true;
-        }
-        return false;
-    }
-
     public function scopeValidity($query)
     {
         return $query->where('status', 0)->where("expired_at", ">", date('Y-m-d H:i:s'));

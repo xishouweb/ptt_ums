@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
 
 class UserController extends Controller
@@ -161,7 +162,7 @@ class UserController extends Controller
             return $this->_bad_json('请确认手机号正确');
         }
 
-        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
+        if (!$captcha || !(Captcha::valid($phone, $captcha))) {
             return $this->_bad_json('验证码错误或过期');
         }
 
@@ -211,7 +212,7 @@ class UserController extends Controller
             return $this->_bad_json('该手机号已被注册');
         }
 
-        if (!$captcha || !(Captcha::pre_valid($phone, $captcha))) {
+        if (!$captcha || !(Captcha::valid($phone, $captcha))) {
             return $this->_bad_json('验证码错误或过期');
         }
 
