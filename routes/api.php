@@ -45,6 +45,7 @@ Route::prefix('campaign')->group(function() {
 
     Route::namespace('Campaign')->group(function () {
         Route::post('user/login', 'UserController@login');
+        Route::post('user/fast_login', 'UserController@fastLogin');
         Route::post('user/register', 'UserController@register');
 
         Route::get('detail/{id}', 'CampaignController@show');
