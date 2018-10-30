@@ -22,7 +22,7 @@ class ProtonNew extends BaseModel implements FormatInterface
         $data['img_base'] = $this->img_base;
         $data['img'] = $this->img;
         $data['url'] = $this->url;
-        $data['release_date'] = $this->release;
+        $data['release_date'] = $this->release_date;
 
 
         return $data;
