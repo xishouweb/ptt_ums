@@ -11,6 +11,8 @@ class CaptchaController extends Controller
 {
     public function send(Request $request)
     {
+
+
         $data['phone'] = (string)$request->input('phone');
         $data['country'] = (string)$request->input('country');
 
