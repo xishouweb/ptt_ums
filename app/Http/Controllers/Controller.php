@@ -16,7 +16,7 @@ class Controller extends BaseController
     protected $page_size  = 10;
     protected $total_size = 100;
 
-    public function paginate($builder, $total_size = null, $page = null,$page_size = null)
+    public function paginate($builder, $form = [], $total_size = null, $page = null,$page_size = null)
     {
         if (request()->get('page')) {
             $this->page = (int) request()->get('page');
@@ -38,7 +38,7 @@ class Controller extends BaseController
 
         $data = $builder->skip(($this->page - 1) * $this->page_size)->take($this->page_size)->get();
         $responseData = [
-            'data'    => $data,
+            'data'    => $this->format_list($data, $form),
             'page'    => $this->page,
             'page_size'    => $this->page_size,
             'total_size'    => $this->total_size,
@@ -51,11 +51,11 @@ class Controller extends BaseController
         return $format->format();
     }
 
-    public function format_list($data, $from = [])
+    public function format_list($data, $form = [])
     {
         $result = [];
         foreach($data as $d) {
-            $result[] = $d->format($from);
+            $result[] = $d->format($form);
         }
         return $result;
     }
@@ -73,14 +73,40 @@ class Controller extends BaseController
         return response()->json(['code' => $code, 'message' => $message, 'data' => $data]);
     }
 
-    public function success($message = '操作成功', $code = 0)
+
+    protected function _not_found_json($resource)
     {
-        return $this->apiResponse(null, $message, $code);
+        $json = array(
+            "error" => $resource . " 不存在",
+        );
+        return response()->json($json, 404);
     }
 
-    public function error($message = '操作失败', $code = 1)
+    protected function _forbidden_json()
     {
-        return $this->apiResponse(null, $message, $code);
+        $json = array(
+            "error" => "权限失败",
+        );
+        return response()->json($json, 403);
+    }
+
+    protected function _bad_json($msg, $code = 0)
+    {
+        $json = array(
+            'code' => $code,
+            "error" => $msg,
+        );
+        return response()->json($json, 400);
+    }
+
+    protected function _success_json($data = [], $msg = '操作成功', $code = 1)
+    {
+        $json = array(
+            'data' => $data,
+            "msg" => $msg,
+            'code' => $code,
+        );
+        return response()->json($json, 200);
     }
 
     public function response($data = [])

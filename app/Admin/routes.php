@@ -26,6 +26,13 @@ Route::group([
     $router->get('/wallet/banner/{id}/edit', 'BannerController@edit');
     $router->put('/wallet/banner/{id}', 'BannerController@update');
     $router->delete('/wallet/banner/{id}', 'BannerController@delete');
+
+
+    //Campaign
+
+    $router->resource('user/tokens', 'UserTokenController');
+    $router->resource('campaign', 'CampaignController');
+
     //公告相关路由
     $router->get('/wallet/announcement', 'AnnouncementController@index');
     $router->post('/wallet/announcement', 'AnnouncementController@create');
@@ -34,4 +41,5 @@ Route::group([
     $router->put('/wallet/announcement/{id}', 'AnnouncementController@update');
     $router->delete('/wallet/announcement/{id}', 'AnnouncementController@delete');
     $router->resource('news', 'ProtonNewController');
+
 });
