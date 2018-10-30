@@ -179,6 +179,6 @@ class UserController extends Controller
         $user = Auth::user();
         $user->password = Hash::make($request->input('password'));
         $user->save();
-        return response()->json(['message' => '重置成功'], 403);
+        return response()->json(['message' => '重置成功']);
     }
 }
