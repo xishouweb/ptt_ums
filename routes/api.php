@@ -47,7 +47,6 @@ Route::prefix('campaign')->group(function() {
         Route::post('user/login', 'UserController@login');
         Route::post('user/fast_login', 'UserController@fastLogin');
         Route::post('user/register', 'UserController@register');
-        Route::get('user/checknickname/{nickname}', 'UserController@checkNickname');
 
         Route::get('detail/{id}', 'CampaignController@show');
 
@@ -67,6 +66,8 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/edit', 'UserController@edit');
             Route::get('user/teams', 'UserController@teams');
             Route::get('user/logout', 'UserController@logout');
+            Route::get('user/checknickname/{nickname}', 'UserController@checkNickname');
+
         });
 
     });

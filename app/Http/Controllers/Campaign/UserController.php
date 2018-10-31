@@ -8,13 +8,11 @@ use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\TokenVote;
 use App\Models\UserLogin;
-use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
@@ -97,11 +95,9 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user) {
-            return $this->error('请先登录~~~!');
-        }
+        $requestData = $request->only(['nickname', 'avatar', 'password']);
 
-        $requestData = $request->only(['nickname', 'avatar']);
+        $requestData['password'] = $user->createPassword($requestData['password']);
 
         if ($user->update($requestData)) {
             return $this->apiResponse();
@@ -126,11 +122,8 @@ class UserController extends Controller
         $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
         if ($result) {
             $user = Auth::user();
-            $data['token'] = 'Bearer ' . $user->createToken('super_user')->accessToken;
-            $data['address'] = $user->address ?: 'Address';
-            $data['nickname'] = $user->nickname ?: 'User';
-            $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
-            $data['coins'] = $user->coins;
+
+            $data = $user->baseInfo();
 
             try {
                 DB::beginTransaction();
@@ -181,11 +174,7 @@ class UserController extends Controller
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();
 
-            $data['token'] = 'Bearer ' . $user->createToken('super_user')->accessToken;
-            $data['address'] = $user->address ?: 'Address';
-            $data['nickname'] = $user->nickname ?: 'User';
-            $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
-            $data['coins'] = $user->coins;
+            $data = $user->baseInfo();
 
             DB::commit();
             return $this->apiResponse($data);
@@ -199,12 +188,8 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $phone = $request->input('phone');
-        $password = $request->input('password');
         $captcha = $request->input('captcha');
 
-        if (!$password) {
-            return $this->error('请填写密码');
-        }
 
         if (!$phone || !$this->checkPhone($phone)) {
             return $this->error('请确认手机号正确');
@@ -226,7 +211,6 @@ class UserController extends Controller
             $user =new User();
 
             $user->phone = $phone;
-            $user->password = Hash::make($password);
             $user->update_key = md5($phone . env('APP_KEY'));
             $user->type = User::SRC_SUPER_USER;
             $user->invite_code = User::getInviteCode();
@@ -246,7 +230,10 @@ class UserController extends Controller
             }
 
             DB::commit();
-            return $this->apiResponse($user->campaign(1, 'ptt'), '注册成功');
+
+            $data = $user->baseInfo();
+
+            return $this->apiResponse($data, '注册成功');
 
         } catch (\Exception $e) {
             DB::rollBack();

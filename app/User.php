@@ -8,6 +8,7 @@ use App\Models\TeamUser;
 use App\Models\UserLogin;
 use App\Models\UserToken;
 use App\Services\QrCode;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -157,5 +158,19 @@ class User extends Authenticatable
     public function checkTodayLogin()
     {
         return UserLogin::where('created_at' , '>=', date('Y-m-d 00:00:00'))->where('user_id', $this->id)->count() > 0 ? true : false;
+    }
+
+    public function createPassword($password)
+    {
+        return Hash::make($password);
+    }
+
+    public function baseInfo()
+    {
+        $data['token'] = 'Bearer ' . $this->createToken('super_user')->accessToken;
+        $data['nickname'] = $this->nickname ?: 'User';
+        $data['avatar'] = $this->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+
+        return $data;
     }
 }
