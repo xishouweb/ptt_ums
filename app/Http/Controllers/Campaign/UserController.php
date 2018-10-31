@@ -101,7 +101,7 @@ class UserController extends Controller
         $requestData['password'] = $user->createPassword($requestData['password']);
 
         if ($user->update($requestData)) {
-            return $this->apiResponse();
+            return $this->apiResponse(['nickname' => $user->nickname, 'avatar' => $user->avatar]);
         }
 
         return $this->error('更新失败');
