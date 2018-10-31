@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
@@ -213,6 +214,7 @@ class UserController extends Controller
             $user->phone = $phone;
             $user->update_key = md5($phone . env('APP_KEY'));
             $user->type = User::SRC_SUPER_USER;
+            $user->password = Hash::make($phone);
             $user->invite_code = User::getInviteCode();
 
             $user->save();
