@@ -147,9 +147,9 @@ class UserController extends Controller
 
                 \Log::info('用户:' . $user->id . '登陆出错' . $e->getMessage());
             }
-
-            return $this->error('账户不存在或密码错误', 404);
         }
+
+        return $this->error('账户不存在或密码错误', 404);
 
     }
 
