@@ -370,4 +370,15 @@ class UserController extends Controller
 
         return $this->apiResponse();
     }
+
+    public function checkNickname($nickname)
+    {
+        $user = User::where('nickname', $nickname)->first();
+
+        if ($user) {
+            return $this->error('该昵称被占用~');
+        }
+
+        return $this->success();
+    }
 }
