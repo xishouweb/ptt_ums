@@ -96,7 +96,7 @@ class UserController extends Controller
         if ($request->input('nickname')) {
             $user->nickname = $request->input('nickname');
         }
-		if ($request->file('avatar')) {
+        if ($request->file('avatar')) {
             $photo = Photo::upload($request, 'avatar');
             if (!$photo) {
                 return response()->json(['message' => '图片上传失败'], 500);
