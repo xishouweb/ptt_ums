@@ -88,15 +88,15 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
-    {
-        if (!$request->input('nickname') && !$request->input('avatar')) {
+	{
+        if (!$request->input('nickname') && !$request->file('avatar')) {
             return response()->json(['message' => '昵称和头像至少修改一个'], 403);
         }
         $user = Auth::user();
         if ($request->input('nickname')) {
             $user->nickname = $request->input('nickname');
         }
-        if ($request->file('avatar')) {
+		if ($request->file('avatar')) {
             $photo = Photo::upload($request, 'avatar');
             if (!$photo) {
                 return response()->json(['message' => '图片上传失败'], 500);

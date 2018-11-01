@@ -26,14 +26,14 @@ Route::prefix('app')->group(function () {
         $router->get('/notice', 'NoticeController@index');
         $router->post('/user/fast_login', 'UserController@fastLogin');
         $router->post('/user/login', 'UserController@login');
+        $router->post('/user/reset_password', 'UserController@resetPassword');
         $router->get('/captcha', 'ToolController@getCaptcha');
         $router->get('/price', 'ToolController@getPrice');
         $router->get('/search_token', 'ToolController@searchToken');
         $router->get('/version', 'ToolController@latestVersion');
         Route::group(['middleware' => 'auth:api'], function(Router $router) {
             $router->get('/user', 'UserController@show');
-            $router->put('/user', 'UserController@update');
-            $router->post('/user/reset_password', 'UserController@resetPassword');
+            $router->post('/user', 'UserController@update');
         });
     });
 });
