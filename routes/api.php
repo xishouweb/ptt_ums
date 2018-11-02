@@ -43,6 +43,8 @@ Route::prefix('proton')->group(function() {
 Route::prefix('campaign')->group(function() {
     Route::get('captcha', 'CaptchaController@send');
 
+    Route::get('test/add/token', 'TokenTxController@create');
+
     Route::namespace('Campaign')->group(function () {
         Route::post('user/login', 'UserController@login');
         Route::post('user/fast_login', 'UserController@fastLogin');
