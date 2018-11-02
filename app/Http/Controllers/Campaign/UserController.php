@@ -345,15 +345,12 @@ class UserController extends Controller
 
     public function logout()
     {
-        $user = auth()->user();
-
-        if (!$user) {
-            return $this->error('请先登录~~~!');
+        if (Auth::check()) {
+            Auth::user()->token()->revoke();
+            return $this->success();
+        }else {
+            return $this->error('something went wrong');
         }
-
-        Auth::logout();
-
-        return $this->apiResponse();
     }
 
     public function checkNickname($nickname)
