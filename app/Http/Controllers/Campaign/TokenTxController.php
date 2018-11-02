@@ -26,9 +26,27 @@ class TokenTxController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $amount = (float)$request->input('token_amount');
+        $user_id = $request->input('user_id');
+        $type = $request->input('token_type');
+
+        $user = User::find($user_id);
+
+        if (!$user) {
+            return $this->error('未找到该用户');
+        }
+
+        $token = $user->user_token($type);
+
+        if (!$token) {
+            UserToken::record($user_id, $amount, $type);
+        }
+
+        $data = $user->user_token($type);
+
+        return $this->apiResponse($data);
     }
 
     /**

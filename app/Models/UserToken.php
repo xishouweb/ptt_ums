@@ -8,7 +8,7 @@ class UserToken extends Model
 {
     protected $guarded = ['id'];
 
-    public static function record($user_id, $token_amount, $token_type, $freeze = 0, $votes = 0, $temp_votes)
+    public static function record($user_id, $token_amount, $token_type, $freeze = 0, $votes = 0, $temp_votes = 0)
     {
         return static::create([
             'user_id' => $user_id,

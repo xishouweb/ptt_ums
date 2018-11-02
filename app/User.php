@@ -73,7 +73,7 @@ class User extends Authenticatable
         $data['credit'] = $data['has_rent'] * 0.1;
         $data['invite_code'] = $this->invite_code;
 
-        $token = $this->user_tokens('ptt');
+        $token = $this->user_token('ptt');
         $data['votes'] = $token ? $token->votes + $token->temp_votes : 0;
         return $data;
     }
@@ -94,7 +94,7 @@ class User extends Authenticatable
     }
 
 
-    public function user_tokens($type)
+    public function user_token($type)
     {
         return UserToken::where('token_type', $type)->where('user_id', $this->id)->first() ?? [];
     }
