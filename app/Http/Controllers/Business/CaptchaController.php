@@ -36,13 +36,13 @@ class CaptchaController extends Controller
 
         if ($validator->fails()) {
             $this->content['msg'] = '请输入正确的手机号';
-            $this->content['status'] = 401;
+            $this->content['status'] = 403;
             return response()->json($this->content);
         }
 
         if (User::where('phone', $data['phone'])->count()) {
             $this->content['msg'] = '该手机号已被注册';
-            $this->content['status'] = 401;
+            $this->content['status'] = 403;
             return response()->json($this->content);
         }
 
@@ -52,7 +52,7 @@ class CaptchaController extends Controller
             $this->content['status'] = 200;
         } else {
             $this->content['msg'] = '请重试';
-            $this->content['status'] = 401;
+            $this->content['status'] = 403;
         }
         return response()->json($this->content);
     }

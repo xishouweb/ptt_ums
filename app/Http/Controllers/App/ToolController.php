@@ -10,11 +10,14 @@ namespace App\Http\Controllers\App;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\Captcha;
 use App\Models\Contract;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Validator;
 use QL\QueryList;
 
 class ToolController extends Controller
@@ -113,4 +116,46 @@ class ToolController extends Controller
 //        }
 //        return response()->json($response_data);
 //    }
+
+    /**
+     * Send verify code to mobile phone
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function getCaptcha(Request $request)
+    {
+        $data['phone'] = $request->input('phone');
+        $data['country'] = $request->input('country');
+
+        $validator = Validator::make($data, [
+            'phone' => 'required',
+            'country' => 'required',
+        ]);
+        if ($validator->fails() || !(int)$data['country']) {
+            return response()->json(['message' => '请输入正确的区号和手机号'], 403);
+        }
+
+        $redis = Redis::connection('default');
+        $is_ok = $redis->set("messages-lock:" . $data['phone'], $_SERVER['REQUEST_TIME'], 'EX', 60, 'NX');
+        if (!$is_ok) {
+            return response()->json(['message' => '您提交频率过快，请60秒后再试'], 403);
+        }
+
+        $captcha = Captcha::send($data['phone'], (int)$data['country']);
+        if ($captcha) {
+            return response()->json(['message' => '验证码已发送']);
+        }
+        return response()->json(['message' => '发送失败，请重试'], 500);
+    }
+
+    public function latestVersion(Request $request)
+    {
+        if ($request->input('channel') == 'ios_enterprise') {
+            $data = config('setting.ios_latest_version');
+        } else {
+            $data = config('setting.android_latest_version');
+        }
+        return response()->json($data);
+    }
 }
