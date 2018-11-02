@@ -371,8 +371,20 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $password = $request->input('password');
+
+        $phone = $request->input('phone');
+        $captcha = $request->input('captcha');
+
         if (!$password) {
             return $this->error('参数错误');
+        }
+        
+        if (!$phone || !$this->checkPhone($phone)) {
+            return $this->error('请确认手机号正确');
+        }
+
+        if (!$captcha || !(Captcha::valid($phone, $captcha))) {
+            return $this->error('验证码错误或过期');
         }
 
         $res = $user->update(['password' => $user->createPassword($password)]);
