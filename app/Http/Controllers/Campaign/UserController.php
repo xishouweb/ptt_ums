@@ -78,8 +78,6 @@ class UserController extends Controller
 
         $data['nickname'] = $user->nickname;
         $data['avatar'] = $user->avatar;
-        $data['phone'] = $user->phone;
-        $data['invite_code'] = $user->invite_code;
 
 
         return $this->apiResponse($data);
@@ -96,9 +94,7 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $requestData = $request->only(['nickname', 'avatar', 'password']);
-
-        $requestData['password'] = $user->createPassword($requestData['password']);
+        $requestData = $request->only(['nickname', 'avatar']);
 
         if ($user->update($requestData)) {
             return $this->apiResponse(['nickname' => $user->nickname, 'avatar' => $user->avatar]);
@@ -366,6 +362,23 @@ class UserController extends Controller
 
         if ($user) {
             return $this->error('该昵称被占用~');
+        }
+
+        return $this->success();
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = auth()->user();
+        $password = $request->input('password');
+        if (!$password) {
+            return $this->error('参数错误');
+        }
+
+        $res = $user->update(['password' => $user->createPassword($password)]);
+
+        if (!$res) {
+            return $this->error();
         }
 
         return $this->success();
