@@ -47,6 +47,7 @@ Route::prefix('campaign')->group(function() {
         Route::post('user/login', 'UserController@login');
         Route::post('user/fast_login', 'UserController@fastLogin');
         Route::post('user/register', 'UserController@register');
+        Route::post('user/update_password', 'UserController@updatePassword');
 
         Route::get('detail/{id}', 'CampaignController@show');
 
@@ -63,7 +64,6 @@ Route::prefix('campaign')->group(function() {
             Route::post('team', 'TeamController@store');
             Route::post('team/join/{team_id}', 'TeamController@join');
             Route::post('user/update', 'UserController@update');
-            Route::post('user/update_password', 'UserController@updatePassword');
             Route::get('user/edit', 'UserController@edit');
             Route::get('user/teams', 'UserController@teams');
             Route::get('user/logout', 'UserController@logout');
