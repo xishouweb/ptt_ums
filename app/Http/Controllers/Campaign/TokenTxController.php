@@ -41,12 +41,14 @@ class TokenTxController extends Controller
         $token = $user->user_token($type);
 
         if (!$token) {
-            UserToken::record($user_id, $amount, $type);
+            $token = UserToken::record($user_id, $amount, $type);
+        }else {
+            $token->token_amount += $amount;
+            $token->save();
         }
 
-        $data = $user->user_token($type);
 
-        return $this->apiResponse($data);
+        return $this->apiResponse($token);
     }
 
     /**
