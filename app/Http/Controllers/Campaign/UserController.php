@@ -369,7 +369,6 @@ class UserController extends Controller
 
     public function updatePassword(Request $request)
     {
-        $user = auth()->user();
         $password = $request->input('password');
 
         $phone = $request->input('phone');
@@ -378,13 +377,19 @@ class UserController extends Controller
         if (!$password) {
             return $this->error('参数错误');
         }
-        
+
         if (!$phone || !$this->checkPhone($phone)) {
             return $this->error('请确认手机号正确');
         }
 
         if (!$captcha || !(Captcha::valid($phone, $captcha))) {
             return $this->error('验证码错误或过期');
+        }
+
+        $user = User::wherePhone($phone)->first();
+
+        if (!$user) {
+            return $this->error('未找到该用户相关信息, 请核对手机号码');
         }
 
         $res = $user->update(['password' => $user->createPassword($password)]);
