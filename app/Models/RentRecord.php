@@ -31,9 +31,10 @@ class RentRecord extends Model
 
         //扣除本身的额度
         static::create($user->id, $team_id, -$token_amount, $token_type, static::ACTION_DEDUCTION, $campaign_id);
-
-        $token->token_amount += $token_amount;
-        $token->freeze -= $token_amount;
+        //扣除自由额度
+        $token->token_amount -= $token_amount;
+        //增加锁仓额度
+        $token->freeze += $token_amount;
 
         $token->save();
     }
