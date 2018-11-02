@@ -72,6 +72,7 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/logout', 'UserController@logout');
             Route::get('user/checknickname/{nickname}', 'UserController@checkNickname');
 
+            Route::get('user/token/detail', 'UserController@tokenDetail');
         });
 
     });

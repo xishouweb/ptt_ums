@@ -78,6 +78,7 @@ class UserController extends Controller
 
         $data['nickname'] = $user->nickname;
         $data['avatar'] = $user->avatar;
+        $data['invite_code'] = $user->invite_code;
 
 
         return $this->apiResponse($data);
@@ -397,4 +398,19 @@ class UserController extends Controller
 
         return $this->success();
     }
+
+    public function tokenDetail()
+    {
+        $user = auth()->user();
+        $records = RentRecord::whereUserId($user->id)->whereAction(RentRecord::ACTION_JOIN_TEAM)->get();
+
+        $data = [];
+        foreach ($records as $key => $record) {
+            $data[$key]['created_at'] = $record->created_at;
+            $data[$key]['type'] = $record->created_at;
+            $data[$key]['token_type'] = $record->token_type;
+            $data[$key]['created_at'] = $record->created_at;
+        }
+    }
+
 }
