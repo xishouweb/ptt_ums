@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class ActionHistory extends Model
 {
 
+    const ACTION_VOTE = 'vote';
+    const TYPE_USER = 'user';
+
     protected $guarded = ['id'];
 
     public static function record($user_id, $type = null, $action = null, $data = null, $note = null, $payload = null, $count_flag = 0)

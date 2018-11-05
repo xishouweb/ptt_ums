@@ -290,14 +290,21 @@ class UserController extends Controller
             return $this->error('未找到投票信息');
         }
 
-        if ($amount > $userToken->votes) {
+        if ($amount > ($userToken->votes + $userToken->temp_votes)) {
             return $this->error('票数不足');
         }
         try{
             DB::beginTransaction();
             TokenVote::record($team_id, $user->id, $amount);
 
-            $userToken->votes -= $amount;
+            ActionHistory::record($user->id, ActionHistory::TYPE_USER, ActionHistory::ACTION_VOTE, $team_id, '投票', $amount);
+            if ($amount > $userToken->temp_votes) {
+
+                $userToken->votes -= ($amount - $userToken);
+                $userToken->temp_votes = 0;
+            } else {
+                $userToken->temp_votes -= $amount;
+            }
             $userToken->save();
 
             DB::commit();
