@@ -216,7 +216,7 @@ class UserController extends Controller
 
             $user->save();
 
-            ActionHistory::record($user->id, User::TYPE_SYSTEM, User::ACTION_REGISTER, null, '用户注册');
+            ActionHistory::record($user->id, User::ACTION_REGISTER, null, null,'用户注册');
 
             if ($invite_code = $request->get('invite_code')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
@@ -225,7 +225,7 @@ class UserController extends Controller
                 }
 
                 $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES, 'invite_register');
-                ActionHistory::record($inviter->id, 'system', User::ACTION_INVITE_USER, $user->id, '邀请用户');
+                ActionHistory::record($inviter->id,User::ACTION_INVITE_USER, null, User::INVITE_USER_VOTES,'邀请好友', $user->id);
             }
 
             DB::commit();
@@ -297,10 +297,10 @@ class UserController extends Controller
             DB::beginTransaction();
             TokenVote::record($team_id, $user->id, $amount);
 
-            ActionHistory::record($user->id, ActionHistory::TYPE_USER, ActionHistory::ACTION_VOTE, $team_id, '投票', $amount);
+            ActionHistory::record($user->id, ActionHistory::ACTION_VOTE, $team_id, $amount,'投票');
             if ($amount > $userToken->temp_votes) {
 
-                $userToken->votes -= ($amount - $userToken);
+                $userToken->votes -= ($amount - $userToken->temp_votes);
                 $userToken->temp_votes = 0;
             } else {
                 $userToken->temp_votes -= $amount;
