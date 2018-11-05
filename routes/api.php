@@ -80,6 +80,8 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/votes/detail', 'UserController@getVoteDetail');
 
             Route::get('user/token/detail', 'UserController@tokenDetail');
+            Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
+            Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myVoteRank');
         });
 
     });

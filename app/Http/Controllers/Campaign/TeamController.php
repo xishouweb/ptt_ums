@@ -64,7 +64,7 @@ class TeamController extends Controller
             $team = new Team();
             $team->team_name = $requestData['team_name'];
             $team->info = $requestData['info'];
-            $team->logo = $requestData['url'];;
+            $team->logo = $requestData['logo'];;
             $team->creater_user_id = $user->id;
             $team->campaign_id = $requestData['campaign_id'];
 

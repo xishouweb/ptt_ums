@@ -454,6 +454,44 @@ class UserController extends Controller
     }
 
 
+    public function myRanks($campaign_id, $token_type)
+    {
+        $user = auth()->user();
+
+        $ranks = RentRecord::where('campaign_id', $campaign_id)
+            ->where('token_type', $token_type)
+            ->whereUserId($user->id)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->groupBy('team_id')
+            ->select('team_id', DB::raw("SUM(token_amount) as total"))
+            ->orderBy('total', 'desc')
+            ->get();
+
+
+        $data = $this->format_list($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type]);
+
+
+        return $this->apiResponse($data);
+    }
+
+    public function myVoteRank($campaign_id, $token_type)
+    {
+        $user = auth()->user();
+
+        $team_ids = TokenVote::whereUserId($user->id)->select(DB::raw('distinct team_id'))->get()->pluck('team_id');
+
+        $ranks = TokenVote::whereIn('team_id', $team_ids)
+            ->select('team_id', DB::raw("SUM(amount) as total"))
+            ->groupBy('team_id')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        $data = $this->format_list($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type]);
+
+        return $this->apiResponse($data);
+    }
+
+
 
 
 }
