@@ -57,10 +57,6 @@ class TeamController extends Controller
             return $this->error( '用户未登录!');
         }
         $requestData = $request->only(['team_name', 'logo', 'info', 'campaign_id', 'token_amount', 'token_type']);
-        $photo = Photo::upload($request, 'logo');
-        if (!$photo) {
-            return $this->error('图片上传失败!');
-        }
 
         try{
             DB::beginTransaction();
@@ -68,7 +64,7 @@ class TeamController extends Controller
             $team = new Team();
             $team->team_name = $requestData['team_name'];
             $team->info = $requestData['info'];
-            $team->logo = $photo->url;
+            $team->logo = $requestData['url'];;
             $team->creater_user_id = $user->id;
             $team->campaign_id = $requestData['campaign_id'];
 

@@ -87,13 +87,16 @@ class RentRecord extends Model
                 $status = $rank['ranking_id'] >= $old_model['ranking_id'] ? 'up' : 'down';
 
                 return [
+                    'team_id' => $this->team_id,
                     'team_name' => $user->nickname,
                     'logo' => $user->avatar,
                     'info' => null,
                     'type' => 'personal',
                     'credit' => $rank['total'] * 0.1,
                     'ranking_id' => $rank['ranking_id'],
+                    'token_amount' => (float)$rank['total'],
                     'status' => $status,
+                    'count' => 1,
                 ];
             } else {
                 throw new \Exception('未找到该用户');
