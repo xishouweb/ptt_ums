@@ -46,6 +46,7 @@ class User extends Authenticatable
     const ACTION_REGISTER = 'register';
     const ACTION_INVITE_USER = 'invite_user';
     const ACTION_LOGIN = 'login';
+    const ACTION_VOTE = 'vote';
 
     const SRC_SUPER_USER = 'super_user'; //超级广告主
 

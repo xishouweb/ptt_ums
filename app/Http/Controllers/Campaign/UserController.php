@@ -129,7 +129,7 @@ class UserController extends Controller
                 $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
 
                 UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
-                ActionHistory::record($user->id,User::ACTION_LOGIN, null, User::LOGIN_VOTES,'登录赠送');
+                ActionHistory::record($user->id,User::ACTION_LOGIN, null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
 
                 $user->last_login = date('Y-m-d H:i:s');
                 $user->save();
@@ -172,7 +172,7 @@ class UserController extends Controller
             $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
 
             UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
-            ActionHistory::record($user->id,User::ACTION_LOGIN, null, User::LOGIN_VOTES,'登录赠送');
+            ActionHistory::record($user->id,User::ACTION_LOGIN, null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
 
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();
@@ -230,7 +230,7 @@ class UserController extends Controller
                 }
 
                 $inviter->increaseVotes('ptt', User::INVITE_USER_VOTES, 'invite_register');
-                ActionHistory::record($inviter->id,User::ACTION_INVITE_USER, null, User::INVITE_USER_VOTES,'邀请好友', $user->id);
+                ActionHistory::record($inviter->id,User::ACTION_INVITE_USER, null, User::INVITE_USER_VOTES,'邀请好友', ActionHistory::TYPE_VOTE, $user->id);
             }
 
             DB::commit();
@@ -310,7 +310,7 @@ class UserController extends Controller
                 $name = $team->team_name;
             }
 
-            ActionHistory::record($user->id, ActionHistory::ACTION_VOTE, $team_id, $amount,'投票' . $name);
+            ActionHistory::record($user->id, User::ACTION_VOTE, $team_id, -$amount,'投票' . $name, ActionHistory::TYPE_VOTE);
             if ($amount > $userToken->temp_votes) {
 
                 $userToken->votes -= ($amount - $userToken->temp_votes);
@@ -432,5 +432,28 @@ class UserController extends Controller
             $data[$key]['created_at'] = $record->created_at;
         }
     }
+
+    public function getVotes()
+    {
+        $user = auth()->user();
+
+        return $this->apiResponse([$user->votes + $user->temp_votes]);
+    }
+
+    public function getVoteDetail()
+    {
+        $user = auth()->user();
+
+        $data['histories'] = ActionHistory::where('user_id', $user->id)
+            ->whereType(ActionHistory::TYPE_VOTE)
+            ->select('created_at', 'note', 'data')
+            ->get();
+        $data['votes'] = $this->getVotes();
+
+        return $this->apiResponse($data);
+    }
+
+
+
 
 }
