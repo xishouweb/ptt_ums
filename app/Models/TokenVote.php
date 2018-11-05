@@ -48,6 +48,7 @@ class TokenVote extends Model
             if ($user = User::where("id", $user_id)->first()) {
                 $data['team_name'] = $user->nick_name;
                 $data['logo'] = $user->avatar;
+                $data['type'] = 'personal';
             } else {
                 throw new \Exception('未找到该用户');
             }
@@ -56,6 +57,7 @@ class TokenVote extends Model
             $team = Team::find($this->team_id);
             $data['team_name'] =  $team->team_name;
             $data['logo'] = $team->logo;
+            $data['type'] = 'team';
         }
 
         return $data;
