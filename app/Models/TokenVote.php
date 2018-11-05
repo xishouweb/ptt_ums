@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class TokenVote extends Model
@@ -38,7 +39,7 @@ class TokenVote extends Model
             $user_id = intval(substr($this->team_id, 8));
 
             if ($user = User::where("id", $user_id)->first()) {
-                $data['team_name'] = $user->nick_name;
+                $data['team_name'] = $user->nick_name ?? 'proton win';
             } else {
                 throw new \Exception('未找到该用户');
             }
