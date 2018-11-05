@@ -40,7 +40,7 @@ class TokenVote extends Model
     {
         $data['team_id'] = $this->team_id;
         $data['total'] = $this->total;
-        $data['ranking_id'] = self::ranking($this->team_id);
+        $data['ranking_id'] = self::ranking($this->team_id)['ranking_id'];
 
         if (substr($this->team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
             $user_id = intval(substr($this->team_id, 8));
