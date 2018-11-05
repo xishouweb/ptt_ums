@@ -6,6 +6,7 @@ use App\Models\ActionHistory;
 use App\Models\Captcha;
 use App\Models\Photo;
 use App\Models\RentRecord;
+use App\Models\Team;
 use App\Models\TokenVote;
 use App\Models\UserLogin;
 use App\User;
@@ -274,10 +275,6 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user) {
-            return $this->error('未登录');
-        }
-
         if (!$team_id) {
             return $this->error('请选择正确的团队');
         }
@@ -286,12 +283,8 @@ class UserController extends Controller
             return $this->error('请填写正确的票数');
         }
 
-        if ($team_id === RentRecord::ACTION_SELF_IN . $user->id  && !$user->checkVote()) {
-            return $this->error('请先充值');
-        }
-
         if (!$userToken = $user->user_token('ptt')) {
-            return $this->error('未找到投票信息');
+            return $this->error('请先充值');
         }
 
         if ($amount > ($userToken->votes + $userToken->temp_votes)) {
@@ -301,7 +294,23 @@ class UserController extends Controller
             DB::beginTransaction();
             TokenVote::record($team_id, $user->id, $amount);
 
-            ActionHistory::record($user->id, ActionHistory::ACTION_VOTE, $team_id, $amount,'投票');
+            if (substr($this->team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
+                $person_team = User::find((int)substr($this->team_id, 8));
+                if (!$person_team) {
+                    throw new \Exception('请选择正确的战队');
+                }
+
+                $name = $person_team->nickname;
+            } else {
+                $team = Team::find($team_id);
+                if (!$team) {
+                    throw new \Exception('请选择正确的战队');
+                }
+
+                $name = $team->team_name;
+            }
+
+            ActionHistory::record($user->id, ActionHistory::ACTION_VOTE, $team_id, $amount,'投票' . $name);
             if ($amount > $userToken->temp_votes) {
 
                 $userToken->votes -= ($amount - $userToken->temp_votes);
