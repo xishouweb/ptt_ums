@@ -18,7 +18,10 @@ class Team extends BaseModel implements FormatInterface
 
             if ($rank) {
                 $data['ranking_id'] = $rank['ranking_id'];
-                $data['credit'] = $rank['total'] * 1;
+                $data['credit'] = $rank['total'] * 0.1 + TokenVote::totalVoteOf($this->id) / 4;
+                $data['token_amount'] = $rank['total'];
+                $count = TeamUser::whereTeamId($this->id)->count();
+                $data['count'] = $count ? $count + 1 : 1;
 
                 $old_model = DataCache::getRanking($this->id);
                 $data['status'] = $rank['ranking_id'] >= $old_model['ranking_id'] ? 'up' : 'down';
