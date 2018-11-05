@@ -91,7 +91,7 @@ class RentRecord extends Model
                     'logo' => $user->avatar,
                     'info' => null,
                     'type' => 'personal',
-                    'credit' => $rank['total'] * 1,
+                    'credit' => $rank['total'] * 0.1,
                     'ranking_id' => $rank['ranking_id'],
                     'status' => $status,
                 ];

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TokenVote extends Model
 {
@@ -39,20 +40,42 @@ class TokenVote extends Model
     {
         $data['team_id'] = $this->team_id;
         $data['total'] = $this->total;
+        $data['ranking_id'] = self::ranking($this->team_id);
 
         if (substr($this->team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
             $user_id = intval(substr($this->team_id, 8));
 
             if ($user = User::where("id", $user_id)->first()) {
-                $data['team_name'] = $user->nick_name ?? 'proton win';
+                $data['team_name'] = $user->nick_name;
+                $data['logo'] = $user->avatar;
             } else {
                 throw new \Exception('未找到该用户');
             }
 
         } else {
-            $data['team_name'] = Team::find($this->team_id)->team_name;
+            $team = Team::find($this->team_id);
+            $data['team_name'] =  $team->team_name;
+            $data['logo'] = $team->logo;
         }
 
         return $data;
+    }
+
+    public static function ranking($team_id)
+    {
+        $ranks = TokenVote::groupBy('team_id')
+            ->select('team_id', DB::raw("SUM(amount) as total"))
+            ->orderBy('total', 'desc')
+            ->get();
+
+        foreach ($ranks as $key => $rank) {
+
+            if ($rank->team_id == $team_id) {
+                $rank['ranking_id'] = $key + 1;
+                return $rank;
+            }
+        }
+
+        return [];
     }
 }
