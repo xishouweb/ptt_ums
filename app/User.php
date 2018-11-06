@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\ActionHistory;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
