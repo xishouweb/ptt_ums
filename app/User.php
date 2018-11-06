@@ -77,7 +77,10 @@ class User extends Authenticatable
         $data['invite_code'] = $this->invite_code;
 
         $token = $this->user_token('ptt');
+
         $data['votes'] = $token ? $token->votes + $token->temp_votes : 0;
+        $data['token_amount'] = $token ? $token->token_amount : 0;
+
         return $data;
     }
 
