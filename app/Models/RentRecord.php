@@ -23,7 +23,7 @@ class RentRecord extends Model
         }
 
 
-        if ($token_amount > $token->freeze) {
+        if ($token_amount > $token->token_amount) {
             throw new \Exception('token额度不足');
         }
 
