@@ -129,7 +129,6 @@ class UserController extends Controller
                 $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
 
                 UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
-                ActionHistory::record($user->id,User::ACTION_LOGIN, null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
 
                 $user->last_login = date('Y-m-d H:i:s');
                 $user->save();
@@ -169,10 +168,9 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
+            $user->increaseVotes('ptt', User::LOGIN_VOTES, 'fast_login');
 
             UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
-            ActionHistory::record($user->id,User::ACTION_LOGIN, null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
 
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();

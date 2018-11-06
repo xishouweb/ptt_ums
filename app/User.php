@@ -121,12 +121,16 @@ class User extends Authenticatable
     {
         $token = UserToken::where('user_id', $this->id)->where('token_type', $type)->first();
 
-        if ($action == 'login') {
+        if ($action == 'login' || $action == 'fast_login') {
             if (!$token){
                 UserToken::record($this->id, 0, $type, 0, 0, $votes);
+
+                ActionHistory::record($this->id, $action, null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
             } else if (!$this->checkTodayLogin()) {
-                    $token->temp_votes = $votes;
-                    $token->save();
+                $token->temp_votes = $votes;
+                $token->save();
+
+                ActionHistory::record($this->id, $action, null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
             }
         }
 
