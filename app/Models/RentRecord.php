@@ -105,4 +105,37 @@ class RentRecord extends Model
         }
         return Team::find($this->team_id)->format($source);
     }
+
+    public function getRankInfoOf($team_ids, $source = [])
+    {
+        foreach ($team_ids as $team_id) {
+            if (substr($team_id, 0, 8) == self::ACTION_SELF_IN) {
+                $user_id = intval(substr($team_id, 8));
+
+                if ($user = User::where("id", $user_id)->first()) {
+                    $rank = self::ranking($source['campaign_id'], $source['token_type'], $team_id);
+                    $old_model = DataCache::getRanking($team_id);
+                    $status = $rank['ranking_id'] >= $old_model['ranking_id'] ? 'up' : 'down';
+
+                    return [
+                        'team_id' => $this->team_id,
+                        'team_name' => $user->nickname,
+                        'logo' => $user->avatar,
+                        'info' => null,
+                        'type' => 'personal',
+                        'credit' => DataCache::getZscoreOfCreditRank($team_id),
+                        'ranking_id' => DataCache::getZrank($team_id),
+                        'token_amount' => (float)$rank['total'],
+                        'status' => $status,
+                        'count' => 1,
+                    ];
+                } else {
+                    throw new \Exception('未找到该用户');
+                }
+
+            }
+
+            return Team::find($this->team_id)->format($source);
+        }
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Campaign;
 use App\Jobs\CreateBlockChainAccount;
 use App\Models\ActionHistory;
 use App\Models\Captcha;
+use App\Models\DataCache;
 use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\Team;
@@ -325,6 +326,8 @@ class UserController extends Controller
             }
             $userToken->save();
 
+            DataCache::zincrOfCreditRankFor($team_id, $amount * User::CREDIT_VOTE_RATIO);
+
             DB::commit();
 
             return $this->apiResponse();
@@ -497,6 +500,33 @@ class UserController extends Controller
     }
 
 
+    public function test_c($team_name, $score)
+    {
+        return DataCache::zAddIntoCreditRank($team_name, $score);
+    }
 
+    public function test_incr($team_name, $score)
+    {
+        return DataCache::zincrOfCreditRankFor($team_name, $score);
+    }
 
+    public function test_get($start, $end)
+    {
+        return DataCache::getRangOfCreditRank($start, $end);
+    }
+
+    public function test_count()
+    {
+        return DataCache::zcardOfCreditRank();
+    }
+
+    public function test_get_zscore($key)
+    {
+        return DataCache::getZscoreOfCreditRank($key);
+    }
+
+    public function test_get_zrank($key)
+    {
+        return DataCache::getZrank($key);
+    }
 }

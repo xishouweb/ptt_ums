@@ -20,4 +20,35 @@ class DataCache extends Model
 
         return json_decode(Redis::get($key), true);
     }
+
+    public static function zAddIntoCreditRank($key, $score)
+    {
+       return Redis::zadd('credit_rank', $score, $key);
+    }
+
+    public static function getRangOfCreditRank($start, $end)
+    {
+        return Redis::zrevrange('credit_rank', $start, $end);
+    }
+
+    public static function zincrOfCreditRankFor($key, $score)
+    {
+        return Redis::zIncrBy('credit_rank', $score, $key);
+    }
+
+    public static function getCountOfCreditRank()
+    {
+        return Redis::zcard('credit_rank');
+    }
+
+    public static function getZscoreOfCreditRank($key)
+    {
+        return Redis::zscore('credit_rank', $key);
+    }
+
+    public static function getZrank($key)
+    {
+        return Redis::zrevrank('credit_rank', $key);
+    }
+
 }

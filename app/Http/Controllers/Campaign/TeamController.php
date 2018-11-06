@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\DataCache;
 use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\TokenVote;
 use App\Services\QrCode;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +73,8 @@ class TeamController extends Controller
             $team->save();
 
             RentRecord::record($user, $team->id, $requestData['token_amount'], $requestData['token_type'], $requestData['campaign_id']);
+
+            DataCache::zAddIntoCreditRank($team->id, $requestData['token_amount'] * User::CREDIT_TOKEN_RATIO);
 
             DB::commit();
 
@@ -172,6 +176,8 @@ class TeamController extends Controller
 
             RentRecord::record($user, $team_id, $token_amount, $token_type, $campaign_id);
 
+            DataCache::zincrOfCreditRankFor($team_id, $token_amount * User::CREDIT_TOKEN_RATIO);
+
             DB::commit();
             return $this->apiResponse($teamUser, '加入成功');
         } catch (\Exception $e) {
@@ -190,16 +196,14 @@ class TeamController extends Controller
             return $this->apiResponse([], '未找到token类型');
         }
 
-        $ranks = RentRecord::where('campaign_id', $campaign_id)
-            ->where('token_type', $token_type)
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
-            ->groupBy('team_id')
-            ->select('team_id', DB::raw("SUM(token_amount) as total"))
-            ->orderBy('total', 'desc');
+        $page = (int)$request->get('page');
+        $limit = (int)$request->get('page_size');
 
-        $count = DB::select("select count(1) as total_size from (select team_id, sum(token_amount) as total from rent_records where campaign_id = 1 GROUP BY team_id order by total DESC ) as rank ");
-
-        $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], $count[0]->total_size ?? 0);
+        $team_ids = DataCache::getRangOfCreditRank(($page - 1) * $limit, $page * $limit - 1);
+        $data['data'] = RentRecord::getInfoOf($team_ids);
+        $data['page'] = $request->get('page');
+        $data['page_size'] = $request->get('page_size');
+        $data['total_size'] = DataCache::getCountOfCreditRank();
 
 
         return $this->apiResponse($data);
