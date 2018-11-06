@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Jobs\CreateBlockChainAccount;
 use App\Models\ActionHistory;
 use App\Models\Captcha;
 use App\Models\Photo;
@@ -220,6 +221,8 @@ class UserController extends Controller
             $user->save();
 
             ActionHistory::record($user->id, User::ACTION_REGISTER, null, null,'用户注册');
+
+            CreateBlockChainAccount::dispatch($phone)->onQueue('create_block_chain_account');
 
             if ($invite_code = $request->get('invite_code')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
