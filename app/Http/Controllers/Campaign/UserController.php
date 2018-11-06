@@ -18,10 +18,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Mockery\Exception;
 
 class UserController extends Controller
 {
+    use DispatchesJobs;
+    
     /**
      * Display a listing of the resource.
      *
@@ -222,7 +225,8 @@ class UserController extends Controller
 
             ActionHistory::record($user->id, User::ACTION_REGISTER, null, null,'用户注册');
 
-            CreateBlockChainAccount::dispatch($phone)->onQueue('create_block_chain_account');
+//            CreateBlockChainAccount::dispatch($phone)->onQueue('create_block_chain_account');
+            $this->dispatch((new CreateBlockChainAccount($phone))->onQueue('create_block_chain_account'));
 
             if ($invite_code = $request->get('invite_code')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
