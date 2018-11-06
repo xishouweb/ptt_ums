@@ -24,7 +24,7 @@ use Mockery\Exception;
 class UserController extends Controller
 {
     use DispatchesJobs;
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -299,8 +299,8 @@ class UserController extends Controller
             DB::beginTransaction();
             TokenVote::record($team_id, $user->id, $amount);
 
-            if (substr($this->team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
-                $person_team = User::find((int)substr($this->team_id, 8));
+            if (substr($team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
+                $person_team = User::find((int)substr($team_id, 8));
                 if (!$person_team) {
                     throw new \Exception('请选择正确的战队');
                 }
