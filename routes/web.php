@@ -17,13 +17,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('test_c/name/{name}/score/{score}', 'Campaign\Usercontroller@test_c');
-Route::get('test_incr/name/{name}/score/{score}', 'Campaign\Usercontroller@test_incr');
-Route::get('test_get/start/{start}/end/{end}', 'Campaign\Usercontroller@test_get');
-Route::get('test_get_zscore/{key}', 'Campaign\Usercontroller@test_get_zscore');
-Route::get('test_get_zrank/{key}', 'Campaign\Usercontroller@test_get_zrank');
-Route::get('test_count', 'Campaign\Usercontroller@test_count');
-
 Route::get('/api/v1/track', 'Vendor\TrackController@upload');
 Route::post('/api/v1/track_node_call', 'Vendor\TrackController@record');
 Route::get('/track', 'Vendor\TrackController@index');

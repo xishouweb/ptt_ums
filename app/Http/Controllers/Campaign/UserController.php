@@ -476,10 +476,12 @@ class UserController extends Controller
             ->get();
 
 
-        $data = $this->format_list($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type]);
+        $teams = $this->format_list($ranks);
+        $rank_ids = array_column($teams, 'ranking_id');
 
+        array_multisort($rank_ids, SORT_ASC, $teams);
 
-        return $this->apiResponse($data);
+        return $this->apiResponse($teams);
     }
 
     public function myVoteRank($campaign_id, $token_type)
@@ -497,36 +499,5 @@ class UserController extends Controller
         $data = $this->format_list($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type]);
 
         return $this->apiResponse($data);
-    }
-
-
-    public function test_c($team_name, $score)
-    {
-        return DataCache::zAddIntoCreditRank($team_name, $score);
-    }
-
-    public function test_incr($team_name, $score)
-    {
-        return DataCache::zincrOfCreditRankFor($team_name, $score);
-    }
-
-    public function test_get($start, $end)
-    {
-        return DataCache::getRangOfCreditRank($start, $end);
-    }
-
-    public function test_count()
-    {
-        return DataCache::getCountOfCreditRank();
-    }
-
-    public function test_get_zscore($key)
-    {
-        return DataCache::getZscoreOfCreditRank($key);
-    }
-
-    public function test_get_zrank($key)
-    {
-        return DataCache::getZrank($key);
     }
 }
