@@ -48,7 +48,7 @@ class DataCache extends Model
 
     public static function getZrank($key)
     {
-        return Redis::zrevrank('credit_rank', $key);
+        return Redis::zrevrank('credit_rank', $key) + 1;
     }
 
 }

@@ -199,12 +199,32 @@ class TeamController extends Controller
         $page = (int)$request->get('page');
         $limit = (int)$request->get('page_size');
 
-        $team_ids = DataCache::getRangOfCreditRank(($page - 1) * $limit, $page * $limit - 1);
-        $data['data'] = RentRecord::getInfoOf($team_ids);
+        $data['total_size'] = DataCache::getCountOfCreditRank();
+        $start = ($page - 1) * $limit;
+        $end = $page * $limit - 1;
+
+        if ($end > $data['total_size']) {
+            $end = $data['total_size'];
+        }
+
+        $team_ids = DataCache::getRangOfCreditRank($start, $end);
+
+        $teams = RentRecord::where('campaign_id', $campaign_id)
+            ->where('token_type', $token_type)
+            ->whereIn('team_id', $team_ids)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->groupBy('team_id')
+            ->select('team_id', \DB::raw("SUM(token_amount) as total"))
+            ->orderBy('total', 'desc')
+            ->get();
+        $teams = $this->format_list($teams);
+        $rank_ids = array_column($teams, 'ranking_id');
+
+        array_multisort($rank_ids, SORT_ASC, $teams);
+
+        $data['data'] = $teams;
         $data['page'] = $request->get('page');
         $data['page_size'] = $request->get('page_size');
-        $data['total_size'] = DataCache::getCountOfCreditRank();
-
 
         return $this->apiResponse($data);
     }

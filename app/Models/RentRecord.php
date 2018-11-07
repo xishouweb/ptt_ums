@@ -75,67 +75,38 @@ class RentRecord extends Model
         return [];
     }
 
-    public function format($source = [])
+    public function format()
     {
 
         if (substr($this->team_id, 0, 8) == self::ACTION_SELF_IN) {
             $user_id = intval(substr($this->team_id, 8));
 
-            if ($user = User::where("id", $user_id)->first()) {
-                $rank = self::ranking($source['campaign_id'], $source['token_type'], $this->team_id);
-                $old_model = DataCache::getRanking($this->team_id);
-                $status = $rank['ranking_id'] >= $old_model['ranking_id'] ? 'up' : 'down';
+            $user = User::where("id", $user_id)->first();
 
-                return [
-                    'team_id' => $this->team_id,
-                    'team_name' => $user->nickname,
-                    'logo' => $user->avatar,
-                    'info' => null,
-                    'type' => 'personal',
-                    'credit' => $rank['total'] * 0.1,
-                    'ranking_id' => $rank['ranking_id'],
-                    'token_amount' => (float)$rank['total'],
-                    'status' => $status,
-                    'count' => 1,
-                ];
-            } else {
-                throw new \Exception('未找到该用户');
-            }
+            $team['team_id'] = $this->team_id;
+            $team['team_name'] = $user->nickname;
+            $team['logo'] = $user->avatar;
+            $team['info'] = null;
+            $team['type'] = 'personal';
+            $team['count'] = 1;
 
+        } else {
+
+            $team = Team::find($this->team_id)->format();
+            $count = TeamUser::whereTeamId($this->id)->count();
+            $data['count'] = $count ? $count + 1 : 1;
         }
-        return Team::find($this->team_id)->format($source);
+
+        $team['credit'] = $this->getTeamCredit();
+        $team['ranking_id'] = DataCache::getZrank($this->team_id);
+        $team['token_amount'] = $this->total;
+
+        return $team;
     }
 
-    public function getRankInfoOf($team_ids, $source = [])
+
+    public function getTeamCredit()
     {
-        foreach ($team_ids as $team_id) {
-            if (substr($team_id, 0, 8) == self::ACTION_SELF_IN) {
-                $user_id = intval(substr($team_id, 8));
-
-                if ($user = User::where("id", $user_id)->first()) {
-                    $rank = self::ranking($source['campaign_id'], $source['token_type'], $team_id);
-                    $old_model = DataCache::getRanking($team_id);
-                    $status = $rank['ranking_id'] >= $old_model['ranking_id'] ? 'up' : 'down';
-
-                    return [
-                        'team_id' => $this->team_id,
-                        'team_name' => $user->nickname,
-                        'logo' => $user->avatar,
-                        'info' => null,
-                        'type' => 'personal',
-                        'credit' => DataCache::getZscoreOfCreditRank($team_id),
-                        'ranking_id' => DataCache::getZrank($team_id),
-                        'token_amount' => (float)$rank['total'],
-                        'status' => $status,
-                        'count' => 1,
-                    ];
-                } else {
-                    throw new \Exception('未找到该用户');
-                }
-
-            }
-
-            return Team::find($this->team_id)->format($source);
-        }
+        return $this->total * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($this->team_id) * User::CREDIT_VOTE_RATIO;
     }
 }

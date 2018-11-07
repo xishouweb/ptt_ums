@@ -517,7 +517,7 @@ class UserController extends Controller
 
     public function test_count()
     {
-        return DataCache::zcardOfCreditRank();
+        return DataCache::getCountOfCreditRank();
     }
 
     public function test_get_zscore($key)
