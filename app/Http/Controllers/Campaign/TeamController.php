@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Campaign;
 
 use App\Models\DataCache;
-use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\TokenVote;
-use App\Services\QrCode;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -59,6 +57,12 @@ class TeamController extends Controller
             return $this->error( '用户未登录!');
         }
         $requestData = $request->only(['team_name', 'logo', 'info', 'campaign_id', 'token_amount', 'token_type']);
+
+        $exists = Team::where('creater_user_id', $user->id)->first();
+
+        if ($exists) {
+            return $this->error('每人只能创建一个战队');
+        }
 
         try{
             DB::beginTransaction();
@@ -166,13 +170,19 @@ class TeamController extends Controller
 
         try{
             DB::beginTransaction();
-            $teamUser = new TeamUser();
 
-            $teamUser->user_id = $user->id;
-            $teamUser->team_id = $team_id;
-            $teamUser->campaign_id = $campaign_id;
+            $is_joined = TeamUser::whereUserId($user->id)->whereTeamId($team_id)->count();
 
-            $teamUser->save();
+            if ($is_joined <= 0){
+
+                $teamUser = new TeamUser();
+
+                $teamUser->user_id = $user->id;
+                $teamUser->team_id = $team_id;
+                $teamUser->campaign_id = $campaign_id;
+
+                $teamUser->save();
+            }
 
             RentRecord::record($user, $team_id, $token_amount, $token_type, $campaign_id);
 

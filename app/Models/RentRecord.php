@@ -37,6 +37,8 @@ class RentRecord extends Model
         $token->freeze += $token_amount;
 
         $token->save();
+
+        ActionHistory::record($user->id,User::ACTION_LOCK_PTT, $team_id, $token_amount,'锁仓PTT', ActionHistory::TYPE_TOKEN);
     }
 
 
