@@ -95,8 +95,6 @@ class RentRecord extends Model
         } else {
 
             $team = Team::find($this->team_id)->format();
-            $count = TeamUser::whereTeamId($this->id)->count();
-            $data['count'] = $count ? $count + 1 : 1;
         }
 
         $team['credit'] = $this->getTeamCredit();

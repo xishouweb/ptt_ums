@@ -481,7 +481,12 @@ class UserController extends Controller
 
         array_multisort($rank_ids, SORT_ASC, $teams);
 
-        return $this->apiResponse($teams);
+        $data['teams'] = $teams;
+        $data['has_rent'] = $user->getHasRent($campaign_id, $token_type);
+        $token = $user->user_token($token_type);
+        $data['total_token'] = $token->token_amount + $token->freeze;
+
+        return $this->apiResponse($data);
     }
 
     public function myVoteRank($campaign_id, $token_type)
