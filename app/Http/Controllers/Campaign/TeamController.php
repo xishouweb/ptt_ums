@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\ActionHistory;
 use App\Models\DataCache;
 use App\Models\RentRecord;
 use App\Models\Team;
@@ -182,11 +183,15 @@ class TeamController extends Controller
                 $teamUser->campaign_id = $campaign_id;
 
                 $teamUser->save();
+                ActionHistory::record($user->id, User::ACTION_JOIN_TEAM, $team_id, 0, '加入战队');
             }
 
             RentRecord::record($user, $team_id, $token_amount, $token_type, $campaign_id);
 
             DataCache::zincrOfCreditRankFor($team_id, $token_amount * User::CREDIT_TOKEN_RATIO);
+            DataCache::zincrOfCreditRankFor('self_in_' . $user->id, -($token_amount * User::CREDIT_TOKEN_RATIO));
+
+            ActionHistory::record($user->id, User::ACTION_INCR_TOKEN, $team_id, $token_amount, '往战队增加token', ActionHistory::TYPE_TOKEN);
 
             DB::commit();
             return $this->apiResponse([], '加入成功');

@@ -427,20 +427,6 @@ class UserController extends Controller
         return $this->success();
     }
 
-    public function tokenDetail()
-    {
-        $user = auth()->user();
-        $records = RentRecord::whereUserId($user->id)->whereAction(RentRecord::ACTION_JOIN_TEAM)->get();
-
-        $data = [];
-        foreach ($records as $key => $record) {
-            $data[$key]['created_at'] = $record->created_at;
-            $data[$key]['type'] = $record->created_at;
-            $data[$key]['token_type'] = $record->token_type;
-            $data[$key]['created_at'] = $record->created_at;
-        }
-    }
-
     public function getVotes()
     {
         $user = auth()->user();
@@ -503,6 +489,33 @@ class UserController extends Controller
         $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], count($team_ids));
 
         return $this->apiResponse($data);
+    }
+
+    public function tokenDetail(Request $request)
+    {
+        $user = auth()->user();
+        $page = $request->get('page', 1);
+        $page_size = $request->get('page_size', 10);
+
+        $records = ActionHistory::whereUserId($user->id)
+            ->whereIn('action', [User::ACTION_JOIN_TEAM, User::ACTION_PREPAID])
+            ->select('created_at', 'note', 'team_id', 'data')
+            ->orderBy('id', 'desc')
+            ->skip(($page - 1) * $page_size)
+            ->take($page_size)
+            ->get();
+
+        foreach ($records as &$record) {
+            if ($record->team_id) {
+                $team = Team::find($record->team_id);
+
+                $record->data = -$record->data;
+                $record->team_name = $team->team_name;
+                $record->team_logo = $team->logo;
+            }
+        }
+
+        return $this->apiResponse($records);
     }
 
     public function myIncome()
