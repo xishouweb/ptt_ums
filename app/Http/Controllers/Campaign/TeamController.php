@@ -189,7 +189,7 @@ class TeamController extends Controller
             DataCache::zincrOfCreditRankFor($team_id, $token_amount * User::CREDIT_TOKEN_RATIO);
 
             DB::commit();
-            return $this->apiResponse($teamUser, '加入成功');
+            return $this->apiResponse([], '加入成功');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->apiResponse([], $e->getMessage(), 1);
