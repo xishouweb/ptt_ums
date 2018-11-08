@@ -20,12 +20,17 @@ class TeamController extends Controller
         $team_name = $request->get('team_name');
         $campaign_id = $request->get('campaign_id');
         $token_type = $request->get('token_type');
+        $page = $request->get('page', 1);
+        $page_size = $request->get('page_size', 10);
 
         if (!$token_type || !$campaign_id || !$team_name) {
             return $this->error('参数错误');
         }
 
-        $teams = Team::where('team_name', 'like', '%' . $team_name .'%')->get();
+        $teams = Team::where('team_name', 'like', '%' . $team_name .'%')
+            ->skip(($page - 1) * $page_size)
+            ->take($page_size)
+            ->get();
 
         if (!$teams) {
             return $this->apiResponse();
