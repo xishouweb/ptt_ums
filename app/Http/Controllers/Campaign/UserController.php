@@ -481,7 +481,7 @@ class UserController extends Controller
 
         array_multisort($rank_ids, SORT_ASC, $teams);
 
-        $data['teams'] = $teams;
+        $data['data'] = $teams;
         $data['has_rent'] = $user->getHasRent($campaign_id, $token_type);
         $token = $user->user_token($token_type);
         $data['total_token'] = $token->token_amount + $token->freeze;
