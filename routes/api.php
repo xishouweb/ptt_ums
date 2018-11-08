@@ -78,10 +78,14 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/checknickname/{nickname}', 'UserController@checkNickname');
             Route::get('user/votes', 'UserController@getVotes');
             Route::get('user/votes/detail', 'UserController@getVoteDetail');
+            Route::get('user/income', 'UserController@myIncome');
+            Route::get('user/income/detail', 'UserController@incomeDetail');
 
             Route::get('user/token/detail', 'UserController@tokenDetail');
+
+            //to do campaign_id, token_type 放header里
             Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
-            Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myVoteRank');
+            Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{token_type}', 'UserController@myVoteRank');
         });
 
     });

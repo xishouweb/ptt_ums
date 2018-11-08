@@ -31,9 +31,14 @@ class TokenVote extends Model
         return 1;
     }
 
-    public static function totalVoteOf($team_id)
+    public static function totalVoteOf($team_id, $user_id = null)
     {
-        return self::where('team_id', $team_id)->sum('amount') ?? 0;
+        $vote = self::where('team_id', $team_id);
+
+        if ($user_id) {
+            $vote->whereUserId($user_id);
+        }
+        return $vote->sum('amount') ?? 0;
     }
 
     public function format($source)

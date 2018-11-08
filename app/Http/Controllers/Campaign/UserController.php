@@ -505,4 +505,113 @@ class UserController extends Controller
 
         return $this->apiResponse($data);
     }
+
+    public function myIncome()
+    {
+        $user = auth()->user();
+
+        $ranks = RentRecord::where('campaign_id', 1)
+            ->where('token_type', 'ptt')
+            ->whereUserId($user->id)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->groupBy('team_id')
+            ->select('team_id')
+            ->get();
+
+        foreach ($ranks as $rank) {
+            $data[$rank->team_id] = DataCache::getZrank($rank->team_id);
+        }
+
+        $res['max_rank_id'] = min($data);
+        $team_id = array_search(min($data), $data);
+
+        $res['has_rent'] = RentRecord::where('campaign_id', 1)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->where('token_type', 'ptt')
+            ->whereUserId($user->id)
+            ->whereTeamId($team_id)
+            ->sum('token_amount') ?? 0;
+
+        $res['credit'] = $res['has_rent'] * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($team_id, $user->id) * User::CREDIT_VOTE_RATIO;
+
+        $res['income'] = 100;
+        $res['next_income'] = 1000;
+        $res['unit'] = 'CNY';
+
+        return $this->apiResponse($res);
+    }
+
+    public function incomeDetail()
+    {
+        $income = [
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+            [
+                'created_at' => '2018-11-08 12:00:00',
+                'src' => '帮推客战队',
+                'eth_income' => 1,
+                'ptt_income' => 200,
+            ],
+        ];
+
+        return $this->apiResponse($income);
+    }
 }
