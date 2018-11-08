@@ -32,11 +32,33 @@ class TeamController extends Controller
             ->take($page_size)
             ->get();
 
+        $count = Team::where('team_name', 'like', '%' . $team_name .'%')->count();
+
         if (!$teams) {
             return $this->apiResponse();
         }
 
-        return $this->apiResponse($this->format_list($teams, ['campaign_id' => $campaign_id, 'token_type' => $token_type ]));
+        $teams =  $this->format_list($teams);
+
+        foreach ($teams as &$team) {
+            $teams->token_amount =  RentRecord::where('campaign_id', $campaign_id)
+                ->where('token_type', $token_type)
+                ->where('team_id', $team->id)
+                ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+                ->sum('token_amount') ?? 0;
+
+            $team->ranking_id = DataCache::getZrank($this->team_id);
+
+            $team->credit =  $teams->token_amount * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($this->team_id) * User::CREDIT_VOTE_RATIO;
+        }
+
+        $data['data'] = $teams;
+        $data['page'] = $page;
+        $data['page_size'] =$page_size;
+        $data['total_size'] = $count;
+
+
+        return $this->apiResponse($data);
     }
 
     /**
