@@ -498,10 +498,9 @@ class UserController extends Controller
         $ranks = TokenVote::whereIn('team_id', $team_ids)
             ->select('team_id', DB::raw("SUM(amount) as total"))
             ->groupBy('team_id')
-            ->orderBy('total', 'desc')
-            ->get();
+            ->orderBy('total', 'desc');
 
-        $data = $this->format_list($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type]);
+        $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], count($team_ids));
 
         return $this->apiResponse($data);
     }
