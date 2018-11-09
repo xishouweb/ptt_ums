@@ -43,7 +43,7 @@ class GetRankingList extends Command
     {
         $ranks = RentRecord::where('campaign_id', 1)
             ->where('token_type', 'ptt')
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
             ->groupBy('team_id')
             ->select('team_id', \DB::raw("SUM(token_amount) as total"))
             ->orderBy('total', 'desc')

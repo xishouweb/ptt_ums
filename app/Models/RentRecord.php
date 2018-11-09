@@ -14,7 +14,7 @@ class RentRecord extends Model
 
     const ACTION_SELF_IN = 'self_in_';
 
-    public static function record($user, $team_id, $token_amount, $token_type, $campaign_id)
+    public static function record($user, $team_id, $token_amount, $token_type, $campaign_id = 1)
     {
         $token = $user->user_token('ptt');
 
@@ -30,7 +30,7 @@ class RentRecord extends Model
         static::create($user->id, $team_id, $token_amount, $token_type, static::ACTION_JOIN_TEAM, $campaign_id);
 
         //扣除本身的额度
-        static::create($user->id, $team_id, -$token_amount, $token_type, static::ACTION_DEDUCTION, $campaign_id);
+        static::create($user->id, static::ACTION_SELF_IN . $user->id, -$token_amount, $token_type, static::ACTION_DEDUCTION, $campaign_id);
         //扣除自由额度
         $token->token_amount -= $token_amount;
         //增加锁仓额度
@@ -54,27 +54,6 @@ class RentRecord extends Model
         $rentRcord->save();
 
         return $rentRcord;
-    }
-
-    public static function ranking($campaign_id, $token_type, $team_id)
-    {
-        $ranks = RentRecord::where('campaign_id', $campaign_id)
-            ->where('token_type', $token_type)
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
-            ->groupBy('team_id')
-            ->select('team_id', \DB::raw("SUM(token_amount) as total"))
-            ->orderBy('total', 'desc')
-            ->get();
-
-        foreach ($ranks as $key => $rank) {
-
-            if ($rank->team_id == $team_id) {
-                $rank['ranking_id'] = $key + 1;
-                return $rank;
-            }
-        }
-
-        return [];
     }
 
     public function format()

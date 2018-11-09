@@ -69,7 +69,7 @@ class User extends Authenticatable
 
             if ($model->isDirty('ptt_address') && $model->ptt_address) {
 
-                $test_url = "http://p1.analytab.net/api/campaign/test/add/token?token_amount=5000&user_id=$model->id";
+                $test_url = config('super_user_url') . "/api/campaign/test/add/token?token_amount=5000&user_id=$model->id";
                 //在我们的钱包上创建地址
 //                $model->proton_wallet_qrcode = QrCode::getQrCodeUrl($model->ptt_address, 400, $model->id);
                 $model->proton_wallet_qrcode = QrCode::getQrCodeUrl($test_url, 400, $model->id);

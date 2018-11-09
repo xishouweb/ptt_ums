@@ -44,7 +44,7 @@ class TeamController extends Controller
             $teams->token_amount =  RentRecord::where('campaign_id', $campaign_id)
                 ->where('token_type', $token_type)
                 ->where('team_id', $team->id)
-                ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+                ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
                 ->sum('token_amount') ?? 0;
 
             $team->ranking_id = DataCache::getZrank($this->team_id);
@@ -254,7 +254,7 @@ class TeamController extends Controller
         $teams = RentRecord::where('campaign_id', $campaign_id)
             ->where('token_type', $token_type)
             ->whereIn('team_id', $team_ids)
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
             ->groupBy('team_id')
             ->select('team_id', \DB::raw("SUM(token_amount) as total"))
             ->orderBy('total', 'desc')

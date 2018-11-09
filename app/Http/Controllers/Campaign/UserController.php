@@ -455,7 +455,7 @@ class UserController extends Controller
         $ranks = RentRecord::where('campaign_id', $campaign_id)
             ->where('token_type', $token_type)
             ->whereUserId($user->id)
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
             ->groupBy('team_id')
             ->select('team_id', DB::raw("SUM(token_amount) as total"))
             ->orderBy('total', 'desc')
@@ -525,7 +525,7 @@ class UserController extends Controller
         $ranks = RentRecord::where('campaign_id', 1)
             ->where('token_type', 'ptt')
             ->whereUserId($user->id)
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
             ->groupBy('team_id')
             ->select('team_id')
             ->get();
@@ -538,7 +538,7 @@ class UserController extends Controller
         $team_id = array_search(min($data), $data);
 
         $res['has_rent'] = RentRecord::where('campaign_id', 1)
-            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM])
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
             ->where('token_type', 'ptt')
             ->whereUserId($user->id)
             ->whereTeamId($team_id)

@@ -53,6 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'super_user_url' => env('SUPER_USER_URL', 'http://ums.proton.global'),
 
     /*
     |--------------------------------------------------------------------------

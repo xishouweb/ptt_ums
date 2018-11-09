@@ -43,15 +43,16 @@ class TokenTxController extends Controller
 
         $token = $user->user_token($type);
 
+        $last_tx = TokenTransaction::whereUserId($user->id)->orderby('id', 'desc')->first();
+        $last_amount = $last_tx ? $last_tx->after_amount : 0;
+
+
         try {
             DB::beginTransaction();
 
             if (!$token) {
                 $token = UserToken::record($user->id, $amount, $type);
 
-                $data['user_id'] = $user->id;
-                $data['token_amount'] = $amount;
-                $data['token_type'] = $type;
                 $data['original_amount'] = 0;
                 $data['after_amount'] = $token->token_amount;
             } else {
@@ -59,14 +60,18 @@ class TokenTxController extends Controller
                 $token->token_amount += $amount;
                 $token->save();
 
-                $data['original_amount'] = $token->token_amount;
-                $data['after_amount'] = $token->token_amount + $amount;
+                $data['original_amount'] = $last_amount;
+                $data['after_amount'] = $last_amount + $amount;
             }
+
+            $data['user_id'] = $user->id;
+            $data['token_amount'] = $amount;
+            $data['token_type'] = $type;
 
             $data['action'] = TokenTransaction::ACTION_INPUT;
             TokenTransaction::create($data);
 
-            RentRecord::record($user, RentRecord::ACTION_SELF_IN . $user->id, $amount, $type, 1);
+            RentRecord::create($user->id, RentRecord::ACTION_SELF_IN . $user->id, $amount, $type, RentRecord::ACTION_JOIN_CAMPAIGN, 1);
 
             DataCache::zAddIntoCreditRank(RentRecord::ACTION_SELF_IN . $user->id, $amount * User::CREDIT_TOKEN_RATIO);
 
