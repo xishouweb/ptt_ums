@@ -41,15 +41,15 @@ class TeamController extends Controller
         $teams =  $this->format_list($teams);
 
         foreach ($teams as &$team) {
-            $teams->token_amount =  RentRecord::where('campaign_id', $campaign_id)
+            $team['token_amount'] =  RentRecord::where('campaign_id', $campaign_id)
                 ->where('token_type', $token_type)
-                ->where('team_id', $team->id)
+                ->where('team_id', $team['team_id'])
                 ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
                 ->sum('token_amount') ?? 0;
 
-            $team->ranking_id = DataCache::getZrank($this->team_id);
+            $team['ranking_id'] = DataCache::getZrank($team['team_id']);
 
-            $team->credit =  $teams->token_amount * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($this->team_id) * User::CREDIT_VOTE_RATIO;
+            $team['credit'] =  $team['token_amount'] * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($team['team_id']) * User::CREDIT_VOTE_RATIO;
         }
 
         $data['data'] = $teams;
