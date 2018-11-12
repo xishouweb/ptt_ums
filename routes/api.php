@@ -82,6 +82,7 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/income/detail', 'UserController@incomeDetail');
 
             Route::get('user/token/detail', 'UserController@tokenDetail');
+            Route::get('user/deposit/address', 'UserController@getDepositAddress');
 
             //to do campaign_id, token_type 放header里
             Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');

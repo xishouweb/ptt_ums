@@ -10,8 +10,10 @@ use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TokenVote;
+use App\Models\UserAddress;
 use App\Models\UserLogin;
 use App\User;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -225,9 +227,6 @@ class UserController extends Controller
             $user->save();
 
             ActionHistory::record($user->id, User::ACTION_REGISTER, null, null,'用户注册');
-
-//            CreateBlockChainAccount::dispatch($phone)->onQueue('create_block_chain_account');
-            $this->dispatch((new CreateBlockChainAccount($phone))->onQueue('create_block_chain_account'));
 
             if ($invite_code = $request->get('invite_code')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
@@ -625,5 +624,57 @@ class UserController extends Controller
         ];
 
         return $this->apiResponse($income);
+    }
+
+
+    public function getDepositAddress()
+    {
+
+        $user = auth()->user();
+
+        $address = $user->addresses()->where('type', 'super_user')->first();
+
+        if (!$address) {
+
+            $url = config('app.node_domain') . "/account";
+
+            $client = new Client();
+
+            $res = $client->request('POST', $url, [
+                'form_params' => [
+                    'phone' => $user->phone,
+                    'password' => $user->phone . rand(100000, 999999),
+                ],
+            ]);
+
+            $bodys = (string)$res->getBody();
+
+            $result = json_decode($bodys);
+
+            if (isset($result->address)) {
+                try {
+                    DB::beginTransaction();
+
+                    $address = UserAddress::create([
+                        'user_id' => $user->id,
+                        'address' => $result->address,
+                        'address_password' => $result->password,
+                        'type' => UserAddress::SUPER_USER,
+                    ]);
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    \Log::error('User adress create failed user_id = '. $user->id . '[' .  $e->getMessage() . ']');
+                }
+            } else {
+                return $this->error('地址生成失败, 请联系管理员');
+            }
+        }
+
+        $data['address'] = $address->address;
+        $data['qrcode_str'] = 'ethereum:' . $address->address;
+
+        return $this->apiResponse($data);
     }
 }
