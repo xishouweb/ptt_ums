@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\ActionHistory;
+use App\Models\DataCache;
 use App\Models\RentRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
@@ -80,15 +81,11 @@ class User extends Authenticatable
 
     public function campaign($campaign_id, $token_type)
     {
-        $data['user_id'] = $this->id;
-        $data['expected_income'] = 3000;
-        $data['expected_income_unit'] = strtoupper($token_type);
-
-        $data['my_ranking'] = RentRecord::ranking($campaign_id, $token_type, RentRecord::ACTION_SELF_IN . $this->id);
-        $data['has_rent'] = $this->getHasRent($campaign_id, $token_type);
-        $data['credit'] = $data['has_rent'] * 0.1;
-        $data['invite_code'] = $this->invite_code;
-
+//        $data['user_id'] = $this->id;
+//        $data['my_ranking'] = $this->myMaxRank($campaign_id, $token_type);
+//
+//        $data['invite_code'] = $this->invite_code;
+//
         $token = $this->user_token('ptt');
 
         $data['votes'] = $token ? $token->votes + $token->temp_votes : 0;
@@ -195,5 +192,23 @@ class User extends Authenticatable
         $data['avatar'] = $this->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
 
         return $data;
+    }
+
+    public function myMaxRank($campaign_id, $token_type)
+    {
+        $ranks = RentRecord::where('campaign_id', $campaign_id)
+            ->where('token_type', $token_type)
+            ->whereUserId($this->id)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
+            ->groupBy('team_id')
+            ->select('team_id', DB::raw("SUM(token_amount) as total"))
+            ->orderBy('total', 'desc')
+            ->get();
+
+        foreach ($ranks as $rank) {
+            $rank_ids  = DataCache::getZrank($rank->team_id);
+        }
+
+        return min($rank_ids);
     }
 }
