@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Campaign;
 
-use App\Jobs\CreateBlockChainAccount;
 use App\Models\ActionHistory;
 use App\Models\Captcha;
 use App\Models\DataCache;
@@ -632,48 +631,51 @@ class UserController extends Controller
 
         $user = auth()->user();
 
-        $address = $user->addresses()->where('type', 'super_user')->first();
+//        $address = $user->addresses()->where('type', 'super_user')->first();
+//
+//        if (!$address) {
+//
+//            $url = config('app.node_domain') . "/account";
+//
+//            $client = new Client();
+//
+//            $res = $client->request('POST', $url, [
+//                'form_params' => [
+//                    'phone' => $user->phone,
+//                    'password' => $user->phone . rand(100000, 999999),
+//                ],
+//            ]);
+//
+//            $bodys = (string)$res->getBody();
+//
+//            $result = json_decode($bodys);
+//
+//            if (isset($result->address)) {
+//                try {
+//                    DB::beginTransaction();
+//
+//                    $address = UserAddress::create([
+//                        'user_id' => $user->id,
+//                        'address' => $result->address,
+//                        'address_password' => $result->password,
+//                        'type' => UserAddress::SUPER_USER,
+//                    ]);
+//
+//                    DB::commit();
+//                } catch (\Exception $e) {
+//                    DB::rollBack();
+//                    \Log::error('User adress create failed user_id = '. $user->id . '[' .  $e->getMessage() . ']');
+//                }
+//            } else {
+//                return $this->error('地址生成失败, 请联系管理员');
+//            }
+//        }
+//
+//        $data['address'] = $address->address;
+//        $data['qrcode_str'] = 'ethereum:' . $address->address;
 
-        if (!$address) {
-
-            $url = config('app.node_domain') . "/account";
-
-            $client = new Client();
-
-            $res = $client->request('POST', $url, [
-                'form_params' => [
-                    'phone' => $user->phone,
-                    'password' => $user->phone . rand(100000, 999999),
-                ],
-            ]);
-
-            $bodys = (string)$res->getBody();
-
-            $result = json_decode($bodys);
-
-            if (isset($result->address)) {
-                try {
-                    DB::beginTransaction();
-
-                    $address = UserAddress::create([
-                        'user_id' => $user->id,
-                        'address' => $result->address,
-                        'address_password' => $result->password,
-                        'type' => UserAddress::SUPER_USER,
-                    ]);
-
-                    DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    \Log::error('User adress create failed user_id = '. $user->id . '[' .  $e->getMessage() . ']');
-                }
-            } else {
-                return $this->error('地址生成失败, 请联系管理员');
-            }
-        }
-
-        $data['address'] = $address->address;
-        $data['qrcode_str'] = 'ethereum:' . $address->address;
+        $data['address']  = '0x923139d93f305Ad6272ae9E80B2467bf1a630673';
+        $data['qrcode_str'] = config('super_user_url') . "/api/campaign/test/add/token?token_amount=5000&user_id=$user->id";
 
         return $this->apiResponse($data);
     }
