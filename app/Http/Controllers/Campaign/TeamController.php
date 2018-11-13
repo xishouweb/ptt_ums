@@ -92,6 +92,11 @@ class TeamController extends Controller
             return $this->error('每人只能创建一个战队');
         }
 
+        $is_exist = Team::whereTeamName($requestData['team_name'])->first();
+        if ($is_exist) {
+            return $this->error('该名字已被占用~, 请换一个吧');
+        }
+
         try{
             DB::beginTransaction();
 
