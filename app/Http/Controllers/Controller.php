@@ -87,7 +87,7 @@ class Controller extends BaseController
         $json = array(
             "error" => "权限失败",
         );
-        return response()->json($json, 403);
+        return response()->json($json, 401);
     }
 
     protected function _bad_json($msg, $code = 0)

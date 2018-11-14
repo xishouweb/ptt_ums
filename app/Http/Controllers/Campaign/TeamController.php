@@ -118,8 +118,8 @@ class TeamController extends Controller
             return $this->apiResponse($team, '团队创建成功');
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return $this->error($e->getMessage());
+            \Log::error($e->getMessage());
+            return $this->error();
         }
 
 

@@ -177,8 +177,8 @@ class User extends Authenticatable
     public function baseInfo()
     {
         $data['token'] = 'Bearer ' . $this->createToken('super_user')->accessToken;
-        $data['nickname'] = $this->nickname ?: 'User';
-        $data['avatar'] = $this->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+        $data['nickname'] = $this->nickname ?? 'User';
+        $data['avatar'] = $this->avatar ?? 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
 
         return $data;
     }

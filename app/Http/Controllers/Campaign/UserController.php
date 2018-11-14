@@ -149,7 +149,7 @@ class UserController extends Controller
             }
         }
 
-        return $this->error('账户不存在或密码错误', 404);
+        return $this->error('账户不存在或密码错误', 401);
 
     }
 
@@ -188,8 +188,8 @@ class UserController extends Controller
             return $this->apiResponse($data);
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return $this->error($e->getMessage());
+            \Log::error($e->getMessage());
+            return $this->error();
         }
     }
 
@@ -247,7 +247,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('<'.$phone .'>注册失败--超级广告主' . $e->getMessage());
-            return $this->error($e->getMessage());
+            return $this->error();
         }
 
     }
@@ -332,7 +332,8 @@ class UserController extends Controller
             return $this->apiResponse();
         } catch (Exception $e) {
             DB::rollBack();
-            return $this->error($e->getMessage());
+            \Log::error($e->getMessage());
+            return $this->error();
         }
 
     }
