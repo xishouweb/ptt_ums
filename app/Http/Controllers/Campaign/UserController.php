@@ -440,7 +440,7 @@ class UserController extends Controller
             ->whereType(ActionHistory::TYPE_VOTE)
             ->select('created_at', 'note', 'data')
             ->get();
-        $data['votes'] = $this->getVotes();
+        $data['votes'] = $user->votes + $user->temp_votes;
 
         return $this->apiResponse($data);
     }
