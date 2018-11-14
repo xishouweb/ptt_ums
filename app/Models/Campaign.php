@@ -22,7 +22,9 @@ class Campaign extends BaseModel implements FormatInterface
 
     private function totalNumberOfPeople()
     {
-        return RentRecord::where('campaign_id', $this->id)->select('distinct(user_id)')->count() ?? 0;
+        $record = RentRecord::where('campaign_id', $this->id)->select(\DB::raw('count(distinct(user_id)) as aaa'))->first();
+
+        return $record ? $record->aaa : 0;
     }
 
     private function totalPtt()
