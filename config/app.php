@@ -218,4 +218,6 @@ return [
 
     //云片 api key - 给非中国地区发短信
     'yunpian_apikey'    => env('YUNPIAN_APIKEY', '598084290533d2f982ba871710d7b0dc'),
+
+    'captcha_live_time' => env('CAPTCHA_LIVE_TIME', 180),
 ];
