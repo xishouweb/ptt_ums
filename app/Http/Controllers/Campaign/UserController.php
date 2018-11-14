@@ -11,6 +11,7 @@ use App\Models\Team;
 use App\Models\TokenVote;
 use App\Models\UserAddress;
 use App\Models\UserLogin;
+use App\Models\UserToken;
 use App\User;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -440,7 +441,9 @@ class UserController extends Controller
             ->whereType(ActionHistory::TYPE_VOTE)
             ->select('created_at', 'note', 'data')
             ->get();
-        $data['votes'] = $user->votes + $user->temp_votes;
+
+        $userToken = UserToken::whereUserId($user->id)->whereTokenType('ptt')->first();
+        $data['votes'] = $userToken ? $userToken->votes + $userToken->temp_votes : 0;
 
         return $this->apiResponse($data);
     }
