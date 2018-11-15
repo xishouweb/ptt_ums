@@ -230,7 +230,7 @@ class UserController extends Controller
             UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
             $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
 
-            if ($invite_code = $request->get('invite_code')) {
+            if ($invite_code = $request->get('inviteCode')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
                 if (!$inviter) {
                     throw new \Exception('invalid invite code');
@@ -532,7 +532,7 @@ class UserController extends Controller
             ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
             ->groupBy('team_id')
             ->select('team_id')
-            ->get();
+            ->get()->toArray();
 
         if (!$ranks) {
             $res['max_rank_id'] = null;
@@ -548,7 +548,7 @@ class UserController extends Controller
         }
 
         foreach ($ranks as $rank) {
-            $data[$rank->team_id] = DataCache::getZrank($rank->team_id);
+            $data[$rank['team_id']] = DataCache::getZrank($rank['team_id']);
         }
 
         $res['max_rank_id'] = min($data);

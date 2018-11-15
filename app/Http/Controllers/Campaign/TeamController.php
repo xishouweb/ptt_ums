@@ -119,7 +119,7 @@ class TeamController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error($e->getMessage());
-            return $this->error();
+            return $this->error($e->getMessage());
         }
 
 
