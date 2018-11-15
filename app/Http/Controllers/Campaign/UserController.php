@@ -534,6 +534,19 @@ class UserController extends Controller
             ->select('team_id')
             ->get();
 
+        if (!$ranks) {
+            $res['max_rank_id'] = null;
+
+            $res['has_rent'] =  0;
+
+            $res['credit'] = 0;
+
+            $res['income'] = 100;
+            $res['next_income'] = 1000;
+            $res['unit'] = 'CNY';
+            return $this->apiResponse($res);
+        }
+
         foreach ($ranks as $rank) {
             $data[$rank->team_id] = DataCache::getZrank($rank->team_id);
         }
