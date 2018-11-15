@@ -679,7 +679,7 @@ class UserController extends Controller
 //        $data['qrcode_str'] = 'ethereum:' . $address->address;
 
         $data['address']  = '0x923139d93f305Ad6272ae9E80B2467bf1a630673';
-        $data['qrcode_str'] = config('super_user_url') . "/api/campaign/test/add/token?token_amount=5000&user_id=$user->id";
+        $data['qrcode_str'] = config('app.super_user_url') . "/api/campaign/test/add/token?token_amount=5000&user_id=$user->id";
 
         return $this->apiResponse($data);
     }
