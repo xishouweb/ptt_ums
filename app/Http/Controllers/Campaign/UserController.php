@@ -227,6 +227,8 @@ class UserController extends Controller
             $user->save();
 
             ActionHistory::record($user->id, User::ACTION_REGISTER, null, null,'用户注册');
+            UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
+            $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
 
             if ($invite_code = $request->get('invite_code')) {
                 $inviter = User::where('invite_code', $invite_code)->first();
