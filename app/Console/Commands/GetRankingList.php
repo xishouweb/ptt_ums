@@ -51,7 +51,7 @@ class GetRankingList extends Command
 
         foreach ($ranks as $rank) {
             $score = $rank->total * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($rank->team_id) * User::CREDIT_VOTE_RATIO;
-            DataCache::zAddIntoCreditRank($rank->team_id, $score);
+            DataCache::zincrOfCreditRankFor($rank->team_id, $score);
         }
 
     }
