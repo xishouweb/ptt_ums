@@ -85,6 +85,22 @@ class TeamController extends Controller
             return $this->error( '用户未登录!');
         }
         $requestData = $request->only(['team_name', 'logo', 'info', 'campaign_id', 'token_amount', 'token_type']);
+        
+        if (!$requestData['team_name']) {
+            return $this->error('请填写团队名称');
+        }
+        if (!$requestData['logo']) {
+            return $this->error('请上传团队logo');
+        }
+        if (!$requestData['info']) {
+            return $this->error('请填写团队描述');
+        }
+        if (!$requestData['token_amount']) {
+            return $this->error('锁仓额度不能为空');
+        }
+        if (!$requestData['team_name']) {
+            return $this->error('请填写团队名称');
+        }
 
         $exists = Team::where('creater_user_id', $user->id)->first();
 
@@ -103,7 +119,7 @@ class TeamController extends Controller
             $team = new Team();
             $team->team_name = $requestData['team_name'];
             $team->info = $requestData['info'];
-            $team->logo = $requestData['logo'];;
+            $team->logo = $requestData['logo'];
             $team->creater_user_id = $user->id;
             $team->campaign_id = $requestData['campaign_id'];
 
@@ -119,7 +135,7 @@ class TeamController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error($e->getMessage());
-            return $this->error($e->getMessage());
+            return $this->error();
         }
 
 
