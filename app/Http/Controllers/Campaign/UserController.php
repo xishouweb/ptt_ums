@@ -8,6 +8,7 @@ use App\Models\DataCache;
 use App\Models\Photo;
 use App\Models\RentRecord;
 use App\Models\Team;
+use App\Models\TeamUser;
 use App\Models\TokenVote;
 use App\Models\UserAddress;
 use App\Models\UserLogin;
@@ -104,6 +105,14 @@ class UserController extends Controller
         $user = auth()->user();
 
         $requestData = $request->only(['nickname', 'avatar']);
+
+        if (!$requestData['nickname']) {
+            return $this->error('请填写昵称!');
+        }
+
+        if (!$requestData['avatar']) {
+            return $this->error('请上传头像!');
+        }
 
         if ($user->update($requestData)) {
             return $this->apiResponse(['nickname' => $user->nickname, 'avatar' => $user->avatar]);
@@ -483,14 +492,16 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $team_ids = TokenVote::whereUserId($user->id)->select(DB::raw('distinct team_id'))->get()->pluck('team_id');
+        $team_ids = TeamUser::whereUserId($user->id)->select(DB::raw('distinct team_id'))->get()->pluck('team_id')->toArray();
+
+        array_push($team_ids, RentRecord::ACTION_SELF_IN . $user->id);
 
         $ranks = TokenVote::whereIn('team_id', $team_ids)
             ->select('team_id', DB::raw("SUM(amount) as total"))
             ->groupBy('team_id')
             ->orderBy('total', 'desc');
 
-        $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], count($team_ids));
+        $data = $this->format_list($ranks);
 
         return $this->apiResponse($data);
     }
