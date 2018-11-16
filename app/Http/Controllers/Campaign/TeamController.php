@@ -135,7 +135,7 @@ class TeamController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error($e->getMessage());
-            return $this->error();
+            return $this->error($e->getMessage());
         }
 
 
@@ -245,7 +245,7 @@ class TeamController extends Controller
             return $this->apiResponse([], '加入成功');
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse([], $e->getMessage(), 1);
+            return $this->error($e->getMessage());
         }
     }
 

@@ -24,7 +24,7 @@ class RentRecord extends Model
 
 
         if ($token_amount > $token->token_amount) {
-            throw new \Exception('token额度不足');
+            throw new \Exception('现有额度不足');
         }
 
         static::create($user->id, $team_id, $token_amount, $token_type, static::ACTION_JOIN_TEAM, $campaign_id);
