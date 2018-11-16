@@ -73,7 +73,7 @@ class TokenTxController extends Controller
 
             RentRecord::create($user->id, RentRecord::ACTION_SELF_IN . $user->id, $amount, $type, RentRecord::ACTION_JOIN_CAMPAIGN, 1);
 
-            DataCache::zAddIntoCreditRank(RentRecord::ACTION_SELF_IN . $user->id, $amount * User::CREDIT_TOKEN_RATIO);
+            DataCache::zincrOfCreditRankFor(RentRecord::ACTION_SELF_IN . $user->id, $amount * User::CREDIT_TOKEN_RATIO);
 
             ActionHistory::record($user->id, User::ACTION_PREPAID, null, $amount, '充值' . $type, ActionHistory::TYPE_TOKEN);
 
