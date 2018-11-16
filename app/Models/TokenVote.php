@@ -51,7 +51,7 @@ class TokenVote extends Model
             $user_id = intval(substr($this->team_id, 8));
 
             if ($user = User::where("id", $user_id)->first()) {
-                $data['team_name'] = $user->nick_name;
+                $data['team_name'] = $user->nickname;
                 $data['logo'] = $user->avatar;
                 $data['type'] = 'personal';
             } else {
