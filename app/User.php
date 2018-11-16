@@ -76,6 +76,7 @@ class User extends Authenticatable
 //        $data['invite_code'] = $this->invite_code;
 //
         $token = $this->user_token('ptt');
+        $data['is_created_team'] = Team::where('creater_user_id', $this->id)->first() ? true : false;
 
         $data['votes'] = $token ? $token->votes + $token->temp_votes : 0;
         $data['token_amount'] = $token ? $token->token_amount : 0;
