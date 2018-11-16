@@ -534,7 +534,12 @@ class UserController extends Controller
             ->select('team_id')
             ->get()->toArray();
 
-        if (!$ranks) {
+        $data = [];
+        foreach ($ranks as $rank) {
+            $data[$rank['team_id']] = DataCache::getZrank($rank['team_id']);
+        }
+
+        if (!$data) {
             $res['max_rank_id'] = null;
 
             $res['has_rent'] =  0;
@@ -545,10 +550,6 @@ class UserController extends Controller
             $res['next_income'] = 1000;
             $res['unit'] = 'CNY';
             return $this->apiResponse($res);
-        }
-
-        foreach ($ranks as $rank) {
-            $data[$rank['team_id']] = DataCache::getZrank($rank['team_id']);
         }
 
         $res['max_rank_id'] = min($data);
