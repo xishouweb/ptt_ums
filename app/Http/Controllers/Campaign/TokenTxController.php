@@ -6,6 +6,7 @@ use App\Models\ActionHistory;
 use App\Models\DataCache;
 use App\Models\RentRecord;
 use App\Models\TokenTransaction;
+use App\Models\TokenVote;
 use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
@@ -72,6 +73,8 @@ class TokenTxController extends Controller
             TokenTransaction::create($data);
 
             RentRecord::create($user->id, RentRecord::ACTION_SELF_IN . $user->id, $amount, $type, RentRecord::ACTION_JOIN_CAMPAIGN, 1);
+
+            TokenVote::record(RentRecord::ACTION_SELF_IN . $user->id, $user->id, 0);
 
             DataCache::zincrOfCreditRankFor(RentRecord::ACTION_SELF_IN . $user->id, $amount * User::CREDIT_TOKEN_RATIO);
 

@@ -127,6 +127,8 @@ class TeamController extends Controller
 
             RentRecord::record($user, $team->id, $requestData['token_amount'], $requestData['token_type'], $requestData['campaign_id']);
 
+            TokenVote::record($team->id, $user->id, 0);
+
             DataCache::zAddIntoCreditRank($team->id, $requestData['token_amount'] * User::CREDIT_TOKEN_RATIO);
 
             DB::commit();
