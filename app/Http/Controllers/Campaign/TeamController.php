@@ -95,7 +95,7 @@ class TeamController extends Controller
         if (!$requestData['info']) {
             return $this->error('请填写团队描述');
         }
-        if (!$requestData['token_amount']) {
+        if (!(float)$requestData['token_amount']) {
             return $this->error('锁仓额度不能为空');
         }
         if (!$requestData['team_name']) {
@@ -211,7 +211,7 @@ class TeamController extends Controller
 
         $token_type =$request->get('token_type');
         $campaign_id = $request->get('campaign_id');
-        $token_amount = $request->get('token_amount');
+        $token_amount = (float)$request->get('token_amount');
 
         if (!$token_type || !$campaign_id || !$token_amount) {
             return $this->error('参数错误');
