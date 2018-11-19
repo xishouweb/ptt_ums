@@ -27,36 +27,36 @@ class TeamController extends Controller
             return $this->error('参数错误');
         }
 
-        $teams = Team::where('team_name', 'like', '%' . $team_name .'%')
-            ->skip(($page - 1) * $page_size)
-            ->take($page_size)
-            ->get();
+        $team_ids = Team::where('team_name', 'like', '%' . $team_name .'%')->get()->pluck('id')->toArray();
 
-        $count = Team::where('team_name', 'like', '%' . $team_name .'%')->count();
+        $user_ids = User::where('nickname', 'like'. "%$team_name%")->get()->pluck('id')->toArray();
 
-        if (!$teams) {
+        if (!$team_ids && !$user_ids) {
             return $this->apiResponse();
         }
 
-        $teams =  $this->format_list($teams);
+        array_map(function($user_id) use (&$team_ids) {
+            $team_ids[] = RentRecord::ACTION_SELF_IN . $user_id;
+        }, $user_ids);
 
-        foreach ($teams as &$team) {
-            $team['token_amount'] =  RentRecord::where('campaign_id', $campaign_id)
-                ->where('token_type', $token_type)
-                ->where('team_id', $team['team_id'])
-                ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
-                ->sum('token_amount') ?? 0;
+        $teams = RentRecord::where('campaign_id', $campaign_id)
+            ->where('token_type', $token_type)
+            ->whereIn('team_id', $team_ids)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
+            ->groupBy('team_id')
+            ->select('team_id', \DB::raw("SUM(token_amount) as total"))
+            ->orderBy('total', 'desc')
+            ->get();
 
-            $team['ranking_id'] = DataCache::getZrank($team['team_id']);
+        $teams = $this->format_list($teams);
+        $rank_ids = array_column($teams, 'ranking_id');
 
-            $team['credit'] =  $team['token_amount'] * User::CREDIT_TOKEN_RATIO + TokenVote::totalVoteOf($team['team_id']) * User::CREDIT_VOTE_RATIO;
-        }
+        array_multisort($rank_ids, SORT_ASC, $teams);
 
-        $data['data'] = $teams;
+        $data['data'] = array_slice($teams, ($page - 1 ) * $page_size, $page_size);
         $data['page'] = $page;
-        $data['page_size'] =$page_size;
-        $data['total_size'] = $count;
-
+        $data['page_size'] = $page_size;
+        $data['total_size'] = count($teams);
 
         return $this->apiResponse($data);
     }
