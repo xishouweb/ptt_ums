@@ -499,7 +499,8 @@ class UserController extends Controller
         $ranks = TokenVote::whereIn('team_id', $team_ids)
             ->select('team_id', DB::raw("SUM(amount) as total"))
             ->groupBy('team_id')
-            ->orderBy('total', 'desc');
+            ->orderBy('total', 'desc')
+            ->get();
 
         $data = $this->format_list($ranks);
 
