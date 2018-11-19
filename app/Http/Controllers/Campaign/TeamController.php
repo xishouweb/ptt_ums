@@ -316,8 +316,14 @@ class TeamController extends Controller
 
             $ranks = $ranks->whereIn('team_id', $ids);
 
-            $id_str =  implode(",",$ids);
-            $query .= " where team_id in ($id_str)";
+            if ($ids) {
+                $id_str =  implode(",",$ids);
+                $query .= " where team_id in ($id_str)";
+
+            } else {
+                $query .= " where team_id = 0";
+
+            }
         }
 
         $query .= " GROUP BY team_id order by total DESC)";
