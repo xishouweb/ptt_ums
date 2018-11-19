@@ -295,7 +295,7 @@ class UserController extends Controller
             return $this->error('请选择正确的团队');
         }
 
-        if (!$amount = $request->get('amount', 0)) {
+        if (!$amount = (float)$request->get('amount', 0)) {
             return $this->error('请填写正确的票数');
         }
 
