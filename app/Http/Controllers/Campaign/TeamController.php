@@ -316,10 +316,11 @@ class TeamController extends Controller
 
             $ranks = $ranks->whereIn('team_id', $ids);
 
-            $query .= "where team_id in $ids";
+            $id_str =  implode(",",$ids);
+            $query .= " where team_id in ($id_str)";
         }
 
-        $query .= "GROUP BY team_id order by total DESC)";
+        $query .= " GROUP BY team_id order by total DESC)";
         $count = DB::select("select count(1) as total_size from $query as vote_rank ");
 
 
