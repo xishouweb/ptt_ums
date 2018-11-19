@@ -87,6 +87,7 @@ Route::prefix('campaign')->group(function() {
             //to do campaign_id, token_type 放header里
             Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
             Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{token_type}', 'UserController@myVoteRank');
+
         });
 
     });

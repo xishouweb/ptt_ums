@@ -307,6 +307,11 @@ class TeamController extends Controller
         $ranks = TokenVote::groupBy('team_id')
             ->select('team_id', DB::raw("SUM(amount) as total"))
             ->orderBy('total', 'desc');
+        if ($team_name = $request->get('team_name')) {
+            $ids = Team::where('team_name', 'like', $team_name)->get()->pluck('id')->toArray();
+            
+            $ranks = $ranks->whereIn('team_id', $ids);
+        }
 
         $count = DB::select("select count(1) as total_size from (select team_id, sum(amount) as total from token_votes GROUP BY team_id order by total DESC ) as vote_rank ");
 
