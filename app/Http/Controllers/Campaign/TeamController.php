@@ -307,13 +307,21 @@ class TeamController extends Controller
         $ranks = TokenVote::groupBy('team_id')
             ->select('team_id', DB::raw("SUM(amount) as total"))
             ->orderBy('total', 'desc');
-        if ($team_name = $request->get('team_name')) {
-            $ids = Team::where('team_name', 'like', $team_name)->get()->pluck('id')->toArray();
-            
+
+        $query = "(select team_id, sum(amount) as total from token_votes";
+
+        $team_name = $request->get('team_name');
+        if ($team_name) {
+            $ids = Team::where('team_name', 'like', "%$team_name%")->get()->pluck('id')->toArray();
+
             $ranks = $ranks->whereIn('team_id', $ids);
+
+            $query .= "where team_id in $ids";
         }
 
-        $count = DB::select("select count(1) as total_size from (select team_id, sum(amount) as total from token_votes GROUP BY team_id order by total DESC ) as vote_rank ");
+        $query .= "GROUP BY team_id order by total DESC)";
+        $count = DB::select("select count(1) as total_size from $query as vote_rank ");
+
 
         $data = $this->paginate($ranks, ['campaign_id' => $campaign_id, 'token_type' => $token_type], $count[0]->total_size ?? 0);
 
