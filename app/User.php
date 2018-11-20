@@ -209,4 +209,22 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\UserAddress');
     }
 
+    public function checkLogin($request)
+    {
+        if (!$this->checkTodayLogin()) {
+
+            $token = UserToken::where('user_id', $this->id)->where('token_type', 'ptt')->first();
+            $token->temp_votes = static::LOGIN_VOTES;
+            $token->save();
+
+            ActionHistory::record($this->id, 'login', null, User::LOGIN_VOTES,'登录赠送', ActionHistory::TYPE_VOTE);
+
+            UserLogin::record($this, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
+
+            return false;
+        }
+
+        return true;
+    }
+
 }

@@ -67,7 +67,6 @@ Route::prefix('campaign')->group(function() {
         Route::group(['middleware' => 'auth:api'], function() {
             Route::post('photo/upload', 'UserController@photoUpload');
 
-            Route::get('account/detail', 'UserController@detail');
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
             Route::post('team', 'TeamController@store');
             Route::post('team/join/{team_id}', 'TeamController@join');
@@ -85,8 +84,13 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/deposit/address', 'UserController@getDepositAddress');
 
             //to do campaign_id, token_type 放header里
-            Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
-            Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{token_type}', 'UserController@myVoteRank');
+
+            Route::group(['middleware' => 'checklogin'], function() {
+                Route::get('account/detail', 'UserController@detail');
+                Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
+                Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{token_type}', 'UserController@myVoteRank');
+            });
+
 
         });
 
