@@ -52,6 +52,4 @@ $app->singleton(
 |
 */
 
-$app->register(Overtrue\LaravelWeChat\ServiceProvider::class);
-
 return $app;

@@ -49,9 +49,9 @@ Route::prefix('proton')->group(function() {
 Route::prefix('campaign')->group(function() {
     Route::get('captcha', 'CaptchaController@send');
 
-    Route::any('/wechat', 'WeChatController@serve');
-
     Route::namespace('Campaign')->group(function () {
+
+        Route::any('wechat', 'WechatController@serve');
 
         Route::get('test/add/token', 'TokenTxController@create');
 
