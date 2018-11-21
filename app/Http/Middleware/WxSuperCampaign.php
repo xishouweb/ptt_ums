@@ -23,7 +23,8 @@ class WxSuperCampaign
         if (!$wechat) {
 
             $auth = $this->__get_auth();
-            $user = $auth->authorize(null, 'snsapi_userinfo');
+            $user = $auth->oauth->scopes(['snsapi_userinfo'])
+                ->redirect();
 
             if ($user['unionid']) {
                 $wechat = WechatUser::createOrUpdate($user, 'unionid', 'yiqi', request()->get('user_id', null));
@@ -50,7 +51,7 @@ class WxSuperCampaign
 
     private function __get_auth()
     {
-//        return new Au(config('wechat.app_id_yiqi'), config('wechat.secret_yiqi'));
+
         return Factory::officialAccount();
     }
 }
