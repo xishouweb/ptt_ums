@@ -43,31 +43,49 @@ class TokenVote extends Model
 
     public function format($source)
     {
-        $data['team_id'] = $this->team_id;
-        $data['total'] = $this->total;
-        $data['ranking_id'] = self::ranking($this->team_id)['ranking_id'];
+        $data['votes'] = $this->total;
+        $data['vote_ranking_id'] = self::ranking($this->team_id)['ranking_id'];
 
         if (substr($this->team_id, 0, 8) == RentRecord::ACTION_SELF_IN) {
             $user_id = intval(substr($this->team_id, 8));
 
             if ($user = User::where("id", $user_id)->first()) {
-                $data['team_name'] = $user->nickname;
-                $data['logo'] = $user->avatar;
-                $data['type'] = 'personal';
+
+                $team['team_id'] = $this->team_id;
+                $team['team_name'] = $user->nickname;
+                $team['logo'] = $user->avatar;
+                $team['info'] = null;
+                $team['type'] = 'personal';
+                $team['count'] = 1;
             } else {
                 throw new \Exception('未找到该用户');
             }
 
         } else {
-            $team = Team::find($this->team_id);
-            $data['team_name'] =  $team->team_name;
-            $data['logo'] = $team->logo;
-            $data['type'] = 'team';
+            $team = Team::find($this->team_id)->format();
+            $data = array_merge($data, $team);
         }
+
+        $data['credit'] = $this->getTeamCredit();
+        $data['ranking_id'] = DataCache::getZrank($this->team_id);
+        $data['token_amount'] = $this->getTokenAmount($this->team_id);
 
         return $data;
     }
 
+    public function getTeamCredit()
+    {
+        return $this->getTokenAmount($this->team_id) * User::CREDIT_TOKEN_RATIO + $this->total  * User::CREDIT_VOTE_RATIO;
+    }
+
+    public function getTokenAmount($team_id, $token_type = 'ptt', $campaign_id = 1)
+    {
+        return RentRecord::where('team_id', $team_id)
+            ->where('token_type', $token_type)
+            ->whereIn('action', [RentRecord::ACTION_JOIN_CAMPAIGN, RentRecord::ACTION_JOIN_TEAM, RentRecord::ACTION_DEDUCTION])
+            ->where('campaign_id', $campaign_id)
+            ->sum('token_amount') ?? 0;
+    }
     public static function ranking($team_id)
     {
         $ranks = TokenVote::groupBy('team_id')
