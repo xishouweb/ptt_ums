@@ -514,7 +514,7 @@ class UserController extends Controller
         $page_size = $request->get('page_size', 10);
 
         $records = ActionHistory::whereUserId($user->id)
-            ->whereIn('action', [User::ACTION_JOIN_TEAM, User::ACTION_PREPAID])
+            ->whereIn('action', [User::ACTION_INCR_TOKEN, User::ACTION_PREPAID])
             ->select('created_at', 'note', 'team_id', 'data')
             ->orderBy('id', 'desc')
             ->skip(($page - 1) * $page_size)
@@ -525,7 +525,6 @@ class UserController extends Controller
             if ($record->team_id) {
                 $team = Team::find($record->team_id);
 
-                $record->data = -$record->data;
                 $record->team_name = $team->team_name;
                 $record->team_logo = $team->logo;
             }

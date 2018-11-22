@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use EasyWeChat\Factory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -11,7 +12,8 @@ class WechatController extends Controller
     {
         \Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
 
-        $app = app('wechat.official_account');
+//        $app = app('wechat.official_account');
+        $app = Factory::officialAccount(config('wechat.official_account.default'));
         $app->server->push(function($message){
             return "欢迎关注 overtrue！";
         });

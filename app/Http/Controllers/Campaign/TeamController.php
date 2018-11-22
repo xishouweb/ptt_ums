@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
+    public function info()
+    {
+        return 'zhang piao liang';
+    }
     public function index(Request $request)
     {
         $team_name = $request->get('team_name');
@@ -241,7 +245,7 @@ class TeamController extends Controller
             DataCache::zincrOfCreditRankFor($team_id, $token_amount * User::CREDIT_TOKEN_RATIO);
             DataCache::zincrOfCreditRankFor('self_in_' . $user->id, -($token_amount * User::CREDIT_TOKEN_RATIO));
 
-            ActionHistory::record($user->id, User::ACTION_INCR_TOKEN, $team_id, $token_amount, '往战队增加token', ActionHistory::TYPE_TOKEN);
+            ActionHistory::record($user->id, User::ACTION_INCR_TOKEN, $team_id, -$token_amount, '往战队增加' . $token_type, ActionHistory::TYPE_TOKEN);
 
             DB::commit();
             return $this->apiResponse([], '加入成功');

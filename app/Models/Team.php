@@ -13,7 +13,7 @@ class Team extends BaseModel implements FormatInterface
         $data['info'] = $this->info;
         $data['type'] = 'team';
         $count = TeamUser::whereTeamId($this->id)->count();
-        $data['count'] = $count ? $count + 1 : 1;
+        $data['count'] = $count ?? 1;
 
         return $data;
     }

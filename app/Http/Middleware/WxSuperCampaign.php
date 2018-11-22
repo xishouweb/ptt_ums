@@ -11,8 +11,8 @@ class WxSuperCampaign
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -22,36 +22,32 @@ class WxSuperCampaign
 
         if (!$wechat) {
 
-            $auth = $this->__get_auth();
+            $auth = Factory::officialAccount(config('wechat.official_account.default'));
             $user = $auth->oauth->scopes(['snsapi_userinfo'])
                 ->redirect();
 
-            if ($user['unionid']) {
-                $wechat = WechatUser::createOrUpdate($user, 'unionid', 'yiqi', request()->get('user_id', null));
-                Session::put('wechatUser', $wechat);
-            } else {
-                $openid        = $user['openid'];
-                $wechat_openid = WechatOpenid::where('openid', $openid)->first();
-                if (!$wechat_openid) {
-                    $user = $auth->redirect();
-                    Session::put('wechatUser', $user->all());
-                }
-
-                $wechat = WechatUser::where('unionid', $wechat_openid->unionid)->first();
-                if ($wechat) {
-                    Session::put('wechatUser', $wechat);
-                } else {
-                    $user = $auth->redirect();
-                    Session::put('wechatUser', $user->all());
-                }
-            }
+            \Log::info('user', [$user]);
+//            if ($user['unionid']) {
+//                $wechat = WechatUser::createOrUpdate($user, 'unionid', 'yiqi', request()->get('user_id', null));
+//                Session::put('wechatUser', $wechat);
+//            } else {
+//                $openid        = $user['openid'];
+//                $wechat_openid = WechatOpenid::where('openid', $openid)->first();
+//                if (!$wechat_openid) {
+//                    $user = $auth->redirect();
+//                    Session::put('wechatUser', $user->all());
+//                }
+//
+//                $wechat = WechatUser::where('unionid', $wechat_openid->unionid)->first();
+//                if ($wechat) {
+//                    Session::put('wechatUser', $wechat);
+//                } else {
+//                    $user = $auth->redirect();
+//                    Session::put('wechatUser', $user->all());
+//                }
+//            }
+//        }
+            return $next($request);
         }
-        return $next($request);
-    }
-
-    private function __get_auth()
-    {
-
-        return Factory::officialAccount();
     }
 }

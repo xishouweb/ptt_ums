@@ -51,12 +51,12 @@ class TokenVote extends Model
 
             if ($user = User::where("id", $user_id)->first()) {
 
-                $team['team_id'] = $this->team_id;
-                $team['team_name'] = $user->nickname;
-                $team['logo'] = $user->avatar;
-                $team['info'] = null;
-                $team['type'] = 'personal';
-                $team['count'] = 1;
+                $data['team_id'] = $this->team_id;
+                $data['team_name'] = $user->nickname;
+                $data['logo'] = $user->avatar;
+                $data['info'] = null;
+                $data['type'] = 'personal';
+                $data['count'] = 1;
             } else {
                 throw new \Exception('未找到该用户');
             }

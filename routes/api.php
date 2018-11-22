@@ -51,8 +51,6 @@ Route::prefix('campaign')->group(function() {
 
     Route::namespace('Campaign')->group(function () {
 
-        Route::any('wechat', 'WechatController@serve');
-
         Route::get('test/add/token', 'TokenTxController@create');
 
         Route::post('user/login', 'UserController@login');
@@ -93,8 +91,11 @@ Route::prefix('campaign')->group(function() {
                 Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
                 Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{token_type}', 'UserController@myVoteRank');
             });
+        });
 
-
+        Route::any('wechat', 'WechatController@serve');
+        Route::middleware('wx_super_campaign', 'wechat.oauth')->group(function(){
+            Route::get('wechat/info', 'TeamController@info');
         });
 
     });
