@@ -54,6 +54,7 @@ class User extends Authenticatable
     const ACTION_JOIN_TEAM = 'join_team';
     const ACTION_INCR_TOKEN = 'incr_token';
     const ACTION_PREPAID = 'prepaid_token';
+    const ACTION_CREATE_TEAM = 'create_team';
 
     const SRC_SUPER_USER = 'super_user'; //超级广告主
 

@@ -89,7 +89,7 @@ class TeamController extends Controller
             return $this->error( '用户未登录!');
         }
         $requestData = $request->only(['team_name', 'logo', 'info', 'campaign_id', 'token_amount', 'token_type']);
-        
+
         if (!$requestData['team_name']) {
             return $this->error('请填写团队名称');
         }
@@ -132,7 +132,8 @@ class TeamController extends Controller
             RentRecord::record($user, $team->id, $requestData['token_amount'], $requestData['token_type'], $requestData['campaign_id']);
 
             TokenVote::record($team->id, $user->id, 0);
-
+            TeamUser::record($team->id, $user->id, 1);
+            ActionHistory::record($user->id, User::ACTION_CREATE_TEAM, $team_id, null, '创建战队');
             DataCache::zAddIntoCreditRank($team->id, $requestData['token_amount'] * User::CREDIT_TOKEN_RATIO);
 
             DB::commit();
