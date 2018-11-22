@@ -515,7 +515,7 @@ class UserController extends Controller
 
         $records = ActionHistory::whereUserId($user->id)
             ->whereIn('action', [User::ACTION_INCR_TOKEN, User::ACTION_PREPAID])
-            ->select('created_at', 'note', 'team_id', 'data')
+            ->select('created_at', 'note', 'team_id', 'data', 'action')
             ->orderBy('id', 'desc')
             ->skip(($page - 1) * $page_size)
             ->take($page_size)
@@ -528,6 +528,8 @@ class UserController extends Controller
                 $record->team_name = $team->team_name;
                 $record->team_logo = $team->logo;
             }
+
+            $record->data *= User::CREDIT_TOKEN_RATIO;
         }
 
         return $this->apiResponse($records);
