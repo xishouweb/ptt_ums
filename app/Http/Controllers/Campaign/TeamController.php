@@ -133,7 +133,7 @@ class TeamController extends Controller
 
             TokenVote::record($team->id, $user->id, 0);
             TeamUser::record($team->id, $user->id, 1);
-            ActionHistory::record($user->id, User::ACTION_CREATE_TEAM, $team_id, null, '创建战队');
+            ActionHistory::record($user->id, User::ACTION_CREATE_TEAM, $team->id, null, '创建战队');
             DataCache::zAddIntoCreditRank($team->id, $requestData['token_amount'] * User::CREDIT_TOKEN_RATIO);
 
             DB::commit();
