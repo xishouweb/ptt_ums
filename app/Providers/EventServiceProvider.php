@@ -22,7 +22,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Overtrue\LaravelWeChat\Events\WeChatUserAuthorized' => [
             'App\Listeners\WeChatUserAuthorizedListener',
-        ]
+        ],
     ];
 
     /**
