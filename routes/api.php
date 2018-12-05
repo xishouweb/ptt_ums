@@ -64,6 +64,7 @@ Route::prefix('campaign')->group(function() {
         Route::get('team', 'TeamController@index');
         Route::get('team/{team_id}', 'TeamController@show');
         Route::get('vote/rank', 'TeamController@voteRank');
+        Route::get('vote/{id}', 'TeamController@vote');
 
         Route::group(['middleware' => 'auth:api'], function() {
             Route::post('photo/upload', 'UserController@photoUpload');

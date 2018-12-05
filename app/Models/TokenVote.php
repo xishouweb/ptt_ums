@@ -41,7 +41,7 @@ class TokenVote extends Model
         return $vote->sum('amount') ?? 0;
     }
 
-    public function format($source)
+    public function format()
     {
         $data['votes'] = $this->total;
         $data['vote_ranking_id'] = self::ranking($this->team_id)['ranking_id'];

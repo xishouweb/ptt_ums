@@ -18,11 +18,13 @@ class WxSuperCampaign
     public function handle($request, Closure $next)
     {
 
-        $session = Session::get('wechat.oauth_user.default');
+        $user = Session::get('wechat.oauth_user.default');
 
-        if ($session) {
-            \Log::info('session = ', [$session]);
+        if ($user) {
+            \Log::info('session = ', [$user]);
         }
+
+        dd();
 
 
         return $next($request);

@@ -340,4 +340,19 @@ class TeamController extends Controller
         return $this->apiResponse($data);
     }
 
+    public function vote($id)
+    {
+        $vote = TokenVote::whereTeamId($id)
+            ->select('team_id', DB::raw("SUM(amount) as total"))
+            ->groupBy('team_id')
+            ->first();
+
+        if (!$vote) {
+            return $this->error('未找到该团队信息');
+        }
+
+        return $this->apiResponse($vote->format());
+
+    }
+
 }
