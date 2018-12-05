@@ -24,9 +24,6 @@ class WxSuperCampaign
             \Log::info('session = ', [$user]);
         }
 
-        dd();
-
-
         return $next($request);
     }
 }
