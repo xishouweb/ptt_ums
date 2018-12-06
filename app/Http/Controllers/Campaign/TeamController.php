@@ -15,10 +15,6 @@ use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
-    public function info()
-    {
-        return 'zhang piao liang';
-    }
     public function index(Request $request)
     {
         $team_name = $request->get('team_name');

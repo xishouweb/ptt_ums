@@ -84,6 +84,7 @@ Route::prefix('campaign')->group(function() {
 
             Route::get('user/token/detail', 'UserController@tokenDetail');
             Route::get('user/deposit/address', 'UserController@getDepositAddress');
+            Route::get('user/share/{tema_id}/type/{type}', 'UserController@share');
 
             //to do campaign_id, token_type 放header里
 
@@ -95,8 +96,8 @@ Route::prefix('campaign')->group(function() {
         });
 
         Route::any('wechat', 'WechatController@serve');
-        Route::middleware('wx_super_campaign', 'wechat.oauth')->group(function(){
-            Route::get('wechat/info', 'TeamController@info');
+        Route::middleware('wechat.oauth')->group(function(){
+            Route::get('wechat/auth', 'UserController@wechatAuth');
         });
 
     });

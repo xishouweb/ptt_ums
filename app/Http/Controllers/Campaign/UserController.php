@@ -712,4 +712,21 @@ class UserController extends Controller
 
         return $this->apiResponse($data);
     }
+
+    public function share($team_id, $type)
+    {
+        $user = auth()->user();
+
+        ActionHistory::record($user->id, User::ACTION_SHARE, $team_id, null, '分享团队信息', $type);
+
+        return config('app.super_user_url') . '/api/campaign/wechat/auth';
+    }
+
+    public function wechatAuth(Request $request)
+    {
+        $uri = $request->get('redirect_uri');
+
+        return redirect()->to(urldecode($uri));
+    }
+
 }
