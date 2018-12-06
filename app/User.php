@@ -10,8 +10,10 @@ use App\Models\TeamUser;
 use App\Models\UserAddress;
 use App\Models\UserLogin;
 use App\Models\UserToken;
+use App\Models\WechatOpenid;
 use App\Services\QrCode;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -227,6 +229,20 @@ class User extends Authenticatable
         }
 
         return true;
+    }
+
+    protected function bindWechatForSuperCampaign()
+    {
+        $wechat = Session::get('wechat.oauth_user.default');
+
+        if ($wechat) {
+            $openid = WechatOpenid::whereOpenid($openid)->whereChannel('super_campaign')->first();
+
+            if ($openid) {
+                $openid->user_id = $this->id;
+                $openid->save();
+            }
+        }
     }
 
 }

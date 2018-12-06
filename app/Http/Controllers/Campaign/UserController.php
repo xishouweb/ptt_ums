@@ -149,6 +149,8 @@ class UserController extends Controller
                 $user->last_login = date('Y-m-d H:i:s');
                 $user->save();
 
+                $user->bindWechatForSuperCampaign();
+
                 DB::commit();
                 return $this->apiResponse($data, '登录成功', 200);
             } catch (\Exception $e) {
@@ -190,6 +192,8 @@ class UserController extends Controller
 
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();
+
+            $user->bindWechatForSuperCampaign();
 
             $data = $user->baseInfo();
 
@@ -234,6 +238,8 @@ class UserController extends Controller
             $user->invite_code = User::getInviteCode();
 
             $user->save();
+
+            $user->bindWechatForSuperCampaign();
 
             ActionHistory::record($user->id, User::ACTION_REGISTER, null, null,'用户注册');
             UserLogin::record($user, $request->getClientIp(), User::SRC_SUPER_USER, $request->header('user_agent'));
