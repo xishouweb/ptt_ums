@@ -22,7 +22,7 @@ class TokenTxController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
