@@ -32,20 +32,43 @@ class WeChatUserAuthorizedListener
 
         if ($event->isNewSession) {
             $user = $event->original;
-            WechatOpenid::firstOrCreate($user->openid, $user->unionid, 'super_campaign');
+            WechatOpenid::firstOrCreate([
+                'openid' => $user['openid'],
+                'unionid' => $user['unionid'],
+                'channel' => 'super_campaign'
+            ]);
 
-            WechatUsers::updateOrCreate(
-                [$user->openid, $user->unionid,],
-                [
-                    'nickname' => $user->nickname,
-                    'headimgurl' => $user->headimgurl,
-                    'sex' => $user->sex,
-                    'city' => $user->city,
-                    'country' => $user->country,
-                    'province' => $user->province,
-                    'language' => $user->language,
-                ]
-            );
+            if (isset($user['unionid'])) {
+                WechatUsers::updateOrCreate(
+                    [
+                        'openid' => $user['openid'],
+                        'unionid' => $user['unionid']
+                    ],
+                    [
+                        'nickname' => $user['nickname'],
+                        'headimgurl' => $user['headimgurl'],
+                        'sex' => $user['sex'],
+                        'city' => $user['city'],
+                        'country' => $user['country'],
+                        'province' => $user['province'],
+                        'language' => $user['language'],
+                    ]
+                );
+            } else {
+                WechatUsers::create(
+                    [
+                        'openid' => $user['openid'],
+                        'nickname' => $user['nickname'],
+                        'headimgurl' => $user['headimgurl'],
+                        'sex' => $user['sex'],
+                        'city' => $user['city'],
+                        'country' => $user['country'],
+                        'province' => $user['province'],
+                        'language' => $user['language'],
+                    ]
+                );
+            }
+
 
         }
     }
