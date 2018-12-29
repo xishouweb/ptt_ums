@@ -38,6 +38,13 @@ Route::prefix('app')->group(function () {
     });
 });
 
+Route::prefix('mark_six')->group(function () {
+    Route::namespace('MarkSix')->group(function (Router $router) {
+        $router->get('/', 'MarkSixController@index');
+        $router->post('/', 'MarkSixController@store');
+    });
+});
+
 Route::prefix('proton')->group(function() {
     Route::namespace('Proton')->group(function () {
        Route::resource('news', 'NewController');
