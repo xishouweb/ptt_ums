@@ -21,17 +21,31 @@ class DataCache extends Model
         return json_decode(Redis::get($key), true);
     }
 
-    public static function getSymbolPrice($symbol)
+    public static function getPriceOf($symbol)
     {
         $key = 'coinmarketcap_price_of_' . $symbol;
 
         return json_decode(Redis::get($key), true);
     }
 
-    public static function setSymbolPrice($symbol, $data)
+    public static function setPriceOf($symbol, $data)
     {
         $key = 'coinmarketcap_price_of_' . $symbol;
 
-        Redis::set($key, json_encode($data), 'EX',1800);
+        Redis::set($key, json_encode($data), 'EX',900);
+    }
+
+    public static function getSymbolsPrice()
+    {
+        $key = 'coinmarketcap_price_of_symbols';
+
+        return json_decode(Redis::get($key), true);
+    }
+
+    public static function setSymbolsPrice($data)
+    {
+        $key = 'coinmarketcap_price_of_symbols';
+
+        Redis::set($key, json_encode($data), 'EX', 900);
     }
 }

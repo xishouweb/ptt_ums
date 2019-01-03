@@ -160,14 +160,18 @@ class ToolController extends Controller
         return response()->json($data);
     }
 
-    public function getCryptoCurrencyPrice($symbol)
+    public function getCryptoCurrencyPrice()
     {
-        $symbol = strtoupper($symbol);
-        $priceData = DataCache::getSymbolPrice($symbol);
+        $symbols = ["ETH", "LTC", "BNB", "NEO", "QTUM", "EOS", "SNT", "BNT", "BCC", "GAS", "BTC", "OAX", "DNT", "MCO", "ICN", "WTC", "LRC", "OMG", "ZRX", "STRAT", "SNGLS", "KNC", "FUN", "SNM", "LINK", "XVG", "SALT", "MDA", "MTL", "SUB", "ETC", "MTH", "ENG", "ZEC", "AST", "DASH", "BTG", "EVX", "REQ", "VIB", "TRX", "POWR", "ARK", "XRP", "MOD", "ENJ", "STORJ", "VEN", "KMD", "NULS", "RCN", "RDN", "XMR", "DLT", "AMB", "BAT", "BCPT", "ARN", "GVT", "CDT", "GXS", "POE", "QSP", "BTS", "XZC", "LSK", "TNT", "FUEL", "MANA", "BCD", "DGD", "ADX", "ADA", "PPT", "CMT", "XLM", "CND", "LEND", "WABI", "TNB", "WAVES", "GTO", "ICX", "OST", "ELF", "AION", "NEBL", "BRD", "EDO", "WINGS", "NAV", "LUN", "TRIG", "APPC", "VIBE", "RLC", "INS", "PIVX", "IOST", "CHAT", "STEEM", "NANO", "VIA", "BLZ", "AE", "NCASH", "POA", "ZIL", "ONT", "STORM", "XEM", "WAN", "WPR", "QLC", "SYS", "GRS", "CLOAK", "GNT", "LOOM", "BCN", "REP", "TUSD", "ZEN", "SKY", "CVC", "THETA", "IOTX", "QKC", "AGI", "NXS", "DATA", "SC", "NPXS", "KEY", "NAS", "MFT", "DENT", "ARDR", "HOT", "VET", "DOCK", "POLY", "PHX", "HC", "GO", "PAX", "RVN", "DCR", "USDC", "MITH", "BCHABC", "REN",
+        ];
+
+
+        $priceData = DataCache::getSymbolsPrice();
 
         if (!$priceData) {
             $apiUrl = config('app.coinmarketcap_api_url');
 
+            $symbolStr = implode(',', $symbols);
             $client = new Client();
 
             $headers = [
@@ -176,25 +180,23 @@ class ToolController extends Controller
                 'gzip' => true,
             ];
             try {
-                $res = $client->request('GET', $apiUrl . '?symbol=' . $symbol, ['headers' => $headers]);
+                $res = $client->request('GET', $apiUrl . '?symbol=' . $symbolStr, ['headers' => $headers]);
                 $resData  = json_decode((string) $res->getBody());
 
                 if ($resData) {
                     $priceData = $resData->data;
-                    DataCache::setSymbolPrice($symbol, $priceData);
+                    DataCache::setSymbolsPrice($priceData);
                 }
 
                 return $this->_success_json($priceData);
             } catch (\Exception $e) {
 
-                \Log::error('coinmarketcap price get failed  symbol:' . $symbol);
+                \Log::error('coinmarketcap price get failed');
                 \Log::error($e->getMessage());
                 return $this->_bad_json('not found data of the symbol');
             }
 
         }
         return $this->_success_json($priceData);
-
-
     }
 }
