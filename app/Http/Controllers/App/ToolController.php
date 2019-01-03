@@ -12,6 +12,7 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\Contract;
+use App\Models\DataCache;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -157,5 +158,32 @@ class ToolController extends Controller
             $data = config('setting.android_latest_version');
         }
         return response()->json($data);
+    }
+
+    public function getCryptoCurrencyPrice($symbol)
+    {
+        $priceData = DataCache::getSymbolPrice($symbol);
+
+        if (!$priceData) {
+            $apiUrl = config('coinmarketcap_api_url');
+
+            $client = new Client();
+
+            $headers = [
+                'X-CMC_PRO_API_KEY' => config('coinmarketcap_api_key'),
+                'json' => true,
+                'gzip' => true,
+            ];
+
+            $res = $client->request('GET', $apiUrl . '?symbol=' . $symbol, ['headers' => $headers]);
+            $resData  = json_decode((string) $res->getBody());
+
+            if ($resData) {
+                $priceData = $resData->symbol;
+                DataCache::setSymbolPrice($symbol, $priceData);
+            }
+        }
+
+        return $this->_success_json($priceData);
     }
 }
