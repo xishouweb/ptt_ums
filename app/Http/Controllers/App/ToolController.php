@@ -162,6 +162,7 @@ class ToolController extends Controller
 
     public function getCryptoCurrencyPrice($symbol)
     {
+        $symbol = strtoupper($symbol);
         $priceData = DataCache::getSymbolPrice($symbol);
 
         if (!$priceData) {
@@ -192,6 +193,7 @@ class ToolController extends Controller
             }
 
         }
+        return $this->_success_json($priceData);
 
 
     }
