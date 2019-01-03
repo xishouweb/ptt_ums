@@ -231,7 +231,7 @@ class User extends Authenticatable
         return true;
     }
 
-    protected function bindWechatForSuperCampaign()
+    public function bindWechatForSuperCampaign()
     {
         $wechat = Session::get('wechat.oauth_user.default');
 
