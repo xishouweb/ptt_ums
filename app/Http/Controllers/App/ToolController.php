@@ -162,7 +162,7 @@ class ToolController extends Controller
 
     public function getCryptoCurrencyPrice(Request $request)
     {
-        $requestSymbols = $request->get('symbol');
+        $requestSymbols = $request->get('symbols');
 
         $requestCurrency = $request->get('currency');
 
