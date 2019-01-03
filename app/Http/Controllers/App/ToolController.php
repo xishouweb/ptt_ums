@@ -165,25 +165,34 @@ class ToolController extends Controller
         $priceData = DataCache::getSymbolPrice($symbol);
 
         if (!$priceData) {
-            $apiUrl = config('coinmarketcap_api_url');
+            $apiUrl = config('app.coinmarketcap_api_url');
 
             $client = new Client();
 
             $headers = [
-                'X-CMC_PRO_API_KEY' => config('coinmarketcap_api_key'),
+                'X-CMC_PRO_API_KEY' => config('app.coinmarketcap_api_key'),
                 'json' => true,
                 'gzip' => true,
             ];
+            try {
+                $res = $client->request('GET', $apiUrl . '?symbol=' . $symbol, ['headers' => $headers]);
+                $resData  = json_decode((string) $res->getBody());
 
-            $res = $client->request('GET', $apiUrl . '?symbol=' . $symbol, ['headers' => $headers]);
-            $resData  = json_decode((string) $res->getBody());
+                if ($resData) {
+                    $priceData = $resData->data;
+                    DataCache::setSymbolPrice($symbol, $priceData);
+                }
 
-            if ($resData) {
-                $priceData = $resData->symbol;
-                DataCache::setSymbolPrice($symbol, $priceData);
+                return $this->_success_json($priceData);
+            } catch (\Exception $e) {
+
+                \Log::error('coinmarketcap price get failed  symbol:' . $symbol);
+                \Log::error($e->getMessage());
+                return $this->_bad_json('not found data of the symbol');
             }
+
         }
 
-        return $this->_success_json($priceData);
+
     }
 }

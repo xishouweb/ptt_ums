@@ -18,14 +18,14 @@ class DataCache extends Model
     {
         $key = 'super_agency_ranking_' . $team_id;
 
-        return json_decode(Redis::get($key) ?? [], true);
+        return json_decode(Redis::get($key), true);
     }
 
     public static function getSymbolPrice($symbol)
     {
         $key = 'coinmarketcap_price_of_' . $symbol;
 
-        return json_decode(Redis::get($key) ?? [], true);
+        return json_decode(Redis::get($key));
     }
 
     public static function setSymbolPrice($symbol, $data)
