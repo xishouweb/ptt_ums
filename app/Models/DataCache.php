@@ -48,4 +48,15 @@ class DataCache extends Model
 
         Redis::set($key, json_encode($data), 'EX', 900);
     }
+
+    public static function getCurrency($currency)
+    {
+        $key = 'currency_cache_for_' . $currency;
+        $currency = Redis::get($key);
+        if (!$currency) {
+            $currency =1;
+        }
+
+        return $currency;
+    }
 }
