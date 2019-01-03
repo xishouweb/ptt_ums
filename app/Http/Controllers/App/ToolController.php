@@ -209,7 +209,7 @@ class ToolController extends Controller
 
                 \Log::error('coinmarketcap price get failed');
                 \Log::error($e->getMessage());
-                return $this->_bad_json('not found data of the symbol');
+                return $this->apiResponse([], 'not found data of the symbol', 1);
             }
 
         }
@@ -229,7 +229,7 @@ class ToolController extends Controller
         }
 
 
-        return $this->_success_json($response);
+        return $this->apiResponse($response);
     }
 
     private function __coinMarketCapDataFormat($data)
