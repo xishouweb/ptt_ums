@@ -43,6 +43,7 @@ Route::prefix('mark_six')->group(function () {
     Route::namespace('MarkSix')->group(function (Router $router) {
         $router->get('/', 'MarkSixController@index');
         $router->post('/', 'MarkSixController@store');
+        $router->post('/set_award', 'MarkSixController@setAward');
     });
 });
 
