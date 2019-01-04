@@ -217,4 +217,6 @@ return [
 
     //云片 api key - 给非中国地区发短信
     'yunpian_apikey'    => env('YUNPIAN_APIKEY', '598084290533d2f982ba871710d7b0dc'),
+    'coinmarketcap_api_url' => env('COINMARKETCAP_API_URL', 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'),
+    'coinmarketcap_api_key' => env('COINMARKETCAP_API_KEY', '595a1fe9-e466-4e9d-bb83-06abb08cb30a'),
 ];
