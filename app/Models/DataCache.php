@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Redis;
 
@@ -51,12 +52,31 @@ class DataCache extends Model
 
     public static function getCurrency($currency)
     {
+        $currency = strtoupper($currency);
+
+        if ($currency === 'USD') return 1;
+
         $key = 'currency_cache_for_' . $currency;
-        $currency = Redis::get($key);
-        if (!$currency) {
-            $currency =1;
+        $value = Redis::get($key);
+
+        if (!$value) {
+            $url = "http://op.juhe.cn/onebox/exchange/currency?from=USD&to=$currency&key=4cdacbeb5039b14c171171f7a3d0e4b1";
+            $client = new Client();
+
+            $res = $client->request('GEET', $url);
+            $result  = json_decode((string) $res->getBody());
+
+            if ($result->error_code != 0 ) {
+                throw new \Exception('The currency exchange rate was not found');
+            }
+
+            $data= $result->result;
+
+            $value = $data[0]->exchange;
+
+            Redis::set($key, $value, 'EX', 60 * 60 * 8);
         }
 
-        return $currency;
+        return $value;
     }
 }

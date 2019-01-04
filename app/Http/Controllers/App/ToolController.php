@@ -231,9 +231,4 @@ class ToolController extends Controller
 
         return $this->apiResponse($response);
     }
-
-    private function __coinMarketCapDataFormat($data)
-    {
-
-    }
 }
