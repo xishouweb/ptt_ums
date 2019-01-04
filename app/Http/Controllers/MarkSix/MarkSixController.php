@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\MarkSix;
 
+use App\Jobs\MarkSixCheckTransactionStatus;
 use App\Models\MarkSixBetHistory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -55,6 +56,7 @@ class MarkSixController extends Controller
             'bet_amount' => $bet_amount * 1000000000000000000,
             'round'      => $round,
         ]);
+        dispatch(new MarkSixCheckTransactionStatus($history->id, $tx_hash))->onQueue('check')->delay(now()->addMinutes(30));
         return $this->apiResponse($history);
     }
 
