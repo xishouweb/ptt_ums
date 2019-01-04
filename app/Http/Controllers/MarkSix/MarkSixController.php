@@ -56,7 +56,7 @@ class MarkSixController extends Controller
             'bet_amount' => $bet_amount * 1000000000000000000,
             'round'      => $round,
         ]);
-        dispatch(new MarkSixCheckTransactionStatus($history->id, $tx_hash))->onQueue('check')->delay(now()->addMinutes(30));
+        dispatch(new MarkSixCheckTransactionStatus($history->id, $tx_hash))->delay(now()->addMinutes(30))->onQueue('check');
         return $this->apiResponse($history);
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class MarkSixCheckTransactionStatus implements ShouldQueue
@@ -57,7 +58,7 @@ class MarkSixCheckTransactionStatus implements ShouldQueue
         } else if ($model->result->status === '0') {
             $history->status = MarkSixBetHistory::STATUS_FAILURE_BETTING;
         } else {
-            if (strtotime($history->created_at) > now()->subDays(2)) {
+            if (strtotime($history->created_at) > strtotime(now()->subDays(2))) {
                 dispatch(new MarkSixCheckTransactionStatus($this->id, $this->tx_hash))->delay(now()->addMinutes(30))->onQueue('check');
             } else {
                 $history->status = MarkSixBetHistory::STATUS_FAILURE_BETTING;
