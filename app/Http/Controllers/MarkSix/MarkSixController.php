@@ -6,6 +6,7 @@ use App\Jobs\MarkSixCheckTransactionStatus;
 use App\Models\MarkSixBetHistory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class MarkSixController extends Controller
 {
@@ -53,7 +54,7 @@ class MarkSixController extends Controller
             'address'    => $address,
             'tx_hash'    => $tx_hash,
             'numbers'    => $numbers,
-            'bet_amount' => $bet_amount * 1000000000000000000,
+            'bet_amount' => $bet_amount,
             'round'      => $round,
         ]);
         dispatch(new MarkSixCheckTransactionStatus($history->id, $tx_hash))->delay(now()->addMinutes(30))->onQueue('check');
@@ -108,14 +109,14 @@ class MarkSixController extends Controller
     public function draw(Request $request)
     {
         $round = $request->input('round');
-        $numbers = array_unique(json_decode(json_encode($request->input('numbers'))));
+        $numbers = array_unique(json_decode($request->input('numbers'), true));
         $special_number = $request->input('special_number');
         if (!$round || !$numbers || !$special_number || !is_array($numbers) || count(array_unique($numbers)) != 6 || $special_number < 1 || $special_number > 49 ) {
             return $this->_bad_json('无效参数');
         }
-        $histories = MarkSixBetHistory::where('round', $round)->get();
+        $histories = MarkSixBetHistory::where('round', $round)->where('status', MarkSixBetHistory::STATUS_SUCCESS_BETTING)->get();
         foreach ($histories as $history) {
-            $status = self::checkWinningNumbers(json_decode($numbers), $special_number, json_decode($history->numbers));
+            $status = self::checkWinningNumbers($numbers, $special_number, json_decode($history->numbers));
             $history->status = $status;
             $history->save();
         }
@@ -167,25 +168,45 @@ class MarkSixController extends Controller
         }
         $histories = MarkSixBetHistory::where('round', $round)->get();
         foreach ($histories as $history) {
+            $number = $history->bet_amount * 100;
             if ($history->status == MarkSixBetHistory::STATUS_LOSING_LOTTERY) {
                 $history->award_amount = 0;
             } else if ($history->status == MarkSixBetHistory::STATUS_SEVENTH_PRIZE) {
-                $history->award_amount = $seventh_prize;
+                $history->award_amount = $seventh_prize * $number;
             } else if ($history->status == MarkSixBetHistory::STATUS_SIXTH_PRIZE) {
-                $history->award_amount = $sixth_prize;
+                $history->award_amount = $sixth_prize * $number;
             } else if ($history->status == MarkSixBetHistory::STATUS_FIFTH_PRIZE) {
-                $history->award_amount = $fifth_prize;
+                $history->award_amount = $fifth_prize * $number;
             } else if ($history->status == MarkSixBetHistory::STATUS_FOURTH_PRIZE) {
-                $history->award_amount = $fourth_prize;
+                $history->award_amount = $fourth_prize * $number;
             } else if ($history->status == MarkSixBetHistory::STATUS_THIRD_PRIZE) {
-                $history->award_amount = $third_prize;
+                $history->award_amount = $third_prize * $number;
             } else if ($history->status == MarkSixBetHistory::STATUS_SECOND_PRIZE) {
-                $history->award_amount = $second_prize;
+                $history->award_amount = $second_prize * $number;
             } else if ($history->status == MarkSixBetHistory::STATUS_FIRST_PRIZE) {
-                $history->award_amount = $first_prize;
+                $history->award_amount = $first_prize * $number;
             }
             $history->save();
         }
         return $this->apiResponse();
+    }
+
+    public function rankingList(Request $request)
+    {
+        $round = $request->input('round');
+        $histories = MarkSixBetHistory::where('round', $round)
+            ->whereIn('status', [
+                MarkSixBetHistory::STATUS_FIRST_PRIZE,
+                MarkSixBetHistory::STATUS_SECOND_PRIZE,
+                MarkSixBetHistory::STATUS_THIRD_PRIZE,
+                MarkSixBetHistory::STATUS_FOURTH_PRIZE,
+                MarkSixBetHistory::STATUS_FIFTH_PRIZE,
+                MarkSixBetHistory::STATUS_SIXTH_PRIZE,
+                MarkSixBetHistory::STATUS_SEVENTH_PRIZE,
+            ])
+            ->orderBy('status')
+            ->orderBy('award_amount', 'desc')
+            ->paginate(10);
+        return $this->response($histories);
     }
 }

@@ -22,4 +22,6 @@ class MarkSixBetHistory extends Model
     const STATUS_LOSING_LOTTERY  = 8;    //未中奖
     const STATUS_FAILURE_BETTING = 10;   //下注失败
     const STATUS_SUCCESS_BETTING = 11;   //下注成功
+
+    const ETHER_TO_WEI = 1000000000000000000;
 }
