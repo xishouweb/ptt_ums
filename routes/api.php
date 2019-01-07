@@ -43,7 +43,9 @@ Route::prefix('mark_six')->group(function () {
     Route::namespace('MarkSix')->group(function (Router $router) {
         $router->get('/', 'MarkSixController@index');
         $router->post('/', 'MarkSixController@store');
+        $router->post('/draw', 'MarkSixController@draw');
         $router->post('/set_award', 'MarkSixController@setAward');
+        $router->get('/ranking_list', 'MarkSixController@rankingList');
     });
 });
 
@@ -56,20 +58,15 @@ Route::prefix('proton')->group(function() {
 
 Route::prefix('campaign')->group(function() {
     Route::get('captcha', 'CaptchaController@send');
-
     Route::namespace('Campaign')->group(function () {
         Route::post('user/login', 'UserController@login');
         Route::post('user/register', 'UserController@register');
-
         Route::get('detail/{id}', 'CampaignController@show');
-
         Route::get('team/ranks', 'TeamController@ranks');
         Route::get('team', 'TeamController@index');
         Route::get('team/{team_id}', 'TeamController@show');
-
         Route::group(['middleware' => 'auth:api'], function() {
             Route::post('photo/upload', 'UserController@photoUpload');
-
             Route::get('vote/rank', 'TeamController@voteRank');
             Route::get('account/detail', 'UserController@detail');
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
@@ -80,6 +77,5 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/teams', 'UserController@teams');
             Route::get('user/logout', 'UserController@logout');
         });
-
     });
 });
