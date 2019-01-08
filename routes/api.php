@@ -46,6 +46,7 @@ Route::prefix('mark_six')->group(function () {
         $router->post('/draw', 'MarkSixController@draw');
         $router->post('/set_award', 'MarkSixController@setAward');
         $router->get('/ranking_list', 'MarkSixController@rankingList');
+        $router->get('/winning_info', 'MarkSixController@winningInfo');
     });
 });
 

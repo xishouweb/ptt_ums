@@ -114,7 +114,12 @@ class MarkSixController extends Controller
         if (!$round || !$numbers || !$special_number || !is_array($numbers) || count(array_unique($numbers)) != 6 || $special_number < 1 || $special_number > 49 ) {
             return $this->_bad_json('无效参数');
         }
-        $histories = MarkSixBetHistory::where('round', $round)->where('status', MarkSixBetHistory::STATUS_SUCCESS_BETTING)->get();
+        $histories = MarkSixBetHistory::where('round', $round)
+            ->whereIn('status', [
+                MarkSixBetHistory::STATUS_SUCCESS_BETTING,
+                MarkSixBetHistory::STATUS_NO_LOTTERY,
+            ])
+            ->get();
         foreach ($histories as $history) {
             $status = self::checkWinningNumbers($numbers, $special_number, json_decode($history->numbers));
             $history->status = $status;
@@ -129,24 +134,24 @@ class MarkSixController extends Controller
         $flag = in_array($special_number, $user_numbers);
         if ($count < 3) {
             return MarkSixBetHistory::STATUS_LOSING_LOTTERY;
-        } else if ($count == 3) {
-            //七等奖 选中3个“搅出号码”
-            return MarkSixBetHistory::STATUS_SEVENTH_PRIZE;
         } else if ($count == 3 && $flag) {
             //六等奖 选中3个“搅出号码”加“特别号码”
             return MarkSixBetHistory::STATUS_SIXTH_PRIZE;
-        } else if ($count == 4) {
-            //五等奖 选中4个“搅出号码”
-            return MarkSixBetHistory::STATUS_FIFTH_PRIZE;
+        } else if ($count == 3) {
+            //七等奖 选中3个“搅出号码”
+            return MarkSixBetHistory::STATUS_SEVENTH_PRIZE;
         } else if ($count == 4 && $flag) {
             //四等奖 选中4个“搅出号码”加“特别号码”
             return MarkSixBetHistory::STATUS_FOURTH_PRIZE;
-        } else if ($count == 5) {
-            //三等奖 选中5个“搅出号码”
-            return MarkSixBetHistory::STATUS_THIRD_PRIZE;
+        } else if ($count == 4) {
+            //五等奖 选中4个“搅出号码”
+            return MarkSixBetHistory::STATUS_FIFTH_PRIZE;
         } else if ($count == 5 && $flag) {
             //二等奖 选中5个“搅出号码”加“特别号码”
             return MarkSixBetHistory::STATUS_SECOND_PRIZE;
+        } else if ($count == 5) {
+            //三等奖 选中5个“搅出号码”
+            return MarkSixBetHistory::STATUS_THIRD_PRIZE;
         } else if ($count == 6) {
             //一等奖 选中6个“搅出号码”
             return MarkSixBetHistory::STATUS_FIRST_PRIZE;
@@ -208,5 +213,30 @@ class MarkSixController extends Controller
             ->orderBy('award_amount', 'desc')
             ->paginate(10);
         return $this->response($histories);
+    }
+
+    public function winningInfo(Request $request)
+    {
+        $round = $request->input('round');
+        $address = $request->input('address');
+        if (!$round || !$address) {
+            return $this->_bad_json('无效参数');
+        }
+        $history = MarkSixBetHistory::where('round', $round)
+            ->where('address', $address)
+            ->whereIn('status', [
+                MarkSixBetHistory::STATUS_FIRST_PRIZE,
+                MarkSixBetHistory::STATUS_SECOND_PRIZE,
+                MarkSixBetHistory::STATUS_THIRD_PRIZE,
+                MarkSixBetHistory::STATUS_FOURTH_PRIZE,
+                MarkSixBetHistory::STATUS_FIFTH_PRIZE,
+                MarkSixBetHistory::STATUS_SIXTH_PRIZE,
+                MarkSixBetHistory::STATUS_SEVENTH_PRIZE,
+            ])
+            ->select('award_amount', 'bet_amount', 'numbers', 'status')
+            ->orderBy('status')
+            ->orderBy('award_amount', 'desc')
+            ->first();
+        return $this->response($history);
     }
 }
