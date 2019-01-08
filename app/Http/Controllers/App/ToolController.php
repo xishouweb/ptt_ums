@@ -152,7 +152,7 @@ class ToolController extends Controller
 
     public function latestVersion(Request $request)
     {
-        if ($request->input('channel') == 'ios_enterprise') {
+        if ($request->input('channel') == 'ios_enterprise' || $request->input('channal') == 'ios_enterprise') {
             $data = config('setting.ios_latest_version');
         } else {
             $data = config('setting.android_latest_version');

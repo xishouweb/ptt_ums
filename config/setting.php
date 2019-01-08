@@ -7,6 +7,6 @@
  */
 
 return [
-    'ios_latest_version' => ['version' => 1020],
+    'ios_latest_version' => ['version' => '1020'],
     'android_latest_version' => ['version' => '1000'],
 ];
