@@ -114,7 +114,12 @@ class MarkSixController extends Controller
         if (!$round || !$numbers || !$special_number || !is_array($numbers) || count(array_unique($numbers)) != 6 || $special_number < 1 || $special_number > 49 ) {
             return $this->_bad_json('无效参数');
         }
-        $histories = MarkSixBetHistory::where('round', $round)->where('status', MarkSixBetHistory::STATUS_SUCCESS_BETTING)->get();
+        $histories = MarkSixBetHistory::where('round', $round)
+            ->whereIn('status', [
+                MarkSixBetHistory::STATUS_SUCCESS_BETTING,
+                MarkSixBetHistory::STATUS_NO_LOTTERY,
+            ])
+            ->get();
         foreach ($histories as $history) {
             $status = self::checkWinningNumbers($numbers, $special_number, json_decode($history->numbers));
             $history->status = $status;
