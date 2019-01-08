@@ -214,7 +214,7 @@ class MarkSixController extends Controller
     {
         $round = $request->input('round');
         $address = $request->input('address');
-        if (!$round || !$first_prize || !$second_prize || !$third_prize || !$fourth_prize || !$fifth_prize || !$sixth_prize || !$seventh_prize) {
+        if (!$round || !$address) {
             return $this->_bad_json('无效参数');
         }
         $history = MarkSixBetHistory::where('round', $round)
