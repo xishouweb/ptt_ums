@@ -237,6 +237,6 @@ class MarkSixController extends Controller
             ->orderBy('status')
             ->orderBy('award_amount', 'desc')
             ->first();
-        return $this->response($history);
+        return $this->apiResponse($history);
     }
 }
