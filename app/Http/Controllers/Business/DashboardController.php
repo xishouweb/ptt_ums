@@ -87,6 +87,6 @@ class DashboardController extends Controller
             ->orderBy('is_top', 'desc')
             ->orderBy('release_date', 'desc')
             ->paginate();
-        return response()->json($news);
+        return response()->json(['data' => $news]);
     }
 }
