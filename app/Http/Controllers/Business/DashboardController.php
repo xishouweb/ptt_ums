@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use App\Models\Dashboard;
 use App\Models\MatchItem;
+use App\Models\ProtonNew;
 use App\Models\UserApplication;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,5 +75,18 @@ class DashboardController extends Controller
             ],
         ];
         return response()->json($data);
+    }
+
+    public function news()
+    {
+        if (!$type = request()->get('type')) {
+            return $this->apiResponse([], 'Regional illegality', 1);
+        }
+        $news = ProtonNew::where('status', ProtonNew::STASUS_NOMAL)
+            ->whereType($type)
+            ->orderBy('is_top', 'desc')
+            ->orderBy('release_date', 'desc')
+            ->paginate();
+        return response()->json($news);
     }
 }
