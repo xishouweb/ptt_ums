@@ -232,6 +232,7 @@ class MarkSixController extends Controller
                 MarkSixBetHistory::STATUS_FIFTH_PRIZE,
                 MarkSixBetHistory::STATUS_SIXTH_PRIZE,
                 MarkSixBetHistory::STATUS_SEVENTH_PRIZE,
+                MarkSixBetHistory::STATUS_LOSING_LOTTERY,
             ])
             ->select('award_amount', 'bet_amount', 'numbers', 'status')
             ->orderBy('status')

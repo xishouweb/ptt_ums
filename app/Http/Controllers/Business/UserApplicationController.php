@@ -56,4 +56,23 @@ class UserApplicationController extends Controller
 
 		return response()->json($data);
 	}
+
+    public function edit(Request $request)
+    {
+        $user = Auth::user();
+        $id = $request->get('id');
+        $name = $request->get('name');
+        if ($user && $id && $name) {
+            $application = UserApplication::find($id);
+            $application->name = $name;
+            $application->save();
+            $data['status'] = 200;
+            $data['msg'] = '修改成功';
+        } else {
+            $data['status'] = 400;
+            $data['msg'] = '修改失败';
+        }
+
+        return response()->json($data);
+    }
 }
