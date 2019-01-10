@@ -66,9 +66,11 @@ class UserApplicationController extends Controller
             $application = UserApplication::find($id);
             $application->name = $name;
             $application->save();
+            $data['data'] = $name;
             $data['status'] = 200;
             $data['msg'] = '修改成功';
         } else {
+            $data['data'] = '';
             $data['status'] = 400;
             $data['msg'] = '修改失败';
         }
