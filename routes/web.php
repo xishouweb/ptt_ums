@@ -42,7 +42,7 @@ Route::prefix('api/business')->group(function () {
             Route::post('/users/update', 'BusinessUserController@update');
             Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
             Route::get('/user_applications', 'UserApplicationController@index');
-            Route::put('/user_applications', 'UserApplicationController@store');
+            Route::put('/user_applications', 'UserApplicationController@edit');
             Route::post('/user_applications', 'UserApplicationController@store');
             Route::get('/data_records', 'DataRecordController@index');
             Route::post('/data_records', 'DataRecordController@store');
