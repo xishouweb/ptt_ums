@@ -23,7 +23,7 @@ class QueryBlockChain implements ShouldQueue
     protected $user_id;
 
     const BLOCK_CHAIN_URL = 'http://v1.proton.global:8888/gethash/';
-    const IPFS_URL = 'http://ipfs.analytab.net/ipfs/';
+    const IPFS_URL = 'http://178.128.30.195/ipfs/';
 
     /**
      * Create a new job instance.
