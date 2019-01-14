@@ -22,17 +22,14 @@ Route::post('/api/v1/track_node_call', 'Vendor\TrackController@record');
 Route::get('/track', 'Vendor\TrackController@index');
 
 Route::prefix('api/business')->group(function () {
-
 	Route::namespace('Business')->group(function () {
-
 		Route::resource('/match_items', 'MatchItemController')->only([
 			'show'
 		]);
-
 		Route::resource('/user_applications', 'UserApplicationController')->only([
 		    'show'
 		]);
-
+        Route::get('/news', 'DashboardController@news');
 		Route::post('/users/login', 'BusinessUserController@login');
         Route::post('/users/register', 'BusinessUserController@register');
         Route::post('/users/captcha', 'CaptchaController@send');
@@ -40,12 +37,12 @@ Route::prefix('api/business')->group(function () {
         Route::get('/download/data_upload_example', function() {
             return response()->download(public_path('downloads/data_upload_example.csv'), 'example.csv');
         });
-
         Route::group(['middleware' => 'auth:api'], function() {
             Route::get('/users/detail', 'BusinessUserController@detail');
             Route::post('/users/update', 'BusinessUserController@update');
             Route::post('/users/generate_public_key', 'BusinessUserController@generate_public_key');
             Route::get('/user_applications', 'UserApplicationController@index');
+            Route::put('/user_applications', 'UserApplicationController@edit');
             Route::post('/user_applications', 'UserApplicationController@store');
             Route::get('/data_records', 'DataRecordController@index');
             Route::post('/data_records', 'DataRecordController@store');
@@ -57,20 +54,14 @@ Route::prefix('api/business')->group(function () {
             Route::get('/dashboard/summary', 'DashboardController@summary');
         });
 	});
-
-
 });
 
 Route::prefix('api/vendor')->group(function () {
-
 	Route::namespace('Vendor')->group(function () {
-
 		Route::get('/data/record', 'DataController@index');
 		Route::post('/data/record', 'DataController@record');
 		Route::get('/data/create', 'DataController@create');
 		Route::post('/data', 'DataController@store');
 		Route::get('/data/examples/address', 'DataController@examples_address');
-
 	});
-
 });

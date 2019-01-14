@@ -32,6 +32,7 @@ class BlockChainDataUpload implements ShouldQueue
 
 	public function handle() 
 	{
+	    Log::info('handle');
 		if ($this->attempts() > 3) {
 			Log::info("phone is: " . $this->id);
 			return;

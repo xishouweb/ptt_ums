@@ -12,6 +12,7 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\Contract;
+use App\Models\DataCache;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -151,11 +152,83 @@ class ToolController extends Controller
 
     public function latestVersion(Request $request)
     {
-        if ($request->input('channel') == 'ios_enterprise') {
+        if ($request->input('channel') == 'ios_enterprise' || $request->input('channal') == 'ios_enterprise') {
             $data = config('setting.ios_latest_version');
         } else {
             $data = config('setting.android_latest_version');
         }
         return response()->json($data);
+    }
+
+    public function getCryptoCurrencyPrice(Request $request)
+    {
+        $requestSymbols = $request->get('symbols');
+
+        $requestCurrency = $request->get('currency');
+
+        if (!$requestSymbols || !$requestCurrency) {
+
+            return $this->_bad_json('invalid params!');
+        }
+
+        $symbols = ["PTT", "BTC", "ETH", "LTC", "BNB", "NEO", "QTUM", "EOS", "SNT", "BNT", "BCC", "GAS",  "OAX", "DNT", "MCO", "ICN", "WTC", "LRC", "OMG", "ZRX", "STRAT", "SNGLS", "KNC", "FUN", "SNM", "LINK", "XVG", "SALT", "MDA", "MTL", "SUB", "ETC", "MTH", "ENG", "ZEC", "AST", "DASH", "BTG", "EVX", "REQ", "VIB", "TRX", "POWR", "ARK", "XRP", "MOD", "ENJ", "STORJ", "VEN", "KMD", "NULS", "RCN", "RDN", "XMR", "DLT", "AMB", "BAT", "BCPT", "ARN", "GVT", "CDT", "GXS", "POE", "QSP", "BTS", "XZC", "LSK", "TNT", "FUEL", "MANA", "BCD", "DGD", "ADX", "ADA", "PPT", "CMT", "XLM", "CND", "LEND", "WABI", "TNB", "WAVES", "GTO", "ICX", "OST", "ELF", "AION", "NEBL", "BRD", "EDO", "WINGS", "NAV", "LUN", "TRIG", "APPC", "VIBE", "RLC", "INS", "PIVX", "IOST", "CHAT", "STEEM", "NANO", "VIA", "BLZ", "AE", "NCASH", "POA", "ZIL", "ONT", "STORM", "XEM", "WAN", "WPR", "QLC", "SYS", "GRS", "CLOAK", "GNT", "LOOM", "BCN", "REP", "TUSD", "ZEN", "SKY", "CVC", "THETA", "IOTX", "QKC", "AGI", "NXS", "DATA", "SC", "NPXS", "KEY", "NAS", "MFT", "DENT", "ARDR", "HOT", "VET", "DOCK", "POLY", "PHX", "HC", "GO", "PAX", "RVN", "DCR", "USDC", "MITH", "BCHABC", "REN",
+        ];
+
+
+        $priceData = DataCache::getSymbolsPrice();
+
+        if (!$priceData) {
+            $apiUrl = config('app.coinmarketcap_api_url');
+
+            $symbolStr = implode(',', $symbols);
+            $client = new Client();
+
+            $headers = [
+                'X-CMC_PRO_API_KEY' => config('app.coinmarketcap_api_key'),
+                'json' => true,
+                'gzip' => true,
+            ];
+            try {
+                $res = $client->request('GET', $apiUrl . '?symbol=' . $symbolStr, ['headers' => $headers]);
+                $resData  = json_decode((string) $res->getBody());
+
+                if ($resData) {
+                    $data = $resData->data;
+
+                    foreach ($data as $k => $d) {
+                        $temp['symbol'] = $k;
+                        $temp['price'] = $d->quote->USD->price;
+
+                        $priceData[] = $temp;
+                    }
+
+                    DataCache::setSymbolsPrice($priceData);
+                }
+
+            } catch (\Exception $e) {
+
+                \Log::error('coinmarketcap price get failed');
+                \Log::error($e->getMessage());
+                return $this->apiResponse([], 'not found data of the symbol', 1);
+            }
+
+        }
+
+        $currency = DataCache::getCurrency($requestCurrency);
+
+        $symbolsArr = explode(',', $requestSymbols);
+
+        foreach ($priceData as &$d) {
+            foreach ($symbolsArr as $symb) {
+                if ($d['symbol'] == $symb) {
+                    $d['price'] *= $currency;
+
+                    $response[] = $d;
+                }
+            }
+        }
+
+
+        return $this->apiResponse($response);
     }
 }

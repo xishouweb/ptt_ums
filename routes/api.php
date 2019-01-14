@@ -31,10 +31,22 @@ Route::prefix('app')->group(function () {
         $router->get('/price', 'ToolController@getPrice');
         $router->get('/search_token', 'ToolController@searchToken');
         $router->get('/version', 'ToolController@latestVersion');
+        $router->get('/coinmarketcap', 'ToolController@getCryptoCurrencyPrice');
         Route::group(['middleware' => 'auth:api'], function(Router $router) {
             $router->get('/user', 'UserController@show');
             $router->post('/user', 'UserController@update');
         });
+    });
+});
+
+Route::prefix('mark_six')->group(function () {
+    Route::namespace('MarkSix')->group(function (Router $router) {
+        $router->get('/', 'MarkSixController@index');
+        $router->post('/', 'MarkSixController@store');
+        $router->post('/draw', 'MarkSixController@draw');
+        $router->post('/set_award', 'MarkSixController@setAward');
+        $router->get('/ranking_list', 'MarkSixController@rankingList');
+        $router->get('/winning_info', 'MarkSixController@winningInfo');
     });
 });
 
@@ -48,7 +60,6 @@ Route::prefix('proton')->group(function() {
 
 Route::prefix('campaign')->group(function() {
     Route::get('captcha', 'CaptchaController@send');
-
     Route::namespace('Campaign')->group(function () {
 
         Route::get('test/add/token', 'TokenTxController@create');
@@ -57,9 +68,7 @@ Route::prefix('campaign')->group(function() {
         Route::post('user/fast_login', 'UserController@fastLogin');
         Route::post('user/register', 'UserController@register');
         Route::post('user/update_password', 'UserController@updatePassword');
-
         Route::get('detail/{id}', 'CampaignController@show');
-
         Route::get('team/ranks', 'TeamController@ranks');
         Route::get('team', 'TeamController@index');
         Route::get('team/{team_id}', 'TeamController@show');
@@ -68,7 +77,7 @@ Route::prefix('campaign')->group(function() {
 
         Route::group(['middleware' => 'auth:api'], function() {
             Route::post('photo/upload', 'UserController@photoUpload');
-
+            Route::get('account/detail', 'UserController@detail');
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
             Route::post('team', 'TeamController@store');
             Route::post('team/join/{team_id}', 'TeamController@join');
@@ -99,6 +108,5 @@ Route::prefix('campaign')->group(function() {
         Route::middleware('wechat.oauth')->group(function(){
             Route::get('wechat/auth', 'UserController@wechatAuth');
         });
-
     });
 });

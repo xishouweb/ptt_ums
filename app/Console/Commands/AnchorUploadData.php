@@ -77,7 +77,10 @@ class AnchorUploadData extends Command
             foreach ($items as $item) {
                 try {
                     Log::info('存储redis , anchor数据id : ' . $item->id);
-                    $redis->lpush('anchor:test:channel', json_encode(['data_id'   => $item->id, 'content'   => $item->content,]));
+                    $redis->lpush('anchor:test:channel', json_encode([
+                        'data_id' => $item->id,
+                        'content' => $item->content
+                    ]));
                 } catch (\Exception $exception) {
                     Log::info($exception->getMessage());
                     Log::info('存储redis失败 , anchor数据id : ' . $item->id);

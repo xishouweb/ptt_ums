@@ -90,7 +90,7 @@ class Controller extends BaseController
         return response()->json($json, 401);
     }
 
-    protected function _bad_json($msg, $code = 0)
+    protected function _bad_json($msg, $code = 1)
     {
         $json = array(
             'code' => $code,

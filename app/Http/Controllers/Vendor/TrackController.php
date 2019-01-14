@@ -9,6 +9,7 @@ use App\Models\TrackItem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\BlockChainTrackUpload;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class TrackController extends Controller
 {
@@ -37,7 +38,18 @@ class TrackController extends Controller
 		$data = $request->all();
 
 		if ($item = TrackItem::create(['content' => json_encode($data)])) {
-			$this->dispatch((new BlockChainTrackUpload($item->id, json_encode($data)))->onQueue('block_chain_data_upload'));
+//			$this->dispatch((new BlockChainTrackUpload($item->id, json_encode($data)))->onQueue('block_chain_data_upload'));
+            $redis = Redis::connection('default');
+            try {
+                Log::info('存储redis , anchor数据id : ' . $item->id);
+                $redis->lpush('anchor:test:channel', json_encode([
+                    'data_id' => $item->id,
+                    'content' => $item->content
+                ]));
+            } catch (\Exception $exception) {
+                Log::info($exception->getMessage());
+                Log::info('存储redis失败 , anchor数据id : ' . $item->id);
+            }
 		}
 
 		if (isset($data['rd'])) {
