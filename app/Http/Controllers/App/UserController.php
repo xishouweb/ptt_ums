@@ -105,7 +105,12 @@ class UserController extends Controller
             $user->avatar = $photo->url;
         }
         $user->save();
-        return response()->json(['message' => '修改成功']);
+        $data['id'] = $user->id;
+        $data['phone'] = $user->phone;
+        $data['nickname'] = $user->nickname ?: '无代号质子';
+        $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
+        $data['token'] = $request->header('Authorization');
+        return response()->json(['message' => '修改成功', 'data' => $data]);
     }
 
     /**
