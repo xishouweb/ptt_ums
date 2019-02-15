@@ -64,7 +64,7 @@ class UserController extends Controller
         $user = Auth::user();
         $data['id'] = $user->id;
         $data['phone'] = $user->phone;
-        $data['nickname'] = $user->nickname ?: 'User_' . md5($user->phone);
+        $data['nickname'] = $user->nickname ?: '无代号质子';
         $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2017_08_21_14_48_05_1_2933.png';
         $data['token'] = $request->header('Authorization');
         return response()->json($data);
