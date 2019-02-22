@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Campaign;
 
+use App\Models\ActionHistory;
+use App\Models\DataCache;
 use App\Models\RentRecord;
 use App\Models\TokenTransaction;
+use App\Models\TokenVote;
 use App\Models\UserToken;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class TokenTxController extends Controller
 {
@@ -18,7 +22,7 @@ class TokenTxController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -26,9 +30,64 @@ class TokenTxController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $amount = (float)$request->input('token_amount');
+        $user_id = $request->input('user_id');
+        $type = 'ptt';
+
+        $user = User::find($user_id);
+
+        if (!$user) {
+            return $this->error('未找到该用户');
+        }
+
+        $token = $user->user_token($type);
+
+        $last_tx = TokenTransaction::whereUserId($user->id)->orderby('id', 'desc')->first();
+        $last_amount = $last_tx ? $last_tx->after_amount : 0;
+
+
+        try {
+            DB::beginTransaction();
+
+            if (!$token) {
+                $token = UserToken::record($user->id, $amount, $type);
+
+                $data['original_amount'] = 0;
+                $data['after_amount'] = $token->token_amount;
+            } else {
+
+                $token->token_amount += $amount;
+                $token->save();
+
+                $data['original_amount'] = $last_amount;
+                $data['after_amount'] = $last_amount + $amount;
+            }
+
+            $data['user_id'] = $user->id;
+            $data['token_amount'] = $amount;
+            $data['token_type'] = $type;
+
+            $data['action'] = TokenTransaction::ACTION_INPUT;
+            TokenTransaction::create($data);
+
+            RentRecord::create($user->id, RentRecord::ACTION_SELF_IN . $user->id, $amount, $type, RentRecord::ACTION_JOIN_CAMPAIGN, 1);
+
+            TokenVote::record(RentRecord::ACTION_SELF_IN . $user->id, $user->id, 0);
+
+            DataCache::zincrOfCreditRankFor(RentRecord::ACTION_SELF_IN . $user->id, $amount * User::CREDIT_TOKEN_RATIO);
+
+            ActionHistory::record($user->id, User::ACTION_PREPAID, null, $amount, '充值' . $type, ActionHistory::TYPE_TOKEN);
+
+            DB::commit();
+
+            return $this->apiResponse();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return $this->apiResponse([], $e->getMessage(), 0);
+        }
     }
 
     /**
@@ -63,7 +122,7 @@ class TokenTxController extends Controller
             }
 
 
-            $data['action'] = TokenTransaction::ACTION_TOP_UP;
+            $data['action'] = TokenTransaction::ACTION_INPUT;
             TokenTransaction::create($data);
 
             RentRecord::record($user, RentRecord::ACTION_SELF_IN . $user->id, $data['token_amount'], $data['token_type'], $data['campaign_id']);
@@ -75,7 +134,7 @@ class TokenTxController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
 
-            return $this->apiResponse([], $e->getMessage(), 1);
+            return $this->apiResponse([], $e->getMessage(), 0);
         }
     }
 

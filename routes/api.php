@@ -57,18 +57,26 @@ Route::prefix('proton')->group(function() {
 });
 
 
+
 Route::prefix('campaign')->group(function() {
     Route::get('captcha', 'CaptchaController@send');
     Route::namespace('Campaign')->group(function () {
+
+        Route::get('test/add/token', 'TokenTxController@create');
+
         Route::post('user/login', 'UserController@login');
+        Route::post('user/fast_login', 'UserController@fastLogin');
         Route::post('user/register', 'UserController@register');
+        Route::post('user/update_password', 'UserController@updatePassword');
         Route::get('detail/{id}', 'CampaignController@show');
         Route::get('team/ranks', 'TeamController@ranks');
         Route::get('team', 'TeamController@index');
         Route::get('team/{team_id}', 'TeamController@show');
+        Route::get('vote/rank', 'TeamController@voteRank');
+        Route::get('vote/{id}', 'TeamController@vote');
+
         Route::group(['middleware' => 'auth:api'], function() {
             Route::post('photo/upload', 'UserController@photoUpload');
-            Route::get('vote/rank', 'TeamController@voteRank');
             Route::get('account/detail', 'UserController@detail');
             Route::post('user/vote/{team_id}', 'UserController@voteTo');
             Route::post('team', 'TeamController@store');
@@ -77,6 +85,28 @@ Route::prefix('campaign')->group(function() {
             Route::get('user/edit', 'UserController@edit');
             Route::get('user/teams', 'UserController@teams');
             Route::get('user/logout', 'UserController@logout');
+            Route::get('user/checknickname/{nickname}', 'UserController@checkNickname');
+            Route::get('user/votes', 'UserController@getVotes');
+            Route::get('user/votes/detail', 'UserController@getVoteDetail');
+            Route::get('user/income', 'UserController@myIncome');
+            Route::get('user/income/detail', 'UserController@incomeDetail');
+
+            Route::get('user/token/detail', 'UserController@tokenDetail');
+            Route::get('user/deposit/address', 'UserController@getDepositAddress');
+            Route::get('user/share/{tema_id}/type/{type}', 'UserController@share');
+
+            //to do campaign_id, token_type 放header里
+
+            Route::group(['middleware' => 'checklogin'], function() {
+                Route::get('account/detail', 'UserController@detail');
+                Route::get('user/rank/campaign/{campaign_id}/token_type/{type}', 'UserController@myRanks');
+                Route::get('user/vote/rank/campaign/{campaign_id}/token_type/{token_type}', 'UserController@myVoteRank');
+            });
+        });
+
+        Route::any('wechat', 'WechatController@serve');
+        Route::middleware('wechat.oauth')->group(function(){
+            Route::get('wechat/auth', 'UserController@wechatAuth');
         });
     });
 });

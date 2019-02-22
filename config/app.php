@@ -53,6 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'super_user_url' => env('SUPER_USER_URL', 'http://ums.proton.global'),
 
     /*
     |--------------------------------------------------------------------------
@@ -163,6 +164,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Jacobcyl\AliOSS\AliOssServiceProvider::class,
+        Overtrue\LaravelWeChat\ServiceProvider::class,
     ],
 
     /*
@@ -212,11 +214,13 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'EasyWeChat' => Overtrue\LaravelWeChat\Facade::class,
 
     ],
 
     //云片 api key - 给非中国地区发短信
     'yunpian_apikey'    => env('YUNPIAN_APIKEY', '598084290533d2f982ba871710d7b0dc'),
+    'captcha_live_time' => env('CAPTCHA_LIVE_TIME', 180),
     'coinmarketcap_api_url' => env('COINMARKETCAP_API_URL', 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'),
     'coinmarketcap_api_key' => env('COINMARKETCAP_API_KEY', '595a1fe9-e466-4e9d-bb83-06abb08cb30a'),
 ];

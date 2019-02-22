@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\ChangeTokenExpiresTime',
             'App\Listeners\RevokeOldTokens',
         ],
+        'Overtrue\LaravelWeChat\Events\WeChatUserAuthorized' => [
+            'App\Listeners\WeChatUserAuthorizedListener',
+        ],
     ];
 
     /**

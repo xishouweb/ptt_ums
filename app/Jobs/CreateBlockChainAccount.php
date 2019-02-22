@@ -36,7 +36,7 @@ class CreateBlockChainAccount implements ShouldQueue
 
 		$client = new Client();		
 
-		if ($this->password) {
+		if (!$this->password) {
 			$res = $client->request('POST', $url, [
 				'form_params' => [
 					'phone' => $this->phone,

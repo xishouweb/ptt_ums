@@ -22,14 +22,14 @@ class CaptchaController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->_bad_json('请输入正确的手机号');
+            return $this->error('请输入正确的手机号');
         }
 
         $captcha = Captcha::send($data['phone'], $data['country']);
         if (!$captcha) {
-            return $this->_bad_json('发送失败,请重试');
+            return $this->error('发送失败,请重试');
         }
 
-        return $this->_success_json([],'验证码已发送');
+        return $this->apiResponse([],'验证码已发送');
     }
 }

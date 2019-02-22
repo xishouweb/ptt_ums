@@ -8,6 +8,7 @@ class UserLogin extends Model
 {
     protected $guarded = ['id'];
 
+
     public static function record($user, $ip = null, $login_src = null, $ua = null, $remark = null)
     {
         $last_login = static::where('user_id', $user->id)->orderBy('id', 'desc')->first();

@@ -68,7 +68,7 @@ class Controller extends BaseController
      * @param int          $code
      * @return mixed
      */
-    public function apiResponse($data = [], $message = '操作成功', $code = 0)
+    public function apiResponse($data = [], $message = '操作成功', $code = 1)
     {
         return response()->json(['code' => $code, 'message' => $message, 'data' => $data]);
     }
@@ -87,7 +87,7 @@ class Controller extends BaseController
         $json = array(
             "error" => "权限失败",
         );
-        return response()->json($json, 403);
+        return response()->json($json, 401);
     }
 
     protected function _bad_json($msg, $code = 1)
@@ -107,6 +107,17 @@ class Controller extends BaseController
             'code' => $code,
         );
         return response()->json($json, 200);
+    }
+
+    public function success($message = '操作成功', $code = 1)
+    {
+        return $this->apiResponse(null, $message, $code);
+    }
+
+    public function error($message = '操作失败', $code = 0)
+    {
+        return $this->apiResponse(null, $message, $code);
+
     }
 
     public function response($data = [])
