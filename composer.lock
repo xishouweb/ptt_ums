@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "983e2aec8b96c9e21932eae41f8a027a",
+    "content-hash": "27c9b07de0d6d11da4c3df1135942666",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -690,16 +690,16 @@
         },
         {
             "name": "encore/laravel-admin",
-            "version": "v1.6.6",
+            "version": "v1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/z-song/laravel-admin.git",
-                "reference": "d4950856fe59be95e7d5f9cfeaad1da3f7320cbc"
+                "reference": "c7a24ef32f0e384a0e54940ce4bc7e156ff34501"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/z-song/laravel-admin/zipball/d4950856fe59be95e7d5f9cfeaad1da3f7320cbc",
-                "reference": "d4950856fe59be95e7d5f9cfeaad1da3f7320cbc",
+                "url": "https://api.github.com/repos/z-song/laravel-admin/zipball/c7a24ef32f0e384a0e54940ce4bc7e156ff34501",
+                "reference": "c7a24ef32f0e384a0e54940ce4bc7e156ff34501",
                 "shasum": ""
             },
             "require": {
@@ -713,7 +713,7 @@
                 "intervention/image": "~2.3",
                 "laravel/browser-kit-testing": "^2.0",
                 "laravel/laravel": "~5.5",
-                "phpunit/phpunit": "~6.0",
+                "phpunit/phpunit": "~6.0 || ~8.0",
                 "symfony/css-selector": "~3.1"
             },
             "suggest": {
@@ -757,7 +757,7 @@
                 "grid",
                 "laravel"
             ],
-            "time": "2018-10-25T09:02:19+00:00"
+            "time": "2019-06-10T05:48:25+00:00"
         },
         {
             "name": "erusev/parsedown",
