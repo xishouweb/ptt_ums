@@ -57,7 +57,7 @@ Route::prefix('proton')->group(function() {
 });
 
 Route::prefix('v1')->group(function() {
-    Route::namespace('V1')->group(function () {
+    Route::namespace('V1')->group(function (Router $router) {
        $router->get('symbol/{symbol}/price', 'ToolController@getPrice');
     });
 });

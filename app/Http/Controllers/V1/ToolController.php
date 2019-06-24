@@ -67,7 +67,7 @@ class ToolController extends Controller
         $resData  = json_decode((string) $res->getBody());
 
         if ($resData->status == 'ok') {
-            return isset($resData->tick) && isset($resData->tick->data) ? $resData->tick->data->price : 0;
+            return isset($resData->tick) && isset($resData->tick->data) ? $resData->tick->data[0]->price : 0;
         } else {
             return 0;
         }
@@ -82,7 +82,7 @@ class ToolController extends Controller
         $resData  = json_decode((string) $res->getBody());
 
         if ($resData->code == '0') {
-            return isset($resData->data) && isset($resData->data->trade_data) ? $resData->data->trade_data->price : 0;
+            return isset($resData->data) && isset($resData->data->trade_data) ? $resData->data->trade_data[0]->price : 0;
         } else {
             return 0;
         }
@@ -95,7 +95,7 @@ class ToolController extends Controller
         $res = $client->request('GET', $url . $symbol);
         $resData  = json_decode((string) $res->getBody());
 
-        if ($resData) {
+        if (isset($resData[0])) {
             $d = $resData[0];
             return isset($d->price) ? $d->price : 0;
         } else {
