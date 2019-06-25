@@ -49,7 +49,7 @@ class GetExchangesSymbols extends Command
     {
         $url = 'https://api.binance.com/api/v1/exchangeInfo';
         $client = new Client();
-        $res = $client->request('GET', $url . $symbol);
+        $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody());
 
         $data = [];
@@ -64,11 +64,11 @@ class GetExchangesSymbols extends Command
     {
         $url = 'https://api.huobi.pro/v1/common/symbols';
         $client = new Client();
-        $res = $client->request('GET', $url . $symbol);
+        $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody());
 
         $data = [];
-        foreach ($resData as $key => $d) {
+        foreach ($resData->data as $key => $d) {
             $data[$key] = $d->symbol;
         }
 
@@ -79,24 +79,25 @@ class GetExchangesSymbols extends Command
     {
         $url = 'https://api.cointiger.com/exchange/trading/api/v2/currencys/v2';
         $client = new Client();
-        $res = $client->request('GET', $url . $symbol);
-        $resData  = json_decode((string) $res->getBody());
+        $res = $client->request('GET', $url);
+        $resData  = json_decode((string) $res->getBody(), true);
+        $info = $resData['data'];
 
         $data = [];
-        foreach ($resData->data->btc-partition as $key => $d) {
-            $data[] = $d->symbol;
+        foreach ($info['btc-partition'] as $key => $d) {
+            $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
         }
 
-        foreach ($resData->data->trx-partition as $key => $d) {
-            $data[] = $d->symbol;
+        foreach ($info['trx-partition'] as $key => $d) {
+             $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
         }
 
-        foreach ($resData->data->usdt-partition as $key => $d) {
-            $data[] = $d->symbol;
+        foreach ($info['usdt-partition'] as $key => $d) {
+             $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
         }
 
-        foreach ($resData->data->eth-partition as $key => $d) {
-            $data[] = $d->symbol;
+        foreach ($info['eth-partition'] as $key => $d) {
+             $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
         }
 
         DataCache::setSymbolsFor('cointiger', $data);
@@ -106,7 +107,7 @@ class GetExchangesSymbols extends Command
     {
         $url = 'https://www.lbkex.net/v1/currencyPairs.do';
         $client = new Client();
-        $res = $client->request('GET', $url . $symbol);
+        $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody());
         DataCache::setSymbolsFor('lbank', $resData);
     }

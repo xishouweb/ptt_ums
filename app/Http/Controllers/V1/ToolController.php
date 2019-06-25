@@ -25,7 +25,6 @@ class ToolController extends Controller
 {
     public function getPrice($symbol)
     {
-
         $count = 0;
         if ($lbankPrice = $this->__getPriceFromLbank($symbol)) {
             $count ++;
@@ -51,6 +50,10 @@ class ToolController extends Controller
     private function __getPriceFromBinance($symbol)
     {
         $symbol = strtoupper($symbol);
+        $symbols = DataCache::getSymbolsFrom('binance');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
         $url = 'https://api.binance.com/api/v3/ticker/price?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -61,6 +64,10 @@ class ToolController extends Controller
 
     private function __getPriceFromHuoBi($symbol)
     {
+        $symbols = DataCache::getSymbolsFrom('huobi');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
         $url='https://api.huobi.pro/market/trade?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -76,6 +83,11 @@ class ToolController extends Controller
 
     private function __getPriceFromCointiger($symbol)
     {
+        $symbols = DataCache::getSymbolsFrom('cointiger');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
+
         $url = 'https://api.cointiger.com/exchange/trading/api/market/history/trade?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -90,12 +102,17 @@ class ToolController extends Controller
 
     private function __getPriceFromLbank($symbol)
     {
+        $symbols = DataCache::getSymbolsFrom('lbank');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
+
         $url = 'https://www.lbkex.net/v1/trades.do?size=1&symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
         $resData  = json_decode((string) $res->getBody());
 
-        if (isset($resData[0])) {
+        if (is_array($resData)) {
             $d = $resData[0];
             return isset($d->price) ? $d->price : 0;
         } else {
