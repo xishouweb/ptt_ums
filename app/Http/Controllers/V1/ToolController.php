@@ -119,4 +119,96 @@ class ToolController extends Controller
             return 0;
         }
     }
+
+    public function get24DetailFor($symbol)
+    {
+
+        $count = 0;
+        if ($lbankDetail = $this->__getDetailOfLbank($symbol)) {
+            $count ++;
+        }
+
+        $symbol = str_replace('_', '', $symbol);
+
+        if ($binanceDetail = $this->__getDetailOfbinance($symbol)) {
+            $count ++;
+        }
+
+        if ($huoBiDetail = $this->__getDetailOfHuobi($symbol)) {
+            $count ++;
+        }
+
+        if ($cointigerDetail = $this->__getDetailOfCointiger($symbol)) {
+            $count ++;
+        }
+
+        return ($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $count;
+    }
+
+    private function __getDetailOfCointiger($symbol)
+    {
+        $symbols = DataCache::getSymbolsFrom('cointiger');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
+
+        $url = 'https://api.cointiger.com/exchange/trading/api/market/detail?symbol=';
+        $client = new Client();
+        $res = $client->request('GET', $url . $symbol);
+        $resData  = json_decode((string) $res->getBody());
+
+        if ($resData->code == '0') {
+            return isset($resData->data->trade_ticker_data) ? $resData->data->trade_ticker_data->tick->rose : 0;
+        } else {
+            return 0;
+        }
+    }
+    private function __getDetailOfbinance($symbol)
+    {
+        $symbol = strtoupper($symbol);
+        $symbols = DataCache::getSymbolsFrom('binance');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
+
+        $url = 'https://api.binance.com/api/v1/ticker/24hr?symbol=';
+        $client = new Client();
+        $res = $client->request('GET', $url . $symbol);
+        $resData  = json_decode((string) $res->getBody());
+
+        return isset($resData->priceChangePercent) ? $resData->priceChangePercent : 0;
+    }
+
+    private function __getDetailOfHuobi($symbol)
+    {
+        $symbols = DataCache::getSymbolsFrom('huobi');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
+        $url='https://api.huobi.pro/market/detail?symbol=';
+        $client = new Client();
+        $res = $client->request('GET', $url . $symbol);
+        $resData  = json_decode((string) $res->getBody());
+
+        if ($resData->status == 'ok') {
+            return isset($resData->tick) ?  round(($resData->tick->close - $resData->tick->open) / $resData->tick->open, 8) : 0;
+        } else {
+            return 0;
+        }
+    }
+
+    private function __getDetailOfLbank($symbol)
+    {
+        $symbols = DataCache::getSymbolsFrom('lbank');
+        if (!in_array($symbol, $symbols)) {
+            return 0;
+        }
+
+        $url = 'https://www.lbkex.net/v1/ticker.do?symbol=';
+        $client = new Client();
+        $res = $client->request('GET', $url . $symbol);
+        $resData  = json_decode((string) $res->getBody());
+
+        return isset($resData->ticker->change) ? $resData->ticker->change : 0;
+    }
 }
