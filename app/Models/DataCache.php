@@ -116,7 +116,7 @@ class DataCache extends Model
         return json_decode(Redis::get($key), true);
     }
 
-    public function setSymbolsFor($exchange, $data)
+    public static function setSymbolsFor($exchange, $data)
     {
         $key = $exchange . '-symbols';
         Redis::set($key, json_encode($data));
