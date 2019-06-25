@@ -211,4 +211,44 @@ class ToolController extends Controller
 
         return isset($resData->ticker->change) ? $resData->ticker->change : 0;
     }
+
+    public function wechatMessageCallback(Request $request)
+    {
+        $appid = $request->get('appid');
+        $timestamp = $request->get('timestamp');
+        $data = $request->get('data');
+        $sign = $request->get('sign');
+        $key = '47886fd0de1asdf135sq22fy56w2kl';
+        $secret = '1equEcRkT2hirJhbYByNGCZPRHgFg132rtlb0IZ3vf4=';
+
+        $checkSign = md5($key . $secret . $timestamp . $data);
+
+        if ($sign != $checkSign) {
+           return response()->json([
+                'resultcode' => -11001,
+                'resultdesc' => 'invalid credentials',
+                'data' => null,
+           ], 200);
+        }
+
+        return response()->json([
+                'resultcode' => 0,
+                'resultdesc' => 'success',
+                'data' => [
+                    'nMsgType' => 2001,
+                    'vcContent' => '币种: <ETH>
+币价: ¥<2130.31543> / $<309.62988>
+涨跌幅:
+1H: <0.61>% <↑>
+24H: <0.43>% <↑>
+【<' . date('Y-m-d H:i:s') .  '>】
+<https://proton.global>
+',
+                    'vcShareTitle' => null,
+                    'vcShareDesc' => null,
+                    'vcShareUrl' => null,
+
+                ],
+           ], 200);
+    }
 }
