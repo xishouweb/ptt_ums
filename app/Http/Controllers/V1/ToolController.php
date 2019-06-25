@@ -244,7 +244,7 @@ class ToolController extends Controller
                     'vcContent' => '币种: <ETH>
 币价: ' . $price .'
 涨跌幅:
-24H: <' .  .  '>% <↑>
+24H: <' . $detail .  '>% <↑>
 【<' . date('Y-m-d H:i:s') .  '>】
 <https://proton.global>
 ',
