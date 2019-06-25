@@ -158,7 +158,7 @@ class ToolController extends Controller
         $resData  = json_decode((string) $res->getBody());
 
         if ($resData->code == '0') {
-            return isset($resData->data->trade_ticker_data) ? $resData->data->trade_ticker_data->tick->rose : 0;
+            return isset($resData->data->trade_ticker_data) ? round($resData->data->trade_ticker_data->tick->rose, 4) * 100 : 0;
         } else {
             return 0;
         }
@@ -176,7 +176,7 @@ class ToolController extends Controller
         $res = $client->request('GET', $url . $symbol);
         $resData  = json_decode((string) $res->getBody());
 
-        return isset($resData->priceChangePercent) ? $resData->priceChangePercent : 0;
+        return isset($resData->priceChangePercent) ?  round($resData->priceChangePercent, 4) * 100  : 0;
     }
 
     private function __getDetailOfHuobi($symbol)
@@ -191,7 +191,7 @@ class ToolController extends Controller
         $resData  = json_decode((string) $res->getBody());
 
         if ($resData->status == 'ok') {
-            return isset($resData->tick) ?  round(($resData->tick->close - $resData->tick->open) / $resData->tick->open, 8) : 0;
+            return isset($resData->tick) ?  round(($resData->tick->close - $resData->tick->open) / $resData->tick->open, 4) * 100 : 0;
         } else {
             return 0;
         }
@@ -218,10 +218,12 @@ class ToolController extends Controller
         $timestamp = $request->get('timestamp');
         $data = $request->get('data');
         $sign = $request->get('sign');
+
+
         $key = '47886fd0de1asdf135sq22fy56w2kl';
         $secret = '1equEcRkT2hirJhbYByNGCZPRHgFg132rtlb0IZ3vf4=';
 
-        $checkSign = md5($key . $secret . $timestamp . $data);
+        $checkSign = md5($appid . $secret . $timestamp . $data);
 
         if ($sign != $checkSign) {
            return response()->json([
@@ -231,16 +233,18 @@ class ToolController extends Controller
            ], 200);
         }
 
+        $price = $this->getPrice($data);
+        $detail = $this->get24DetailFor($data);
+
         return response()->json([
                 'resultcode' => 0,
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币种: <ETH>
-币价: ¥<2130.31543> / $<309.62988>
+币价: ' . $price .'
 涨跌幅:
-1H: <0.61>% <↑>
-24H: <0.43>% <↑>
+24H: <' .  .  '>% <↑>
 【<' . date('Y-m-d H:i:s') .  '>】
 <https://proton.global>
 ',
