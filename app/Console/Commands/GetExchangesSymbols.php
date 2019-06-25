@@ -54,7 +54,7 @@ class GetExchangesSymbols extends Command
 
         $data = [];
         foreach ($resData->symbols as $key => $d) {
-            $data[$key] = $d->symbol;
+            $data[$d->quoteAsset][] = $d->baseAsset;
         }
 
         DataCache::setSymbolsFor('binance', $data);
@@ -65,11 +65,11 @@ class GetExchangesSymbols extends Command
         $url = 'https://api.huobi.pro/v1/common/symbols';
         $client = new Client();
         $res = $client->request('GET', $url);
-        $resData  = json_decode((string) $res->getBody());
+        $resData  = json_decode((string) $res->getBody(), true);
 
         $data = [];
-        foreach ($resData->data as $key => $d) {
-            $data[$key] = $d->symbol;
+        foreach ($resData['data'] as $d) {
+            $data[$d['quote-currency']][] = $d['base-currency'];
         }
 
         DataCache::setSymbolsFor('huobi', $data);
@@ -84,20 +84,12 @@ class GetExchangesSymbols extends Command
         $info = $resData['data'];
 
         $data = [];
-        foreach ($info['btc-partition'] as $key => $d) {
-            $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
-        }
 
-        foreach ($info['trx-partition'] as $key => $d) {
-             $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
-        }
-
-        foreach ($info['usdt-partition'] as $key => $d) {
-             $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
-        }
-
-        foreach ($info['eth-partition'] as $key => $d) {
-             $data[] = $d['baseCurrency'] . $d['quoteCurrency'];
+        foreach ($info as $key => $value) {
+            $arr = explode('-', $key);
+            foreach ($info[$key] as $d) {
+                $data[$arr[0]][] = $d['baseCurrency'];
+            }
         }
 
         DataCache::setSymbolsFor('cointiger', $data);
@@ -109,6 +101,11 @@ class GetExchangesSymbols extends Command
         $client = new Client();
         $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody());
-        DataCache::setSymbolsFor('lbank', $resData);
+        $data = [];
+        foreach ($resData as $value) {
+            $arr = explode('_', $value);
+            $data[$arr[1]][] = $arr[0];
+        }
+        DataCache::setSymbolsFor('lbank', $data);
     }
 }
