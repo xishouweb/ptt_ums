@@ -45,8 +45,8 @@ class ToolController extends Controller
             $count ++;
         }
 
-        $count = $count ?? 1;
-        return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $count, 4);
+        $cou = $count ?? 1;
+        return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $cou, 4);
     }
 
     private function __getPriceFromBinance($symbol, $is_check = true)
@@ -222,8 +222,6 @@ class ToolController extends Controller
             $count ++;
         }
 
-        $symbol = str_replace('_', '', $symbol);
-
         if ($binanceDetail = $this->__getDetailOfbinance($symbol)) {
             $count ++;
         }
@@ -236,9 +234,9 @@ class ToolController extends Controller
             $count ++;
         }
 
-        $count = $count ?? 1;
+        $cou = $count ?? 1;
 
-        return round(($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $count, 4);
+        return round(($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $cou, 4);
     }
 
     private function __getDetailOfCointiger($symbol)
@@ -340,13 +338,13 @@ class ToolController extends Controller
                 if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
                     return 0;
                 }else {
-                    $symbol .= 'usdt';
+                    $symbol .= '_usdt';
                 }
             } else {
-                $symbol .= 'btc';
+                $symbol .= '_btc';
             }
         } else {
-            $symbol .= 'eth';
+            $symbol .= '_eth';
         }
        \Log::info('lbank rose symbol = '. $symbol);
 
@@ -381,6 +379,10 @@ class ToolController extends Controller
 
         $data = json_decode(base64_decode($data));
         $symbol = strtolower($data->vcKeyword);
+
+        DataCache::callTotal();
+        DataCache::callTotalOf($symbol);
+
         if ($d = DataCache::getSymbolInfo('symbol-info-data-' . $symbol)) {
             $price = $d['price'];
             $rose = $d['rose'];
@@ -403,7 +405,7 @@ https://proton.global
                ], 200);
             }
             $price = $this->getPrice($symbol);
-            $rose = $this->get24DetailFor($symbol);
+            $rose = round($this->get24DetailFor($symbol), 2);
             DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
         $cny = DataCache::getCurrency('cny');
@@ -413,7 +415,7 @@ https://proton.global
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币种: ' . strtoupper($data->vcKeyword) .'
-币价: ¥' . round($price * $cny, 5) .'/ $' . round($price, 5) . '
+币价: ¥' . round($price * $cny, 5) .' / $' . round($price, 5) . '
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . '
 [' . date('Y-m-d H:i:s') .  ']

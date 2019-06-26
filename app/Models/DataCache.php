@@ -146,4 +146,16 @@ class DataCache extends Model
     {
         return Redis::set($key, 1, 'EX' , $time, 'NX');
     }
+
+    public static function callTotal()
+    {
+        $key = 'wechat_robot_callback_count';
+        Redis::incr($key);
+    }
+
+    public static function callTotalOf($symbol)
+    {
+        $key = 'wechat_robot_callback_' . $symbol . '_count';
+        Redis::incr($key);
+    }
 }
