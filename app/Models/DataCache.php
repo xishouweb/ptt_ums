@@ -120,12 +120,12 @@ class DataCache extends Model
         Redis::set($key, json_encode($data));
     }
 
-    public static function getSymbolInfo()
+    public static function getSymbolInfo($key)
     {
         return json_decode(Redis::get($key), true);
     }
 
-    public static function setSymbolInfo($data)
+    public static function setSymbolInfo($key, $data)
     {
         Redis::set($key, json_encode($data), 'EX', 5);
     }
