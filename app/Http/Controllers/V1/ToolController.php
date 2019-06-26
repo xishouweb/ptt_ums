@@ -51,10 +51,10 @@ class ToolController extends Controller
     private function __getPriceFromBinance($symbol)
     {
         $symbol = strtoupper($symbol);
-        if (!DataCache::getSymbolsFrom('symbol_binance_ETH_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_binance_BTC_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_binance_USDT_' . $symbol)) {
-                    if (!DataCache::getSymbolsFrom('symbol_binance_BNB_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_binance_ETH_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_binance_BTC_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_binance_USDT_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_binance_BNB_' . $symbol)) {
                         return 0;
                     } else {
                         $symbol .= 'BNB';
@@ -80,10 +80,10 @@ class ToolController extends Controller
 
     private function __getPriceFromHuoBi($symbol)
     {
-        if (!DataCache::getSymbolsFrom('symbol_huobi_eth_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_huobi_btc_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_huobi_usdt_' . $symbol)) {
-                    if (!DataCache::getSymbolsFrom('symbol_huobi_ht_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_huobi_eth_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_huobi_btc_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_huobi_usdt_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_huobi_ht_' . $symbol)) {
                         return 0;
                     } else {
                         $symbol .= 'ht';
@@ -114,9 +114,9 @@ class ToolController extends Controller
 
     private function __getPriceFromCointiger($symbol)
     {
-        if (!DataCache::getSymbolsFrom('symbol_cointiger_eth_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_cointiger_btc_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_cointiger_usdt_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_cointiger_eth_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_cointiger_btc_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_cointiger_usdt_' . $symbol)) {
                     return 0;
                 }else {
                     $symbol .= 'usdt';
@@ -143,9 +143,9 @@ class ToolController extends Controller
 
     private function __getPriceFromLbank($symbol)
     {
-        if (!DataCache::getSymbolsFrom('symbol_lbank_eth_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_lbank_btc_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_lbank_usdt_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_lbank_btc_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
                     return 0;
                 }else {
                     $symbol .= 'usdt';
@@ -197,9 +197,9 @@ class ToolController extends Controller
 
     private function __getDetailOfCointiger($symbol)
     {
-        if (!DataCache::getSymbolsFrom('symbol_cointiger_eth_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_cointiger_btc_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_cointiger_usdt_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_cointiger_eth_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_cointiger_btc_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_cointiger_usdt_' . $symbol)) {
                     return 0;
                 }else {
                     $symbol .= 'usdt';
@@ -227,10 +227,10 @@ class ToolController extends Controller
     private function __getDetailOfbinance($symbol)
     {
         $symbol = strtoupper($symbol);
-        if (!DataCache::getSymbolsFrom('symbol_binance_ETH_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_binance_BTC_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_binance_USDT_' . $symbol)) {
-                    if (!DataCache::getSymbolsFrom('symbol_binance_BNB_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_binance_ETH_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_binance_BTC_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_binance_USDT_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_binance_BNB_' . $symbol)) {
                         return 0;
                     } else {
                         $symbol .= 'BNB';
@@ -256,10 +256,10 @@ class ToolController extends Controller
 
     private function __getDetailOfHuobi($symbol)
     {
-        if (!DataCache::getSymbolsFrom('symbol_huobi_eth_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_huobi_btc_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_huobi_usdt_' . $symbol)) {
-                    if (!DataCache::getSymbolsFrom('symbol_huobi_ht_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_huobi_eth_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_huobi_btc_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_huobi_usdt_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_huobi_ht_' . $symbol)) {
                         return 0;
                     } else {
                         $symbol .= 'ht';
@@ -289,9 +289,9 @@ class ToolController extends Controller
 
     private function __getDetailOfLbank($symbol)
     {
-        if (!DataCache::getSymbolsFrom('symbol_lbank_eth_' . $symbol)) {
-            if (!DataCache::getSymbolsFrom('symbol_lbank_btc_' . $symbol)) {
-                if (!DataCache::getSymbolsFrom('symbol_lbank_usdt_' . $symbol)) {
+        if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_lbank_btc_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
                     return 0;
                 }else {
                     $symbol .= 'usdt';
