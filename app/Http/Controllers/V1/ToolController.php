@@ -241,12 +241,12 @@ class ToolController extends Controller
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
-                    'vcContent' => '币种: <ETH>
+                    'vcContent' => '币种: ETH
 币价: ' . $price .'
 涨跌幅:
-24H: <' . $detail .  '>% <↑>
-【<' . date('Y-m-d H:i:s') .  '>】
-<https://proton.global>
+24H: ' . $detail .  '% ↑
+【' . date('Y-m-d H:i:s') .  '】
+https://proton.global
 ',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
