@@ -110,15 +110,13 @@ class DataCache extends Model
         return Redis::zrevrank('credit_rank', $key) + 1;
     }
 
-    public static function getSymbolsFrom($exchange)
+    public static function getSymbolsFrom($key)
     {
-        $key = $exchange . '-symbols';
         return json_decode(Redis::get($key), true);
     }
 
-    public static function setSymbolsFor($exchange, $data)
+    public static function setSymbolsFor($key, $data)
     {
-        $key = $exchange . '-symbols';
         Redis::set($key, json_encode($data));
     }
 }
