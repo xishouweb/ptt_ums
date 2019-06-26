@@ -119,4 +119,19 @@ class DataCache extends Model
     {
         Redis::set($key, json_encode($data));
     }
+
+    public static function getSymbolInfo()
+    {
+        return json_decode(Redis::get($key), true);
+    }
+
+    public static function setSymbolInfo($data)
+    {
+        Redis::set($key, json_encode($data), 'EX', 5);
+    }
+
+    public static function lock($key, $time)
+    {
+        return Redis::set($key, 1, 'EX' , $time, 'NX');
+    }
 }
