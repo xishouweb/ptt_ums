@@ -179,7 +179,7 @@ class ToolController extends Controller
         $res = $client->request('GET', $url . $symbol);
         $resData  = json_decode((string) $res->getBody());
 
-        return isset($resData->priceChangePercent) ?  round($resData->priceChangePercent, 4) * 100  : 0;
+        return isset($resData->priceChangePercent) ?  $resData->priceChangePercent : 0;
     }
 
     private function __getDetailOfHuobi($symbol)
