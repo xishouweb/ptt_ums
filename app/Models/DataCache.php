@@ -63,7 +63,7 @@ class DataCache extends Model
             $url = "http://op.juhe.cn/onebox/exchange/currency?from=USD&to=$currency&key=4cdacbeb5039b14c171171f7a3d0e4b1";
             $client = new Client();
 
-            $res = $client->request('GEET', $url);
+            $res = $client->request('GET', $url);
             $result  = json_decode((string) $res->getBody());
 
             if ($result->error_code != 0 ) {
@@ -74,7 +74,7 @@ class DataCache extends Model
 
             $value = $data[0]->exchange;
 
-            Redis::set($key, $value, 'EX', 60 * 60 * 8);
+            Redis::set($key, $value, 'EX', 60 * 30);
         }
 
         return $value;
@@ -118,6 +118,18 @@ class DataCache extends Model
     public static function setSymbolsFor($key, $data)
     {
         Redis::set($key, json_encode($data));
+    }
+
+    public static function getBaseSymbolPrice($symbol)
+    {
+        $key = 'base_price_' . $symbol;
+        return json_decode(Redis::get($key), true);
+    }
+
+    public static function setBaseSymbolsPrice($symbol, $data)
+    {
+        $key = 'base_price_' . $symbol;
+        Redis::set($key, json_encode($data), 'EX', 15);
     }
 
     public static function getSymbolInfo($key)
