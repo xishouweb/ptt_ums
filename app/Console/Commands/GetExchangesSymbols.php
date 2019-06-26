@@ -45,7 +45,7 @@ class GetExchangesSymbols extends Command
         $this->__setCointigerSymbol($keywords);
         $this->__setLbankSymbol($keywords);
 
-        DataCache::setSymbolsFor('keywords', $keywords);
+        DataCache::setSymbolsFor('keywords-symbol', $keywords);
     }
 
     private function __setBinanceSymbol(&$keywords)
