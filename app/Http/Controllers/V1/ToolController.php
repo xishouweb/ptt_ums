@@ -389,7 +389,7 @@ class ToolController extends Controller
                     'data' => [
                         'nMsgType' => 2001,
                         'vcContent' => '有点累了,我让歇5秒😛
-【' . date('Y-m-d H:i:s') .  '】
+[' . date('Y-m-d H:i:s') .  ']
 https://proton.global
 ',
                         'vcShareTitle' => null,
@@ -410,11 +410,11 @@ https://proton.global
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币种: ' . $data->vcKeyword .'
-币价: ¥' . $price * $cny .' / $ ' . $price . '
+币价: ¥' . round($price * $cny, 5) .'/ $' . round($price, 5) . '
 涨跌幅:
-24H: ' . $rose .  '% ' . ($rose > 0 ? '↑' : '↓' ) . '
-【' . date('Y-m-d H:i:s') .  '】
-https://proton.global
+24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . '
+[' . date('Y-m-d H:i:s') .  ']
+https://www.proton.global
 ',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
