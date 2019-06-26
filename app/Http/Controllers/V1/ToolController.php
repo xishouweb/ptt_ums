@@ -261,12 +261,13 @@ https://proton.global
 
     public function setKeyword()
     {
-        $symbols = DataCache::getSymbols();
-        $data = json_encode([
+        $symbols = DataCache::getSymbols('keywords-symbol');
+
+        $data = base64_encode(json_encode([
             'nActivityId' => 10158,
             'vcName' => 10158,
-            'vcKeyword' => ['eth', 'btc', 'ltc', 'aaa']
-        ]);
+            'vcKeyword' => $symbols
+        ]));
 
         $timestamp = time();
 
@@ -285,7 +286,7 @@ https://proton.global
             'body' => $body,
             'headers' => ['Content-Type' => 'application/json']
            ]);
-        $resData  = json_decode((string) $res->getBody());
+        $resData  = json_decode((string) $res->getBody(), true);
         return $resData;
     }
 }
