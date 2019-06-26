@@ -45,28 +45,34 @@ class ToolController extends Controller
             $count ++;
         }
 
-        return ($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $count;
+        return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $count, 4);
     }
 
-    private function __getPriceFromBinance($symbol)
+    private function __getPriceFromBinance($symbol, $is_check = true)
     {
         $symbol = strtoupper($symbol);
-        if (!DataCache::getSymbols('symbol_binance_ETH_' . $symbol)) {
-            if (!DataCache::getSymbols('symbol_binance_BTC_' . $symbol)) {
-                if (!DataCache::getSymbols('symbol_binance_USDT_' . $symbol)) {
-                    if (!DataCache::getSymbols('symbol_binance_BNB_' . $symbol)) {
-                        return 0;
-                    } else {
-                        $symbol .= 'BNB';
+        $basePrice = 1;
+        if ($is_check) {
+            if (!DataCache::getSymbols('symbol_binance_ETH_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_binance_BTC_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_binance_USDT_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_binance_BNB_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= 'BNB';
+                            $basePrice = $this->__getBasePrice('bnb');
+                        }
+                    }else {
+                        $symbol .= 'USDT';
                     }
-                }else {
-                    $symbol .= 'USDT';
+                } else {
+                    $symbol .= 'BTC';
+                    $basePrice = $this->__getBasePrice('btc');
                 }
             } else {
-                $symbol .= 'BTC';
+                $symbol .= 'ETH';
+                $basePrice = $this->__getBasePrice('eth');
             }
-        } else {
-            $symbol .= 'ETH';
         }
 
         \Log::info('binance price symbol = '. $symbol);
@@ -75,27 +81,58 @@ class ToolController extends Controller
         $res = $client->request('GET', $url . $symbol);
         $resData  = json_decode((string) $res->getBody());
 
-        return isset($resData->price) ? $resData->price : 0;
+        return isset($resData->price) ? $resData->price * $basePrice : 0;
     }
 
-    private function __getPriceFromHuoBi($symbol)
+    private function __getBasePrice($symbol)
     {
-        if (!DataCache::getSymbols('symbol_huobi_eth_' . $symbol)) {
-            if (!DataCache::getSymbols('symbol_huobi_btc_' . $symbol)) {
-                if (!DataCache::getSymbols('symbol_huobi_usdt_' . $symbol)) {
-                    if (!DataCache::getSymbols('symbol_huobi_ht_' . $symbol)) {
-                        return 0;
-                    } else {
-                        $symbol .= 'ht';
+        if ($price = DataCache::getBaseSymbolPrice($symbol)) {
+            return $price;
+        }
+
+        switch ($symbol) {
+            case 'eth':
+                $price = $this->__getPriceFromBinance("ETHUSDT", false);
+                break;
+            case 'btc':
+                $price = $this->__getPriceFromBinance("BTCUSDT", false);
+                break;
+            case 'bnb':
+                $price = $this->__getPriceFromBinance("BNBUSDT", false);
+                break;
+            case 'ht':
+                $price = $this->__getPriceFromHuoBi("htusdt", false);
+                break;
+        }
+
+        DataCache::setBaseSymbolsPrice($symbol, $price);
+        return $price;
+    }
+
+    private function __getPriceFromHuoBi($symbol, $is_check = true)
+    {
+        $basePrice = 1;
+        if ($is_check) {
+            if (!DataCache::getSymbols('symbol_huobi_eth_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_huobi_btc_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_huobi_usdt_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_huobi_ht_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= 'ht';
+                            $basePrice = $this->__getBasePrice('ht');
+                        }
+                    }else {
+                        $symbol .= 'usdt';
                     }
-                }else {
-                    $symbol .= 'usdt';
+                } else {
+                    $symbol .= 'btc';
+                    $basePrice = $this->__getBasePrice('btc');
                 }
             } else {
-                $symbol .= 'btc';
+                $symbol .= 'eth';
+                $basePrice = $this->__getBasePrice('eth');
             }
-        } else {
-            $symbol .= 'eth';
         }
 
      \Log::info('huobi price symbol = '. $symbol);
@@ -105,7 +142,7 @@ class ToolController extends Controller
         $resData  = json_decode((string) $res->getBody());
 
         if ($resData->status == 'ok') {
-            return isset($resData->tick) && isset($resData->tick->data) ? $resData->tick->data[0]->price : 0;
+            return isset($resData->tick) && isset($resData->tick->data) ? $resData->tick->data[0]->price * $basePrice : 0;
         } else {
             return 0;
         }
@@ -114,6 +151,7 @@ class ToolController extends Controller
 
     private function __getPriceFromCointiger($symbol)
     {
+        $basePrice = 1;
         if (!DataCache::getSymbols('symbol_cointiger_eth_' . $symbol)) {
             if (!DataCache::getSymbols('symbol_cointiger_btc_' . $symbol)) {
                 if (!DataCache::getSymbols('symbol_cointiger_usdt_' . $symbol)) {
@@ -123,9 +161,11 @@ class ToolController extends Controller
                 }
             } else {
                 $symbol .= 'btc';
+                $basePrice = $this->__getBasePrice('btc');
             }
         } else {
             $symbol .= 'eth';
+            $basePrice = $this->__getBasePrice('eth');
         }
 
         \Log::info('cointiger price symbol = '. $symbol);
@@ -135,7 +175,7 @@ class ToolController extends Controller
         $resData  = json_decode((string) $res->getBody());
 
         if ($resData->code == '0') {
-            return isset($resData->data) && isset($resData->data->trade_data) ? $resData->data->trade_data[0]->price : 0;
+            return isset($resData->data) && isset($resData->data->trade_data) ? $resData->data->trade_data[0]->price * $basePrice : 0;
         } else {
             return 0;
         }
@@ -143,6 +183,7 @@ class ToolController extends Controller
 
     private function __getPriceFromLbank($symbol)
     {
+        $basePrice = 1;
         if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
             if (!DataCache::getSymbols('symbol_lbank_btc_' . $symbol)) {
                 if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
@@ -152,9 +193,11 @@ class ToolController extends Controller
                 }
             } else {
                 $symbol .= 'btc';
+                $basePrice = $this->__getBasePrice('btc');
             }
         } else {
             $symbol .= 'eth';
+            $basePrice = $this->__getBasePrice('eth');
         }
        \Log::info('lbank price symbol = '. $symbol);
         $url = 'https://www.lbkex.net/v1/trades.do?size=1&symbol=';
@@ -164,7 +207,7 @@ class ToolController extends Controller
 
         if (is_array($resData)) {
             $d = $resData[0];
-            return isset($d->price) ? $d->price : 0;
+            return isset($d->price) ? $d->price * $basePrice : 0;
         } else {
             return 0;
         }
@@ -192,7 +235,7 @@ class ToolController extends Controller
             $count ++;
         }
 
-        return ($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $count;
+        return round(($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $count, 4);
     }
 
     private function __getDetailOfCointiger($symbol)
@@ -360,14 +403,14 @@ https://proton.global
             $rose = $this->get24DetailFor($symbol);
             DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
-
+        $cny = DataCache::getCurrency('cny');
         return response()->json([
                 'resultcode' => 0,
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币种: ' . $data->vcKeyword .'
-币价: ' . $price .'
+币价: ¥' . $price * $cny .' / $ ' . $price . '
 涨跌幅:
 24H: ' . $rose .  '% ' . ($rose > 0 ? '↑' : '↓' ) . '
 【' . date('Y-m-d H:i:s') .  '】
