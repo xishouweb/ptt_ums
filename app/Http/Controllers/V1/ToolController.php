@@ -45,7 +45,7 @@ class ToolController extends Controller
             $count ++;
         }
 
-        $cou = $count ?? 1;
+        $cou = $count > 0  ? $count : 1;
         return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $cou, 4);
     }
 
@@ -234,7 +234,7 @@ class ToolController extends Controller
             $count ++;
         }
 
-        $cou = $count ?? 1;
+        $cou = $count > 0  ? $count : 1;
 
         return round(($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $cou, 4);
     }
