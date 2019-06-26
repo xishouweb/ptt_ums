@@ -45,6 +45,7 @@ class ToolController extends Controller
             $count ++;
         }
 
+        $count = $count ?? 1;
         return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $count, 4);
     }
 
@@ -189,14 +190,14 @@ class ToolController extends Controller
                 if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
                     return 0;
                 }else {
-                    $symbol .= 'usdt';
+                    $symbol .= '_usdt';
                 }
             } else {
-                $symbol .= 'btc';
+                $symbol .= '_btc';
                 $basePrice = $this->__getBasePrice('btc');
             }
         } else {
-            $symbol .= 'eth';
+            $symbol .= '_eth';
             $basePrice = $this->__getBasePrice('eth');
         }
        \Log::info('lbank price symbol = '. $symbol);
@@ -234,6 +235,8 @@ class ToolController extends Controller
         if ($cointigerDetail = $this->__getDetailOfCointiger($symbol)) {
             $count ++;
         }
+
+        $count = $count ?? 1;
 
         return round(($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $count, 4);
     }
@@ -382,13 +385,13 @@ class ToolController extends Controller
             $price = $d['price'];
             $rose = $d['rose'];
         } else {
-            if (!DataCache::lock('symbol-info-lock', 5)) {
+            if (!DataCache::lock('symbol-info-lock', 1)) {
                 return response()->json([
                     'resultcode' => 0,
                     'resultdesc' => 'success',
                     'data' => [
                         'nMsgType' => 2001,
-                        'vcContent' => '有点累了,我让歇5秒😛
+                        'vcContent' => '有点累了,我让歇1秒
 [' . date('Y-m-d H:i:s') .  ']
 https://proton.global
 ',
@@ -409,7 +412,7 @@ https://proton.global
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
-                    'vcContent' => '币种: ' . $data->vcKeyword .'
+                    'vcContent' => '币种: ' . strtoupper($data->vcKeyword) .'
 币价: ¥' . round($price * $cny, 5) .'/ $' . round($price, 5) . '
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . '
