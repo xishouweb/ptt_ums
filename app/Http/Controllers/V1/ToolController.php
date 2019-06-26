@@ -33,8 +33,6 @@ class ToolController extends Controller
             $count ++;
         }
 
-        $symbol = str_replace('_', '', $symbol);
-
         if ($binancePrice = $this->__getPriceFromBinance($symbol)) {
             $count ++;
         }
@@ -53,10 +51,25 @@ class ToolController extends Controller
     private function __getPriceFromBinance($symbol)
     {
         $symbol = strtoupper($symbol);
-        $symbols = DataCache::getSymbolsFrom('binance');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_binance_ETH_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_binance_BTC_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_binance_USDT_' . $symbol)) {
+                    if (!DataCache::getSymbolsFrom('symbol_binance_BNB_' . $symbol)) {
+                        return 0;
+                    } else {
+                        $symbol .= 'BNB';
+                    }
+                }else {
+                    $symbol .= 'USDT';
+                }
+            } else {
+                $symbol .= 'BTC';
+            }
+        } else {
+            $symbol .= 'ETH';
         }
+
+        \Log::info('binance price symbol = '. $symbol);
         $url = 'https://api.binance.com/api/v3/ticker/price?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -67,10 +80,25 @@ class ToolController extends Controller
 
     private function __getPriceFromHuoBi($symbol)
     {
-        $symbols = DataCache::getSymbolsFrom('huobi');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_huobi_eth_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_huobi_btc_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_huobi_usdt_' . $symbol)) {
+                    if (!DataCache::getSymbolsFrom('symbol_huobi_ht_' . $symbol)) {
+                        return 0;
+                    } else {
+                        $symbol .= 'ht';
+                    }
+                }else {
+                    $symbol .= 'usdt';
+                }
+            } else {
+                $symbol .= 'btc';
+            }
+        } else {
+            $symbol .= 'eth';
         }
+
+     \Log::info('huobi price symbol = '. $symbol);
         $url='https://api.huobi.pro/market/trade?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -86,11 +114,21 @@ class ToolController extends Controller
 
     private function __getPriceFromCointiger($symbol)
     {
-        $symbols = DataCache::getSymbolsFrom('cointiger');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_cointiger_eth_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_cointiger_btc_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_cointiger_usdt_' . $symbol)) {
+                    return 0;
+                }else {
+                    $symbol .= 'usdt';
+                }
+            } else {
+                $symbol .= 'btc';
+            }
+        } else {
+            $symbol .= 'eth';
         }
 
+        \Log::info('cointiger price symbol = '. $symbol);
         $url = 'https://api.cointiger.com/exchange/trading/api/market/history/trade?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -105,11 +143,20 @@ class ToolController extends Controller
 
     private function __getPriceFromLbank($symbol)
     {
-        $symbols = DataCache::getSymbolsFrom('lbank');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_lbank_eth_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_lbank_btc_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_lbank_usdt_' . $symbol)) {
+                    return 0;
+                }else {
+                    $symbol .= 'usdt';
+                }
+            } else {
+                $symbol .= 'btc';
+            }
+        } else {
+            $symbol .= 'eth';
         }
-
+       \Log::info('lbank price symbol = '. $symbol);
         $url = 'https://www.lbkex.net/v1/trades.do?size=1&symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -150,10 +197,21 @@ class ToolController extends Controller
 
     private function __getDetailOfCointiger($symbol)
     {
-        $symbols = DataCache::getSymbolsFrom('cointiger');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_cointiger_eth_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_cointiger_btc_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_cointiger_usdt_' . $symbol)) {
+                    return 0;
+                }else {
+                    $symbol .= 'usdt';
+                }
+            } else {
+                $symbol .= 'btc';
+            }
+        } else {
+            $symbol .= 'eth';
         }
+
+        \Log::info('cointiger rose symbol = '. $symbol);
 
         $url = 'https://api.cointiger.com/exchange/trading/api/market/detail?symbol=';
         $client = new Client();
@@ -169,11 +227,25 @@ class ToolController extends Controller
     private function __getDetailOfbinance($symbol)
     {
         $symbol = strtoupper($symbol);
-        $symbols = DataCache::getSymbolsFrom('binance');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_binance_ETH_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_binance_BTC_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_binance_USDT_' . $symbol)) {
+                    if (!DataCache::getSymbolsFrom('symbol_binance_BNB_' . $symbol)) {
+                        return 0;
+                    } else {
+                        $symbol .= 'BNB';
+                    }
+                }else {
+                    $symbol .= 'USDT';
+                }
+            } else {
+                $symbol .= 'BTC';
+            }
+        } else {
+            $symbol .= 'ETH';
         }
 
+\Log::info('binance rose symbol = '. $symbol);
         $url = 'https://api.binance.com/api/v1/ticker/24hr?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -184,10 +256,25 @@ class ToolController extends Controller
 
     private function __getDetailOfHuobi($symbol)
     {
-        $symbols = DataCache::getSymbolsFrom('huobi');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_huobi_eth_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_huobi_btc_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_huobi_usdt_' . $symbol)) {
+                    if (!DataCache::getSymbolsFrom('symbol_huobi_ht_' . $symbol)) {
+                        return 0;
+                    } else {
+                        $symbol .= 'ht';
+                    }
+                }else {
+                    $symbol .= 'usdt';
+                }
+            } else {
+                $symbol .= 'btc';
+            }
+        } else {
+            $symbol .= 'eth';
         }
+
+     \Log::info('huobi rose symbol = '. $symbol);
         $url='https://api.huobi.pro/market/detail?symbol=';
         $client = new Client();
         $res = $client->request('GET', $url . $symbol);
@@ -202,10 +289,20 @@ class ToolController extends Controller
 
     private function __getDetailOfLbank($symbol)
     {
-        $symbols = DataCache::getSymbolsFrom('lbank');
-        if (!in_array($symbol, $symbols)) {
-            return 0;
+        if (!DataCache::getSymbolsFrom('symbol_lbank_eth_' . $symbol)) {
+            if (!DataCache::getSymbolsFrom('symbol_lbank_btc_' . $symbol)) {
+                if (!DataCache::getSymbolsFrom('symbol_lbank_usdt_' . $symbol)) {
+                    return 0;
+                }else {
+                    $symbol .= 'usdt';
+                }
+            } else {
+                $symbol .= 'btc';
+            }
+        } else {
+            $symbol .= 'eth';
         }
+       \Log::info('lbank rose symbol = '. $symbol);
 
         $url = 'https://www.lbkex.net/v1/ticker.do?symbol=';
         $client = new Client();
@@ -236,18 +333,43 @@ class ToolController extends Controller
            ], 200);
         }
 
-        $price = $this->getPrice($data);
-        $detail = $this->get24DetailFor($data);
+        $data = json_decode(base64_decode($data));
+        $symbol = strtolower($data->vcKeyword);
+        if ($d = DataCache::getSymbolInfo('symbol-data-' . $symbol)) {
+            $price = $d['price'];
+            $rose = $d['rose'];
+        } else {
+            if (!DataCache::lock('symbol-info-lock', 5)) {
+                return response()->json([
+                    'resultcode' => 0,
+                    'resultdesc' => 'success',
+                    'data' => [
+                        'nMsgType' => 2001,
+                        'vcContent' => '有点累了,我让歇5秒😛
+【' . date('Y-m-d H:i:s') .  '】
+https://proton.global
+',
+                        'vcShareTitle' => null,
+                        'vcShareDesc' => null,
+                        'vcShareUrl' => null,
+
+                    ],
+               ], 200);
+            }
+            $price = $this->getPrice($symbol);
+            $rose = $this->get24DetailFor($symbol);
+            DataCache::setSymbolInfo(['price' => $price, 'rose' => $rose]);
+        }
 
         return response()->json([
                 'resultcode' => 0,
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
-                    'vcContent' => '币种: ETH
+                    'vcContent' => '币种: ' . $data->vcKeyword .'
 币价: ' . $price .'
 涨跌幅:
-24H: ' . $detail .  '% ↑
+24H: ' . $rose .  '% ' . ($rose > 0 ? '↑' : '↓' ) . '
 【' . date('Y-m-d H:i:s') .  '】
 https://proton.global
 ',
@@ -261,12 +383,13 @@ https://proton.global
 
     public function setKeyword()
     {
-        $symbols = DataCache::getSymbols();
-        $data = json_encode([
+        $symbols = DataCache::getSymbols('keywords-symbol');
+
+        $data = base64_encode(json_encode([
             'nActivityId' => 10158,
             'vcName' => 10158,
-            'vcKeyword' => ['eth', 'btc', 'ltc', 'aaa']
-        ]);
+            'vcKeyword' => $symbols
+        ]));
 
         $timestamp = time();
 
@@ -285,7 +408,7 @@ https://proton.global
             'body' => $body,
             'headers' => ['Content-Type' => 'application/json']
            ]);
-        $resData  = json_decode((string) $res->getBody());
+        $resData  = json_decode((string) $res->getBody(), true);
         return $resData;
     }
 }
