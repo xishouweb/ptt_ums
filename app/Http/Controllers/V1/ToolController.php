@@ -335,7 +335,7 @@ class ToolController extends Controller
 
         $data = json_decode(base64_decode($data));
         $symbol = strtolower($data->vcKeyword);
-        if ($d = DataCache::getSymbolInfo('symbol-data-' . $symbol)) {
+        if ($d = DataCache::getSymbolInfo('symbol-info-data-' . $symbol)) {
             $price = $d['price'];
             $rose = $d['rose'];
         } else {
@@ -358,7 +358,7 @@ https://proton.global
             }
             $price = $this->getPrice($symbol);
             $rose = $this->get24DetailFor($symbol);
-            DataCache::setSymbolInfo(['price' => $price, 'rose' => $rose]);
+            DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
 
         return response()->json([
