@@ -23,6 +23,9 @@ use QL\QueryList;
 
 class ToolController extends Controller
 {
+    const JIA_QUN_LA_APPID = 'BJBTK-1000001';
+    const JIA_QUN_LA_SECRET = 'BJBTK-8b672617101c99eb884f30606366e53a';
+
     public function getPrice($symbol)
     {
         $count = 0;
@@ -241,12 +244,12 @@ class ToolController extends Controller
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
-                    'vcContent' => '币种: <ETH>
+                    'vcContent' => '币种: ETH
 币价: ' . $price .'
 涨跌幅:
-24H: <' . $detail .  '>% <↑>
-【<' . date('Y-m-d H:i:s') .  '>】
-<https://proton.global>
+24H: ' . $detail .  '% ↑
+【' . date('Y-m-d H:i:s') .  '】
+https://proton.global
 ',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
@@ -254,5 +257,35 @@ class ToolController extends Controller
 
                 ],
            ], 200);
+    }
+
+    public function setKeyword()
+    {
+        $symbols = DataCache::getSymbols();
+        $data = json_encode([
+            'nActivityId' => 10158,
+            'vcName' => 10158,
+            'vcKeyword' => ['eth', 'btc', 'ltc', 'aaa']
+        ]);
+
+        $timestamp = time();
+
+        $sign = md5(static::JIA_QUN_LA_APPID . static::JIA_QUN_LA_SECRET . $timestamp . $data);
+
+        $url = 'http://en.hytest.jinqunla.com/api/External/keyword/SetkeywordsImport';
+        $body =  json_encode([
+                   'appid' => static::JIA_QUN_LA_APPID,
+                   'sign' => $sign,
+                   'timestamp' => $timestamp,
+                   'data' => $data,
+               ]);
+
+        $client = new Client();
+        $res = $client->request('POST', $url,  [
+            'body' => $body,
+            'headers' => ['Content-Type' => 'application/json']
+           ]);
+        $resData  = json_decode((string) $res->getBody());
+        return $resData;
     }
 }

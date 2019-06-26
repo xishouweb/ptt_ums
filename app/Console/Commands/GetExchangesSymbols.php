@@ -39,13 +39,16 @@ class GetExchangesSymbols extends Command
      */
     public function handle()
     {
-        $this->__setBinanceSymbol();
-        $this->__setHuoBiSymbol();
-        $this->__setCointigerSymbol();
-        $this->__setLbankSymbol();
+        $keywords = [];
+        $this->__setBinanceSymbol($keywords);
+        $this->__setHuoBiSymbol($keywords);
+        $this->__setCointigerSymbol($keywords);
+        $this->__setLbankSymbol($keywords);
+
+        DataCache::setSymbolsFor('keywords', $keywords);
     }
 
-    private function __setBinanceSymbol()
+    private function __setBinanceSymbol(&$keywords)
     {
         $url = 'https://api.binance.com/api/v1/exchangeInfo';
         $client = new Client();
@@ -53,14 +56,16 @@ class GetExchangesSymbols extends Command
         $resData  = json_decode((string) $res->getBody());
 
         $data = [];
-        foreach ($resData->symbols as $key => $d) {
-            $data[$d->quoteAsset][] = $d->baseAsset;
+        foreach ($resData->symbols as $d) {
+            DataCache::setSymbolsFor('symbol_binance_' . $d->quoteAsset . '_ ' . $d->baseAsset, 1);
+            $keyword = strtolower($d->baseAsset);
+            if (!in_array($keyword, $keywords)) {
+                $keywords[] = $keyword;
+            }
         }
-
-        DataCache::setSymbolsFor('binance', $data);
     }
 
-    private function __setHuoBiSymbol()
+    private function __setHuoBiSymbol(&$keywords)
     {
         $url = 'https://api.huobi.pro/v1/common/symbols';
         $client = new Client();
@@ -69,13 +74,15 @@ class GetExchangesSymbols extends Command
 
         $data = [];
         foreach ($resData['data'] as $d) {
-            $data[$d['quote-currency']][] = $d['base-currency'];
+            DataCache::setSymbolsFor('symbol_huobi_' . $d['quote-currency'] . '_ ' . $d['base-currency'], 1);
+            $keyword = strtolower($d['base-currency']);
+            if (!in_array($keyword, $keywords)) {
+                $keywords[] = $keyword;
+            }
         }
-
-        DataCache::setSymbolsFor('huobi', $data);
     }
 
-    private function __setCointigerSymbol()
+    private function __setCointigerSymbol(&$keywords)
     {
         $url = 'https://api.cointiger.com/exchange/trading/api/v2/currencys/v2';
         $client = new Client();
@@ -88,14 +95,16 @@ class GetExchangesSymbols extends Command
         foreach ($info as $key => $value) {
             $arr = explode('-', $key);
             foreach ($info[$key] as $d) {
-                $data[$arr[0]][] = $d['baseCurrency'];
+                DataCache::setSymbolsFor('symbol_cointiger_' .$arr[0] . '_ ' . $d['baseCurrency'], 1);
+                $keyword = strtolower($d['baseCurrency']);
+                if (!in_array($keyword, $keywords)) {
+                    $keywords[] = $keyword;
+                }
             }
         }
-
-        DataCache::setSymbolsFor('cointiger', $data);
     }
 
-    private function __setLbankSymbol()
+    private function __setLbankSymbol(&$keywords)
     {
         $url = 'https://www.lbkex.net/v1/currencyPairs.do';
         $client = new Client();
@@ -105,7 +114,11 @@ class GetExchangesSymbols extends Command
         foreach ($resData as $value) {
             $arr = explode('_', $value);
             $data[$arr[1]][] = $arr[0];
+            DataCache::setSymbolsFor('symbol_lbank_' .$arr[1] . '_ ' . $arr[0], 1);
+            $keyword = strtolower($arr[0]);
+            if (!in_array($keyword, $keywords)) {
+                $keywords[] = $keyword;
+            }
         }
-        DataCache::setSymbolsFor('lbank', $data);
     }
 }

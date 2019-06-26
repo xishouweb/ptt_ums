@@ -59,6 +59,7 @@ Route::prefix('proton')->group(function() {
 Route::prefix('v1')->group(function() {
     Route::namespace('V1')->group(function (Router $router) {
        $router->get('symbol/{symbol}/info', 'ToolController@getPrice');
+       $router->get('symbol/keyword', 'ToolController@setKeyword');
        $router->post('symbol/message/callback', 'ToolController@wechatMessageCallback');
     });
 });
