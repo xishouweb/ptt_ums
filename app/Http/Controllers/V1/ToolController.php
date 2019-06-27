@@ -24,7 +24,7 @@ use QL\QueryList;
 class ToolController extends Controller
 {
     const JIA_QUN_LA_APPID = 'BJBTK-1000001';
-    const JIA_QUN_LA_SECRET = 'BJBTK-8b672617101c99eb884f30606366e53a';
+    const JIA_QUN_LA_SECRET = 'BJBTK-a5195c503957b7e8c024454a0f8ea2c5';
 
     const TIP_SYMBLOS = ['eth', 'btc'];
     const TIPS = [
@@ -476,8 +476,8 @@ https://www.proton.global
         $symbols = DataCache::getSymbols('keywords-symbol');
 
         $data = base64_encode(json_encode([
-            'nActivityId' => 10158,
-            'vcName' => 10158,
+            'nActivityId' => 10013,
+            'vcName' => 10013,
             'vcKeyword' => $symbols
         ]));
 
@@ -485,7 +485,7 @@ https://www.proton.global
 
         $sign = md5(static::JIA_QUN_LA_APPID . static::JIA_QUN_LA_SECRET . $timestamp . $data);
 
-        $url = 'http://en.hytest.jinqunla.com/api/External/keyword/SetkeywordsImport';
+        $url = 'http://xzscallback.jinqunla.com/api/External/keyword/SetkeywordsImport';
         $body =  json_encode([
                    'appid' => static::JIA_QUN_LA_APPID,
                    'sign' => $sign,
