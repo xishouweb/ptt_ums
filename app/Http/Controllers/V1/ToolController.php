@@ -388,21 +388,7 @@ class ToolController extends Controller
             $rose = $d['rose'];
         } else {
             if (!DataCache::lock('symbol-info-lock', 1)) {
-                return response()->json([
-                    'resultcode' => 0,
-                    'resultdesc' => 'success',
-                    'data' => [
-                        'nMsgType' => 2001,
-                        'vcContent' => '有点累了,我让歇1秒
-[' . date('Y-m-d H:i:s') .  ']
-https://proton.global
-',
-                        'vcShareTitle' => null,
-                        'vcShareDesc' => null,
-                        'vcShareUrl' => null,
-
-                    ],
-               ], 200);
+               sleep(1);
             }
             $price = $this->getPrice($symbol);
             $rose = round($this->get24DetailFor($symbol), 2);
