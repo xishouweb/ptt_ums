@@ -471,6 +471,47 @@ https://www.proton.global
            ], 200);
     }
 
+    private function __choseTip($symbol, $rose)
+    {
+        if (in_array($symbol, static::TIP_SYMBLOS)) {
+            if ($rose > 20) {
+                return static::TIPS['20'];
+            }
+
+            if ($rose > 10) {
+                return static::TIPS['10'];
+            }
+
+            if ($rose > 50) {
+                return static::TIPS['5'];
+            }
+
+            if ($rose > 2) {
+                return static::TIPS['2'];
+            }
+        } else {
+            if ($rose > 200) {
+                return static::OTHER_TIPS['200'];
+            }
+
+            if ($rose > 100) {
+                return static::OTHER_TIPS['100'];
+            }
+
+            if ($rose > 50) {
+                return static::OTHER_TIPS['50'];
+            }
+
+            if ($rose > 20) {
+                return static::OTHER_TIPS['20'];
+            }
+
+            if ($rose > 10) {
+                return static::OTHER_TIPS['10'];
+            }
+        }
+    }
+
     public function setKeyword()
     {
         $symbols = DataCache::getSymbols('keywords-symbol');
