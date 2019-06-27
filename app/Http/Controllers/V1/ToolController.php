@@ -26,6 +26,22 @@ class ToolController extends Controller
     const JIA_QUN_LA_APPID = 'BJBTK-1000001';
     const JIA_QUN_LA_SECRET = 'BJBTK-8b672617101c99eb884f30606366e53a';
 
+    const TIP_SYMBLOS = ['eth', 'btc'];
+    const TIPS = [
+        '2' => '持有者注意啊 即将发车',
+        '5' => '持有者注意啊 已经发车了, 快上车~',
+        '10' => '持有者注意啊 要起飞了',
+        '20' => '飞起来了 好嗨吆',
+    ];
+
+    const OTHER_TIPS = [
+        '10' => '持有者注意啊 即将发车',
+        '20' => '持有者注意啊 已经发车了, 快上车~',
+        '50' => '持有者注意啊 要起飞了',
+        '100' => '飞起来了 好嗨吆',
+        '200' => '坐上了穿天猴, 体验爆炸人生',
+    ];
+
     public function getPrice($symbol)
     {
         $count = 0;
