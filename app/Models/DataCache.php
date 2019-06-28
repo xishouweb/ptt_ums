@@ -153,10 +153,9 @@ class DataCache extends Model
         Redis::incr($key);
     }
 
-    public static function callTotalOf($symbol)
+    public static function zincrOfScoreFor($symbol, $score)
     {
-        $key = 'wechat_robot_callback_' . $symbol . '_count';
-        Redis::incr($key);
+        Redis::zIncrBy('wechat_robot_callback_detail', $score, $symbol);
     }
 
     public static function getAllSymbolCount()
@@ -165,17 +164,8 @@ class DataCache extends Model
         return Redis::get($key);
     }
 
-    public static function getSymbolCount()
+    public static function getSymbolCountDetail()
     {
-        $key = 'wechat_robot_callback_*_count';
-        $keys = Redis::Keys($key);
-        $list = Redis::mget($keys);
-
-        $data = [];
-        foreach ($keys as $k => $v) {
-            $index = str_replace('wechat_robot_callback_', '', $v);
-            $data[$index] = $list[$k];
-        }
-        return $data;
+        return Redis::zrevrange('wechat_robot_callback_detail', 0, -1, 'WITHSCORES');
     }
 }

@@ -438,7 +438,7 @@ class ToolController extends Controller
         $symbol = strtolower($data->vcKeyword);
 
         DataCache::callTotal();
-        DataCache::callTotalOf($symbol);
+        DataCache::zincrOfScoreFor($symbol, 1);
 
         if ($d = DataCache::getSymbolInfo('symbol-info-data-' . $symbol)) {
             $price = $d['price'];
@@ -547,7 +547,7 @@ http://qq.cn.hn/hE2
     public function getStatistic()
     {
         $total = DataCache::getAllSymbolCount();
-        $detail = DataCache::getSymbolCount();
+        $detail = DataCache::getSymbolCountDetail();
 
         return ['total' => $total, 'detail' => $detail];
     }
