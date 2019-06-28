@@ -214,7 +214,7 @@ class ToolController extends Controller
         }
     }
 
-    private function __getPriceFromLbank($symbol)
+    private function __getPriceFromLbank($symbol, $switch = 3)
     {
         try{
             $basePrice = 1;
@@ -247,7 +247,12 @@ class ToolController extends Controller
             }
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
-            return 0;
+            $price = 0;
+            if ($switch) {
+                sleep(2);
+                $price = $this->__getPriceFromLbank($symbol, --$switch);
+            }
+            return $price;
         }
     }
 
@@ -383,7 +388,7 @@ class ToolController extends Controller
         }
     }
 
-    private function __getDetailOfLbank($symbol)
+    private function __getDetailOfLbank($symbol, $switch = 3)
     {
         try{
             if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
@@ -409,7 +414,13 @@ class ToolController extends Controller
             return isset($resData->ticker->change) ? $resData->ticker->change : 0;
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
-            return 0;
+
+            $rose = 0;
+            if ($switch) {
+                sleep(2);
+                $rose = $this->__getDetailOfLbank($symbol, --$switch);
+            }
+            return $rose;
         }
     }
 
