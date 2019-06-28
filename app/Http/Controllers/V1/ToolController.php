@@ -462,7 +462,7 @@ class ToolController extends Controller
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . '
 [' . date('Y-m-d H:i:s') .  ']
-https://www.proton.global
+http://qq.cn.hn/hE2
 ',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
