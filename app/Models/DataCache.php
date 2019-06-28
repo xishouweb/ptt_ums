@@ -158,4 +158,24 @@ class DataCache extends Model
         $key = 'wechat_robot_callback_' . $symbol . '_count';
         Redis::incr($key);
     }
+
+    public static function getAllSymbolCount()
+    {
+        $key = 'wechat_robot_callback_count';
+        return Redis::get($key);
+    }
+
+    public static function getSymbolCount()
+    {
+        $key = 'wechat_robot_callback_*_count';
+        $keys = Redis::Keys($key);
+        $list = Redis::mget($keys);
+
+        $data = [];
+        foreach ($keys as $k => $v) {
+            $index = str_replace('wechat_robot_callback_', '', $v);
+            $data[$index] = $list[$k];
+        }
+        return $data;
+    }
 }

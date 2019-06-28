@@ -14,6 +14,7 @@ use App\Models\Captcha;
 use App\Models\Contract;
 use App\Models\DataCache;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -100,7 +101,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             return isset($resData->price) ? $resData->price * $basePrice : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -170,7 +171,7 @@ class ToolController extends Controller
                 return 0;
             }
             return isset($resData->price) ? $resData->price : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -207,7 +208,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -244,7 +245,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -304,7 +305,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -338,7 +339,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             return isset($resData->priceChangePercent) ?  $resData->priceChangePercent : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -376,7 +377,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -406,7 +407,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             return isset($resData->ticker->change) ? $resData->ticker->change : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -541,5 +542,13 @@ https://www.proton.global
            ]);
         $resData  = json_decode((string) $res->getBody(), true);
         return $resData;
+    }
+
+    public function getStatistic()
+    {
+        $total = DataCache::getAllSymbolCount();
+        $detail = DataCache::getSymbolCount();
+
+        return ['total' => $total, 'detail' => $detail];
     }
 }

@@ -61,6 +61,7 @@ Route::prefix('v1')->group(function() {
        $router->get('symbol/{symbol}/info', 'ToolController@getPrice');
        $router->get('symbol/keyword', 'ToolController@setKeyword');
        $router->post('symbol/message/callback', 'ToolController@wechatMessageCallback');
+       $router->get('symbol/statistic', 'ToolController@getStatistic');
     });
 });
 
