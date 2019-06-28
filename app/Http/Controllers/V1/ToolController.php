@@ -14,6 +14,7 @@ use App\Models\Captcha;
 use App\Models\Contract;
 use App\Models\DataCache;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +25,23 @@ use QL\QueryList;
 class ToolController extends Controller
 {
     const JIA_QUN_LA_APPID = 'BJBTK-1000001';
-    const JIA_QUN_LA_SECRET = 'BJBTK-8b672617101c99eb884f30606366e53a';
+    const JIA_QUN_LA_SECRET = 'BJBTK-a5195c503957b7e8c024454a0f8ea2c5';
+
+    const TIP_SYMBLOS = ['eth', 'btc'];
+    const TIPS = [
+        '2' => '持有者注意啊 即将发车',
+        '5' => '持有者注意啊 已经发车了, 快上车~',
+        '10' => '持有者注意啊 要起飞了',
+        '20' => '飞起来了 好嗨吆',
+    ];
+
+    const OTHER_TIPS = [
+        '10' => '持有者注意啊 即将发车',
+        '20' => '持有者注意啊 已经发车了, 快上车~',
+        '50' => '持有者注意啊 要起飞了',
+        '100' => '飞起来了 好嗨吆',
+        '200' => '坐上了穿天猴, 体验爆炸人生',
+    ];
 
     public function getPrice($symbol)
     {
@@ -84,7 +101,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             return isset($resData->price) ? $resData->price * $basePrice : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -154,7 +171,7 @@ class ToolController extends Controller
                 return 0;
             }
             return isset($resData->price) ? $resData->price : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -191,7 +208,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -228,7 +245,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -288,7 +305,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -322,7 +339,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             return isset($resData->priceChangePercent) ?  $resData->priceChangePercent : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -360,7 +377,7 @@ class ToolController extends Controller
             } else {
                 return 0;
             }
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -390,7 +407,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             return isset($resData->ticker->change) ? $resData->ticker->change : 0;
-        } catch (Exception $e) {
+        } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
@@ -455,13 +472,54 @@ https://www.proton.global
            ], 200);
     }
 
+    private function __choseTip($symbol, $rose)
+    {
+        if (in_array($symbol, static::TIP_SYMBLOS)) {
+            if ($rose > 20) {
+                return static::TIPS['20'];
+            }
+
+            if ($rose > 10) {
+                return static::TIPS['10'];
+            }
+
+            if ($rose > 50) {
+                return static::TIPS['5'];
+            }
+
+            if ($rose > 2) {
+                return static::TIPS['2'];
+            }
+        } else {
+            if ($rose > 200) {
+                return static::OTHER_TIPS['200'];
+            }
+
+            if ($rose > 100) {
+                return static::OTHER_TIPS['100'];
+            }
+
+            if ($rose > 50) {
+                return static::OTHER_TIPS['50'];
+            }
+
+            if ($rose > 20) {
+                return static::OTHER_TIPS['20'];
+            }
+
+            if ($rose > 10) {
+                return static::OTHER_TIPS['10'];
+            }
+        }
+    }
+
     public function setKeyword()
     {
         $symbols = DataCache::getSymbols('keywords-symbol');
 
         $data = base64_encode(json_encode([
-            'nActivityId' => 10158,
-            'vcName' => 10158,
+            'nActivityId' => 10013,
+            'vcName' => 10013,
             'vcKeyword' => $symbols
         ]));
 
@@ -469,7 +527,7 @@ https://www.proton.global
 
         $sign = md5(static::JIA_QUN_LA_APPID . static::JIA_QUN_LA_SECRET . $timestamp . $data);
 
-        $url = 'http://en.hytest.jinqunla.com/api/External/keyword/SetkeywordsImport';
+        $url = 'http://xzscallback.jinqunla.com/api/External/keyword/SetkeywordsImport';
         $body =  json_encode([
                    'appid' => static::JIA_QUN_LA_APPID,
                    'sign' => $sign,
@@ -484,5 +542,13 @@ https://www.proton.global
            ]);
         $resData  = json_decode((string) $res->getBody(), true);
         return $resData;
+    }
+
+    public function getStatistic()
+    {
+        $total = DataCache::getAllSymbolCount();
+        $detail = DataCache::getSymbolCount();
+
+        return ['total' => $total, 'detail' => $detail];
     }
 }
