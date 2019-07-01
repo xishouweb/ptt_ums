@@ -65,7 +65,7 @@ class ToolController extends Controller
         }
 
         $cou = $count > 0  ? $count : 1;
-        return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $cou, 4);
+        return round(($binancePrice + $huoBiPrice + $cointigerPrice + $lbankPrice) / $cou, 8);
     }
 
     private function __getPriceFromBinance($symbol, $is_check = true)
@@ -308,7 +308,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             if ($resData->code == '0') {
-                return isset($resData->data->trade_ticker_data) ? round($resData->data->trade_ticker_data->tick->rose, 4) * 100 : 0;
+                return isset($resData->data->trade_ticker_data) ? round($resData->data->trade_ticker_data->tick->rose, 8) * 100 : 0;
             } else {
                 return 0;
             }
@@ -380,7 +380,7 @@ class ToolController extends Controller
             $resData  = json_decode((string) $res->getBody());
 
             if ($resData->status == 'ok') {
-                return isset($resData->tick) ?  round(($resData->tick->close - $resData->tick->open) / $resData->tick->open, 4) * 100 : 0;
+                return isset($resData->tick) ?  round(($resData->tick->close - $resData->tick->open) / $resData->tick->open, 8) * 100 : 0;
             } else {
                 return 0;
             }
@@ -477,7 +477,8 @@ http://qq.cn.hn/hE2',
             if (!DataCache::lock('symbol-info-lock', 1)) {
                sleep(1);
             }
-            $price = $this->getPrice($symbol);
+            $p = $this->getPrice($symbol);
+            $price = $p >= 1 ? round($p, 5) : round($p, 6);
             $rose = round($this->get24DetailFor($symbol), 2);
             DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
@@ -488,7 +489,7 @@ http://qq.cn.hn/hE2',
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币种: ' . strtoupper($data->vcKeyword) .'
-币价: ¥' . round($price * $cny, 5) .' / $' . round($price, 5) . '
+币价: ¥' . round($price * $cny, 5) .' / $' . $price . '
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . '
 [' . date('Y-m-d H:i:s') .  ']
