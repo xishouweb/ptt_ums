@@ -44,6 +44,7 @@ class GetExchangesSymbols extends Command
         $this->__setHuoBiSymbol($keywords);
         $this->__setCointigerSymbol($keywords);
         $this->__setLbankSymbol($keywords);
+        $this->__setOkexSymbol($keywords);
 
         DataCache::setSymbolsFor('keywords-symbol', $keywords);
     }
@@ -116,6 +117,23 @@ class GetExchangesSymbols extends Command
             $data[$arr[1]][] = $arr[0];
             DataCache::setSymbolsFor('symbol_lbank_' .$arr[1] . '_' . $arr[0], 1);
             $keyword = strtolower($arr[0]);
+            if (!in_array($keyword, $keywords)) {
+                $keywords[] = $keyword;
+            }
+        }
+    }
+
+    private function __setOkexSymbol(&$keywords)
+    {
+        $url = 'https://www.okex.com/api/spot/v3/instruments';
+        $client = new Client();
+        $res = $client->request('GET', $url);
+        $resData  = json_decode((string) $res->getBody(), true);
+
+        $data = [];
+        foreach ($resData as $d) {
+            DataCache::setSymbolsFor('symbol_okex_' . $d['quote_currency'] . '_' . $d['base_currency'], 1);
+            $keyword = strtolower($d['base_currency']);
             if (!in_array($keyword, $keywords)) {
                 $keywords[] = $keyword;
             }

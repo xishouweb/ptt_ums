@@ -258,6 +258,26 @@ class ToolController extends Controller
         }
     }
 
+    public function __getPriceFromOkex()
+    {
+        // $url = 'https://www.okex.com/api/spot/v3/instruments';
+        // $client = new Client();
+        // $res = $client->request('GET', $url);
+        // $resData  = json_decode((string) $res->getBody());
+        $d = ["BCH","BSV","DASH","ADA","ABL","AE","ALGO","ARDR","ATOM","BLOC","BTT","CAI","CTXC","CVT","DCR","EGT","GUSD","HPB","HYC","KAN","LBA","LEO","LET","LSK","NXT","ORS","PAX","SC","TUSD","USDC","VITE","WAVES","WIN","XAS","YOU","ZCO","ZIL","XRP","ELF","LRC","MCO","NULS","BCX","CMT","EDO","ITC","SBTC","ZEC","NEO","GAS","HC","QTUM","IOTA","XUC","EOS","SNT","OMG","LTC","ETH","ETC","BCD","BTG","ACT","PAY","BTM","DGD","GNT","LINK","WTC","ZRX","BNT","CVC","MANA","KNC","GNX","ICX","XEM","ARK","YOYO","FUN","ACE","TRX","DGB","SWFTC","XMR","XLM","KCASH","MDT","NAS","UGC","DPY","SSC","AAC","VIB","QUN","INT","IOST","INS","MOF","TCT","STC","THETA","PST","SNC","MKR","LIGHT","OF","TRUE","SOC","ZEN","HMC","ZIP","NANO","CIC","GTO","CHAT","INSUR","R","BEC","MITH","ABT","BKX","RFR","TRIO","DADI","ONT","OKB","MVP","SDA","PRA","STORJ","PPT","RNT","FAIR","RCT","TOPC","REF","UCT","AUTO","TRA","BTC","USDT","ALV","CRO","ETM","LAMB","VNT","WXT","AST","MDA","UBTC","SHOW","MOT","UTK","IPC","YEE"];
+
+        $data = [];
+
+        foreach ($d as $key => $value) {
+            $value = strtolower($value);
+            if (!in_array($value, static::OTHER_SYMBOL)  && !in_array($value, DataCache::getSymbols('keywords-symbol'))) {
+                $data[] = $value;
+            }
+        }
+
+        return $data;
+    }
+
     public function get24DetailFor($symbol)
     {
 
