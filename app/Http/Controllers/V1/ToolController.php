@@ -47,11 +47,8 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        $okexPrice = $this->__getPriceFromOkex($symbol);
-        $ok24 = $this->__getDetailOfOkex($symbol);
-
-        dump($okexPrice);
-        dump($ok24);
+        $symbols = ["abl","cvt","egt","gusd","hpb","hyc","leo","nxt","ors","vite","win","xas","you","xuc","ace","mdt","ugc","dpy","int","mof","stc","mkr","light","of","true","hmc","zip","insur","r","bkx","rfr","dadi","okb","mvp","pra","rct","ref","uct","auto","alv","vnt","ubtc","show","mot","ipc"];
+        return count($symbols);
     }
 
     public function getPrice($symbol)
