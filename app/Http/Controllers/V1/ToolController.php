@@ -47,11 +47,8 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        $okexPrice = $this->__getPriceFromOkex($symbol);
-        $ok24 = $this->__getDetailOFOkex($symbol);
-
-        dump($okexPrice);
-        dump($ok24);
+        $symbols = ["abl","cvt","egt","gusd","hpb","hyc","leo","nxt","ors","vite","win","xas","you","xuc","ace","mdt","ugc","dpy","int","mof","stc","mkr","light","of","true","hmc","zip","insur","r","bkx","rfr","dadi","okb","mvp","pra","rct","ref","uct","auto","alv","vnt","ubtc","show","mot","ipc"];
+        return count($symbols);
     }
 
     public function getPrice($symbol)
@@ -79,10 +76,10 @@ class ToolController extends Controller
             $price += $cointigerPrice;
         }
 
-        // if ($okexPrice = $this->__getPriceFromOkex($symbol)) {
-        //     $count ++;
-        //     $price += $okexPrice;
-        // }
+        if ($okexPrice = $this->__getPriceFromOkex($symbol)) {
+            $count ++;
+            $price += $okexPrice;
+        }
 
         $cou = $count > 0  ? $count : 1;
         return round($price / $cou, 8);
@@ -335,25 +332,35 @@ class ToolController extends Controller
     {
 
         $count = 0;
+        $rose = 0;
         if ($lbankDetail = $this->__getDetailOfLbank($symbol)) {
             $count ++;
+            $rose += $lbankDetail;
         }
 
         if ($binanceDetail = $this->__getDetailOfbinance($symbol)) {
             $count ++;
+            $rose += $binanceDetail;
         }
 
         if ($huoBiDetail = $this->__getDetailOfHuobi($symbol)) {
             $count ++;
+            $rose += $huoBiDetail;
         }
 
         if ($cointigerDetail = $this->__getDetailOfCointiger($symbol)) {
             $count ++;
+            $rose += $cointigerDetail;
+        }
+
+        if ($okexDetail = $this->__getDetailOfOkex($symbol)) {
+            $count ++;
+            $rose += $okexDetail;
         }
 
         $cou = $count > 0  ? $count : 1;
 
-        return round(($binanceDetail + $huoBiDetail + $cointigerDetail + $lbankDetail) / $cou, 4);
+        return round($rose / $cou, 4);
     }
 
     private function __getDetailOfCointiger($symbol)
@@ -499,7 +506,7 @@ class ToolController extends Controller
         }
     }
 
-    private function __getDetailOFOkex($symbol)
+    private function __getDetailOfOkex($symbol)
     {
         $symbol = strtoupper($symbol);
 
