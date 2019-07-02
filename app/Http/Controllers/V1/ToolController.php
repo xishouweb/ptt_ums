@@ -315,7 +315,7 @@ class ToolController extends Controller
             }
 
             \Log::info('okex price symbol = '. $symbol);
-            $url = '/api/spot/v3/instruments/' . $symbol . '/ticker';
+            $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/ticker';
             $client = new Client();
             $res = $client->request('GET', $url);
             $resData  = json_decode((string) $res->getBody());
@@ -510,30 +510,40 @@ class ToolController extends Controller
                         return 0;
                     } else {
                         $symbol .= '-OKB';
+                        $basePrice = $this->__getBasePrice('okb');
                     }
                 } else {
                     $symbol .= '-USDT';
+                    $basePrice = 1;
                 }
             } else {
                 $symbol .= '-BTC';
+                $basePrice = $this->__getBasePrice('btc');
             }
         } else {
             $symbol .= '-ETH';
+            $basePrice = $this->__getBasePrice('eth');
         }
 
-        if (DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
-            $lastPrice = isset($resData['last']) ? $resData['last'] * $basePrice : 0;
+        if ($cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
+            $lastPrice = $cache['last'] * basePrice;
         } else {
             $lastPrice = $this->__getPriceFromOkex($symbol);
         }
 
-        $date = date('Y-m-d', strtotime('-1 day'));
-        $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/candles?granularity=3600&start='. $date .'T00:00:00.000Z&end=' . $date . 'T23:59:59.999Z';
-        $client = new Client();
-        $res = $client->request('GET', $url . $symbol);
-        $resData  = json_decode((string) $res->getBody(), true);
+        if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("okex-". $symbol)){
+            return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice;
+        } else {
+            $date = date('Y-m-d', strtotime('-1 day'));
+            $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/candles?granularity=3600&start='. $date .'T00%3A00%3A00.000Z&end=' . $date . 'T23%3A59%3A59.999Z';
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody(), true);
 
-        return isset($resData[0]['close']) ? ($lastPrice - $resData[0]['close']) / $resData[0]['close'] : 0;
+            DataCache::setSymbolYesterdayLastPrice("okex-". $symbol, $resData[0][4]);
+
+            return isset($resData[0][4]) ? ($lastPrice - $resData[0][4]) / $resData[0][4] : 0;
+        }
     }
 
 
