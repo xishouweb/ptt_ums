@@ -510,28 +510,22 @@ class ToolController extends Controller
                         return 0;
                     } else {
                         $symbol .= '-OKB';
-                        $basePrice = $this->__getBasePrice('okb');
                     }
                 } else {
                     $symbol .= '-USDT';
-                    $basePrice = 1;
                 }
             } else {
                 $symbol .= '-BTC';
-                $basePrice = $this->__getBasePrice('btc');
             }
         } else {
             $symbol .= '-ETH';
-            $basePrice = $this->__getBasePrice('eth');
         }
 
-        if ($cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
-            $lastPrice = $cache['last'] * $basePrice;
-        } else {
-            $lastPrice = $this->__getPriceFromOkex($symbol);
-        }
+        $cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol);
+        $lastPrice = $cache['last'];
 
         if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("okex-". $symbol)){
+            \Log::info('okex rose cache symbol = '. $symbol);
             return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice;
         } else {
             $date = date('Y-m-d', strtotime('-1 day'));
@@ -539,7 +533,7 @@ class ToolController extends Controller
             $client = new Client();
             $res = $client->request('GET', $url);
             $resData  = json_decode((string) $res->getBody(), true);
-
+            \Log::info('okex rose symbol = '. $symbol);
             DataCache::setSymbolYesterdayLastPrice("okex-". $symbol, $resData[0][4]);
 
             return isset($resData[0][4]) ? ($lastPrice - $resData[0][4]) / $resData[0][4] : 0;
