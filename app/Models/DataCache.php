@@ -139,7 +139,7 @@ class DataCache extends Model
 
     public static function setSymbolInfo($key, $data)
     {
-        Redis::set($key, json_encode($data), 'EX', 5);
+        Redis::set($key, json_encode($data), 'EX', 10);
     }
 
     public static function lock($key, $time)
@@ -167,5 +167,26 @@ class DataCache extends Model
     public static function getSymbolCountDetail()
     {
         return Redis::zrevrange('wechat_robot_callback_detail', 0, -1, 'WITHSCORES');
+    }
+
+    public static function getSymbolYesterdayLastPrice($key)
+    {
+        $key = 'symbol-yesterday-last-price-' . $key;
+        return Redis::get($key);
+    }
+
+    public static function setSymbolYesterdayLastPrice($key, $data)
+    {
+        $key = 'symbol-yesterday-last-price-' . $key;
+
+        $flagTime = strtotime(date('Y-m-d 08:00:00'));
+        $time = time();
+        if ($time >= $flagTime) {
+            $expire = 86400 - ($time - $flagTime);
+        } else {
+            $expire = $flagTime - $time - 1;
+        }
+
+        Redis::set($key, $data, 'EX', $expire);
     }
 }
