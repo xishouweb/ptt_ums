@@ -533,7 +533,7 @@ class ToolController extends Controller
 
         if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("okex-". $symbol)){
             \Log::info('okex rose cache symbol = '. $symbol);
-            return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice;
+            return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
         } else {
             $date = date('Y-m-d', strtotime('-1 day'));
             $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/candles?granularity=3600&start='. $date .'T00%3A00%3A00.000Z&end=' . $date . 'T23%3A59%3A59.999Z';
@@ -543,7 +543,7 @@ class ToolController extends Controller
             \Log::info('okex rose symbol = '. $symbol);
             DataCache::setSymbolYesterdayLastPrice("okex-". $symbol, $resData[0][4]);
 
-            return isset($resData[0][4]) ? ($lastPrice - $resData[0][4]) / $resData[0][4] : 0;
+            return isset($resData[0][4]) ? ($lastPrice - $resData[0][4]) / $resData[0][4] * 100 : 0;
         }
     }
 
