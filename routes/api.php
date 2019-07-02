@@ -62,7 +62,7 @@ Route::prefix('v1')->group(function() {
        $router->get('symbol/keyword', 'ToolController@setKeyword');
        $router->post('symbol/message/callback', 'ToolController@wechatMessageCallback');
        $router->get('symbol/statistic', 'ToolController@getStatistic');
-       $router->get('symbol/test', 'ToolController@__getPriceFromOkex');
+       $router->get('symbol/test/{aaa}', 'ToolController@test');
     });
 });
 
