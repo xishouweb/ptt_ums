@@ -477,7 +477,7 @@ class ToolController extends Controller
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币海茫茫，韭妹儿能力有限，寻它不着~
-添加币种，请加好友 xiaoyou238491
+添加币种，请加好友 xiaoyu238491
 [' . date('Y-m-d H:i:s') .  ']
 http://qq.cn.hn/hE2',
                     'vcShareTitle' => null,
