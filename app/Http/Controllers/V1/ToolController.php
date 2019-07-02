@@ -526,7 +526,7 @@ class ToolController extends Controller
         }
 
         if ($cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
-            $lastPrice = $cache['last'] * basePrice;
+            $lastPrice = $cache['last'] * $basePrice;
         } else {
             $lastPrice = $this->__getPriceFromOkex($symbol);
         }
