@@ -394,9 +394,6 @@ class ToolController extends Controller
             } else {
                 $symbol .= 'eth';
             }
-
-            \Log::info('cointiger rose symbol = '. $symbol);
-
             $cache = DataCache::getSymbolInfo('symbol-info-cointiger-' . $symbol);
 
             if (isset($cache['code']) && $cache['code'] != '0') {
@@ -411,13 +408,13 @@ class ToolController extends Controller
             } else {
                 //获取最近一条7点钟的数据收盘价 作为基准, UTC + 8 是当前时区
                 if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
-                    $tmie = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
+                    $size = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
                 } else {
-                    $time = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+                    $size = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
                 }
                 $url = 'https://api.cointiger.com/exchange/trading/api/market/history/kline?symbol=' . $symbol . '&period=60min&size=' . $size;
                 $client = new Client();
-                $res = $client->request('GET', $url . $symbol);
+                $res = $client->request('GET', $url);
                 $resData  = json_decode((string) $res->getBody(), true);
 
                 if ($resData['code'] == '0') {
