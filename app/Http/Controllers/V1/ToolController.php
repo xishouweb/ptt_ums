@@ -47,8 +47,9 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        $symbols = ["abl","cvt","egt","gusd","hpb","hyc","leo","nxt","ors","vite","win","xas","you","xuc","ace","mdt","ugc","dpy","int","mof","stc","mkr","light","of","true","hmc","zip","insur","r","bkx","rfr","dadi","okb","mvp","pra","rct","ref","uct","auto","alv","vnt","ubtc","show","mot","ipc"];
-        return count($symbols);
+
+        echo strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')));
+
     }
 
     public function getPrice($symbol)
@@ -256,17 +257,20 @@ class ToolController extends Controller
                 $basePrice = $this->__getBasePrice('eth');
             }
            \Log::info('lbank price symbol = '. $symbol);
-            $url = 'https://www.lbkex.net/v1/trades.do?size=1&symbol=';
+
+            if ($cache = DataCache::getSymbolInfo('symbol-info-lbank-' . $symbol)) {
+                return isset($cache['ticker']['latest']) ? $cache['ticker']['latest'] * $basePrice : 0;
+            }
+
+            $url = 'https://www.lbkex.net/v1/ticker.do?symbol=';
             $client = new Client();
             $res = $client->request('GET', $url . $symbol);
             $resData  = json_decode((string) $res->getBody());
 
-            if (is_array($resData)) {
-                $d = $resData[0];
-                return isset($d->price) ? $d->price * $basePrice : 0;
-            } else {
-                return 0;
-            }
+            //由于okex 需要算出来涨跌幅 而这个接口给了 最新价格 所以需要缓存一下 方便下面__getDetailOfLbank 用
+            DataCache::setSymbolInfo('symbol-info-lbank-' . $symbol, $resData);
+
+            return isset($resData->ticker->latest) ? $resData->ticker->latest * $basePrice : 0;
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             $price = 0;
@@ -307,8 +311,8 @@ class ToolController extends Controller
                 }
             }
 
-            if (DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
-                return isset($resData['last']) ? $resData['last'] * $basePrice : 0;
+            if ($cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
+                return isset($cache['last']) ? $cache['last'] * $basePrice : 0;
             }
 
             \Log::info('okex price symbol = '. $symbol);
@@ -486,14 +490,26 @@ class ToolController extends Controller
             } else {
                 $symbol .= '_eth';
             }
-           \Log::info('lbank rose symbol = '. $symbol);
 
-            $url = 'https://www.lbkex.net/v1/ticker.do?symbol=';
-            $client = new Client();
-            $res = $client->request('GET', $url . $symbol);
-            $resData  = json_decode((string) $res->getBody());
+            $cache = DataCache::getSymbolInfo('symbol-info-lbank-' . $symbol);
+            $lastPrice = $cache['ticker']['latest'];
 
-            return isset($resData->ticker->change) ? $resData->ticker->change : 0;
+            if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("lbank-". $symbol)){
+                \Log::info('lbank rose cache symbol = '. $symbol);
+                return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+            } else {
+
+                $url = 'https://www.lbkex.net/v1/kline.do?symbol='. $symbol .'&size=1&type=hour1&time=' . strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')));
+
+                $client = new Client();
+                $res = $client->request('GET', $url);
+                $resData  = json_decode((string) $res->getBody(), true);
+
+                \Log::info('lbank rose symbol = '. $symbol);
+                DataCache::setSymbolYesterdayLastPrice("lbank-". $symbol, $resData[0][4]);
+
+                return isset($resData[0][4]) ?  ($lastPrice - $resData[0][4]) / $resData[0][4] * 100  : 0;
+            }
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
 
