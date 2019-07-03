@@ -48,7 +48,7 @@ class ToolController extends Controller
     public function test($symbol)
     {
 
-        echo strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')));
+        echo intval((time() - strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
 
     }
 
@@ -221,12 +221,19 @@ class ToolController extends Controller
             }
 
             \Log::info('cointiger price symbol = '. $symbol);
+
+            if ($cache = DataCache::getSymbolInfo('symbol-info-cointiger-' . $symbol)) {
+                return isset($cache['data']['trade_data']) ? $cache['data']['trade_data'][0]['price'] * $basePrice : 0;
+            }
+
             $url = 'https://api.cointiger.com/exchange/trading/api/market/history/trade?symbol=';
             $client = new Client();
             $res = $client->request('GET', $url . $symbol);
             $resData  = json_decode((string) $res->getBody());
 
             if ($resData->code == '0') {
+                //cointiger 需要算出来涨跌幅 而这个接口给了 最新价格 所以需要缓存一下 方便下面__getDetailOfCointiger 用
+                DataCache::setSymbolInfo('symbol-info-cointiger-' . $symbol, $resData);
                 return isset($resData->data) && isset($resData->data->trade_data) ? $resData->data->trade_data[0]->price * $basePrice : 0;
             } else {
                 return 0;
@@ -267,7 +274,7 @@ class ToolController extends Controller
             $res = $client->request('GET', $url . $symbol);
             $resData  = json_decode((string) $res->getBody());
 
-            //由于okex 需要算出来涨跌幅 而这个接口给了 最新价格 所以需要缓存一下 方便下面__getDetailOfLbank 用
+            //Lbank 需要算出来涨跌幅 而这个接口给了 最新价格 所以需要缓存一下 方便下面__getDetailOfLbank 用
             DataCache::setSymbolInfo('symbol-info-lbank-' . $symbol, $resData);
 
             if (isset($resData->result) && $resData->result === 'false') {
@@ -390,15 +397,39 @@ class ToolController extends Controller
 
             \Log::info('cointiger rose symbol = '. $symbol);
 
-            $url = 'https://api.cointiger.com/exchange/trading/api/market/detail?symbol=';
-            $client = new Client();
-            $res = $client->request('GET', $url . $symbol);
-            $resData  = json_decode((string) $res->getBody());
+            $cache = DataCache::getSymbolInfo('symbol-info-cointiger-' . $symbol);
 
-            if ($resData->code == '0') {
-                return isset($resData->data->trade_ticker_data) ? round($resData->data->trade_ticker_data->tick->rose, 8) * 100 : 0;
-            } else {
+            if (isset($cache['code']) && $cache['code'] != '0') {
                 return 0;
+            }
+
+            $lastPrice = $cache['data']['trade_data'][0]['price'];
+
+             if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("cointiger-". $symbol)){
+                \Log::info('cointiger rose cache symbol = '. $symbol);
+                return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+            } else {
+                //获取最近一条7点钟的数据收盘价 作为基准, UTC + 8 是当前时区
+                if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
+                    $tmie = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
+                } else {
+                    $time = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+                }
+                $url = 'https://api.cointiger.com/exchange/trading/api/market/history/kline?symbol=' . $symbol . '&period=60min&size=' . $size;
+                $client = new Client();
+                $res = $client->request('GET', $url . $symbol);
+                $resData  = json_decode((string) $res->getBody(), true);
+
+                if ($resData['code'] == '0') {
+                    $yesterdaylastPrice = $resData['data']['kline_data'][0]['close'];
+
+                    \Log::info('cointiger rose symbol = '. $symbol);
+                    DataCache::setSymbolYesterdayLastPrice("cointiger-". $symbol, $yesterdaylastPrice);
+
+                    return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+                } else {
+                    return 0;
+                }
             }
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
@@ -507,8 +538,12 @@ class ToolController extends Controller
                 \Log::info('lbank rose cache symbol = '. $symbol);
                 return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
             } else {
-
-                $url = 'https://www.lbkex.net/v1/kline.do?symbol='. $symbol .'&size=1&type=hour1&time=' . strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')));
+                if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
+                    $tmie = strtotime(date('Y-m-d 07:00:00'));
+                } else {
+                    $time = strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')));
+                }
+                $url = 'https://www.lbkex.net/v1/kline.do?symbol='. $symbol .'&size=1&type=hour1&time=' . $time;
 
                 $client = new Client();
                 $res = $client->request('GET', $url);
