@@ -270,6 +270,10 @@ class ToolController extends Controller
             //由于okex 需要算出来涨跌幅 而这个接口给了 最新价格 所以需要缓存一下 方便下面__getDetailOfLbank 用
             DataCache::setSymbolInfo('symbol-info-lbank-' . $symbol, $resData);
 
+            if (isset($resData->result) && $resData->result === 'false') {
+                return 0;
+            }
+
             return isset($resData->ticker->latest) ? $resData->ticker->latest * $basePrice : 0;
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
@@ -492,6 +496,11 @@ class ToolController extends Controller
             }
 
             $cache = DataCache::getSymbolInfo('symbol-info-lbank-' . $symbol);
+
+            if (isset($cache['result']) && $cache['result'] === 'false') {
+                return 0;
+            }
+
             $lastPrice = $cache['ticker']['latest'];
 
             if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("lbank-". $symbol)){
