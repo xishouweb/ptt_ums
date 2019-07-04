@@ -353,34 +353,39 @@ class ToolController extends Controller
 
     public function get24DetailFor($symbol)
     {
-
+\Log::info('=======================================================');
         $count = 0;
         $rose = 0;
         if ($lbankDetail = $this->__getDetailOfLbank($symbol)) {
+            \Log::info('lbank----------------------->' . $lbankDetail);
             $count ++;
             $rose += $lbankDetail;
         }
 
         if ($binanceDetail = $this->__getDetailOfbinance($symbol)) {
+            \Log::info('binance----------------------->' . $binanceDetail);
             $count ++;
             $rose += $binanceDetail;
         }
 
         if ($huoBiDetail = $this->__getDetailOfHuobi($symbol)) {
+            \Log::info('huobi----------------------->' . $huoBiDetail);
             $count ++;
             $rose += $huoBiDetail;
         }
 
         if ($cointigerDetail = $this->__getDetailOfCointiger($symbol)) {
+            \Log::info('cointiger----------------------->' . $cointigerDetail);
             $count ++;
             $rose += $cointigerDetail;
         }
 
         if ($okexDetail = $this->__getDetailOfOkex($symbol)) {
+            \Log::info('okex------------------------>' . $okexDetail);
             $count ++;
             $rose += $okexDetail;
         }
-
+\Log::info('******************************************************');
         $cou = $count > 0  ? $count : 1;
 
         return round($rose / $cou, 4);
