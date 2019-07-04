@@ -536,7 +536,7 @@ class ToolController extends Controller
                 return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
             } else {
                 if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
-                    $tmie = strtotime(date('Y-m-d 07:00:00'));
+                    $time = strtotime(date('Y-m-d 07:00:00'));
                 } else {
                     $time = strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')));
                 }
@@ -639,7 +639,7 @@ class ToolController extends Controller
                     'vcContent' => '币海茫茫，韭妹儿能力有限，寻它不着~
 添加币种，请加好友 xiaoyu238491
 [' . date('Y-m-d H:i:s') .  ']
-http://dwz.win/cDC',
+http://8i1.cn/ujj',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
@@ -673,7 +673,7 @@ http://dwz.win/cDC',
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . '
 [' . date('Y-m-d H:i:s') .  ']
-http://dwz.win/cDC',
+http://8i1.cn/ujj',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
