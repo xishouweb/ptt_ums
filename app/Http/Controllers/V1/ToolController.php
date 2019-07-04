@@ -55,9 +55,9 @@ class ToolController extends Controller
     public function test($symbol)
     {
         if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
-            $size = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
+            $size = ceil((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
         } else {
-            $size = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+            $size = ceil((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
         }
 
         return $size;
@@ -524,9 +524,9 @@ class ToolController extends Controller
             } else {
                 //获取最近一条7点钟的数据收盘价 作为基准, UTC + 8 是当前时区
                 if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
-                    $size = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
+                    $size = ceil((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
                 } else {
-                    $size = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+                    $size = ceil((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
                 }
 
                 $url='https://api.huobi.com/market/history/kline?symbol=' . $symbol . '&period=60min&size=' . $size;
