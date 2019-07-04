@@ -535,7 +535,7 @@ class ToolController extends Controller
                 $res = $client->request('GET', $url);
                 $resData  = json_decode((string) $res->getBody(), true);
 
-                if ($resData->status == 'ok') {
+                if ($resData['status'] == 'ok') {
                     $yesterdaylastPrice = $resData['data'][$size - 1]['close'];
                     \Log::info('huobi rose symbol = '. $symbol);
                     DataCache::setSymbolYesterdayLastPrice("huobi-". $symbol, $yesterdaylastPrice);
