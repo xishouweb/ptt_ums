@@ -54,13 +54,7 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
-            $size = ceil((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
-        } else {
-            $size = ceil((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
-        }
-
-        return $size;
+        return strtotime(date('Y-m-d 08:00:00',strtotime('-1 day')));
     }
 
     public function getPrice($symbol)
@@ -126,10 +120,15 @@ class ToolController extends Controller
             }
 
             \Log::info('binance price symbol = '. $symbol);
+            if ($cache = DataCache::getSymbolInfo('symbol-info-binance-' . $symbol)) {
+                return isset($cache['price']) ? $cache['price'] * $basePrice : 0;
+            }
             $url = 'https://api.binance.com/api/v3/ticker/price?symbol=';
             $client = new Client();
             $res = $client->request('GET', $url . $symbol);
             $resData  = json_decode((string) $res->getBody());
+
+            DataCache::setSymbolInfo('symbol-info-binance-' . $symbol, $resData);
 
             return isset($resData->price) ? $resData->price * $basePrice : 0;
         } catch (ConnectException $e) {
@@ -475,14 +474,30 @@ class ToolController extends Controller
             } else {
                 $symbol .= 'ETH';
             }
+            $cache = DataCache::getSymbolInfo('symbol-info-binance-' . $symbol);
 
-            \Log::info('binance rose symbol = '. $symbol);
-            $url = 'https://api.binance.com/api/v1/ticker/24hr?symbol=';
-            $client = new Client();
-            $res = $client->request('GET', $url . $symbol);
-            $resData  = json_decode((string) $res->getBody());
+            if (!$cache || !isset($cache[$symbol])) {
+                return 0;
+            }
 
-            return isset($resData->priceChangePercent) ?  $resData->priceChangePercent : 0;
+            $lastPrice = $cache['price'];
+
+            if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("binance-". $symbol)){
+                \Log::info('binance rose cache symbol = '. $symbol);
+                return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+            } else {
+                //获取昨天8点点钟的数据收盘价 作为基准, UTC + 8 是当前时区
+                $url = 'https://api.binance.com/api/v1/klines?symbol=' . $symbol . '&interval=1d&startTime=' . strtotime(date('Y-m-d 08:00:00',strtotime('-1 day')));
+                $client = new Client();
+                $res = $client->request('GET', $url);
+                $resData  = json_decode((string) $res->getBody(), true);
+
+                $yesterdaylastPrice = $resData[0][4];
+                \Log::info('binance rose symbol = '. $symbol);
+                DataCache::setSymbolYesterdayLastPrice("binance-". $symbol, $yesterdaylastPrice);
+
+                return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+            }
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
