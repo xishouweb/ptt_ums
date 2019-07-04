@@ -54,10 +54,13 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        $tip = $this->__getTip('btc', 2.6);
-        echo ($tip ? '\n' . $tip : '' );
-        // echo intval((time() - strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+        if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
+            $size = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
+        } else {
+            $size = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+        }
 
+        return $size;
     }
 
     public function getPrice($symbol)
@@ -190,13 +193,18 @@ class ToolController extends Controller
                 }
             }
 
-         \Log::info('huobi price symbol = '. $symbol);
+            \Log::info('huobi price symbol = '. $symbol);
+
+            if ($cache = DataCache::getSymbolInfo('symbol-info-huobi-' . $symbol)) {
+                return isset($cache['tick']['data']) ? $cache['tick']['data'][0]['price'] * $basePrice : 0;
+            }
             $url='https://api.huobi.pro/market/trade?symbol=';
             $client = new Client();
             $res = $client->request('GET', $url . $symbol);
             $resData  = json_decode((string) $res->getBody());
 
             if ($resData->status == 'ok') {
+                DataCache::setSymbolInfo('symbol-info-huobi-' . $symbol, $resData);
                 return isset($resData->tick) && isset($resData->tick->data) ? $resData->tick->data[0]->price * $basePrice : 0;
             } else {
                 return 0;
@@ -330,11 +338,11 @@ class ToolController extends Controller
                 }
             }
 
+            \Log::info('okex price symbol = '. $symbol);
             if ($cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol)) {
                 return isset($cache['last']) ? $cache['last'] * $basePrice : 0;
             }
 
-            \Log::info('okex price symbol = '. $symbol);
             $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/ticker';
             $client = new Client();
             $res = $client->request('GET', $url);
@@ -353,34 +361,39 @@ class ToolController extends Controller
 
     public function get24DetailFor($symbol)
     {
-
+\Log::info('=======================================================');
         $count = 0;
         $rose = 0;
         if ($lbankDetail = $this->__getDetailOfLbank($symbol)) {
+            \Log::info('lbank----------------------->' . $lbankDetail);
             $count ++;
             $rose += $lbankDetail;
         }
 
         if ($binanceDetail = $this->__getDetailOfbinance($symbol)) {
+            \Log::info('binance----------------------->' . $binanceDetail);
             $count ++;
             $rose += $binanceDetail;
         }
 
         if ($huoBiDetail = $this->__getDetailOfHuobi($symbol)) {
+            \Log::info('huobi----------------------->' . $huoBiDetail);
             $count ++;
             $rose += $huoBiDetail;
         }
 
         if ($cointigerDetail = $this->__getDetailOfCointiger($symbol)) {
+            \Log::info('cointiger----------------------->' . $cointigerDetail);
             $count ++;
             $rose += $cointigerDetail;
         }
 
         if ($okexDetail = $this->__getDetailOfOkex($symbol)) {
+            \Log::info('okex------------------------>' . $okexDetail);
             $count ++;
             $rose += $okexDetail;
         }
-
+\Log::info('******************************************************');
         $cou = $count > 0  ? $count : 1;
 
         return round($rose / $cou, 4);
@@ -410,7 +423,7 @@ class ToolController extends Controller
 
             $lastPrice = $cache['data']['trade_data'][0]['price'];
 
-             if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("cointiger-". $symbol)){
+            if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("cointiger-". $symbol)){
                 \Log::info('cointiger rose cache symbol = '. $symbol);
                 return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
             } else {
@@ -463,7 +476,7 @@ class ToolController extends Controller
                 $symbol .= 'ETH';
             }
 
-    \Log::info('binance rose symbol = '. $symbol);
+            \Log::info('binance rose symbol = '. $symbol);
             $url = 'https://api.binance.com/api/v1/ticker/24hr?symbol=';
             $client = new Client();
             $res = $client->request('GET', $url . $symbol);
@@ -497,16 +510,40 @@ class ToolController extends Controller
                 $symbol .= 'eth';
             }
 
-         \Log::info('huobi rose symbol = '. $symbol);
-            $url='https://api.huobi.pro/market/detail?symbol=';
-            $client = new Client();
-            $res = $client->request('GET', $url . $symbol);
-            $resData  = json_decode((string) $res->getBody());
+            $cache = DataCache::getSymbolInfo('symbol-info-huobi-' . $symbol);
 
-            if ($resData->status == 'ok') {
-                return isset($resData->tick) ?  round(($resData->tick->close - $resData->tick->open) / $resData->tick->open, 8) * 100 : 0;
-            } else {
+            if (isset($cache['status']) && $cache['status'] != 'ok') {
                 return 0;
+            }
+
+            $lastPrice = $cache['tick']['data'][0]['price'];
+
+            if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("huobi-". $symbol)){
+                \Log::info('huobi rose cache symbol = '. $symbol);
+                return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+            } else {
+                //获取最近一条7点钟的数据收盘价 作为基准, UTC + 8 是当前时区
+                if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
+                    $size = intval((time() - strtotime(date('Y-m-d 07:00:00'))) / 3600);
+                } else {
+                    $size = intval((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
+                }
+
+                $url='https://api.huobi.com/market/history/kline?symbol=' . $symbol . '&period=60min&size=' . $size;
+
+                $client = new Client();
+                $res = $client->request('GET', $url);
+                $resData  = json_decode((string) $res->getBody(), true);
+
+                if ($resData->status == 'ok') {
+                    $yesterdaylastPrice = $resData['data'][$size - 1]['close'];
+                    \Log::info('huobi rose symbol = '. $symbol);
+                    DataCache::setSymbolYesterdayLastPrice("huobi-". $symbol, $yesterdaylastPrice);
+
+                    return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+                } else {
+                    return 0;
+                }
             }
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
