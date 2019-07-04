@@ -476,7 +476,7 @@ class ToolController extends Controller
             }
             $cache = DataCache::getSymbolInfo('symbol-info-binance-' . $symbol);
 
-            if (!$cache || !isset($cache[$symbol])) {
+            if (!$cache || !(isset($cache['symbol']) &&  $cache['symbol'] == $symbol)) {
                 return 0;
             }
 
@@ -487,7 +487,7 @@ class ToolController extends Controller
                 return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
             } else {
                 //获取昨天8点点钟的数据收盘价 作为基准, UTC + 8 是当前时区
-                $url = 'https://api.binance.com/api/v1/klines?symbol=' . $symbol . '&interval=1d&startTime=' . strtotime(date('Y-m-d 08:00:00',strtotime('-1 day')));
+                $url = 'https://api.binance.com/api/v1/klines?symbol=' . $symbol . '&interval=1d&startTime=' . strtotime(date('Y-m-d 08:00:00',strtotime('-1 day'))) * 1000;
                 $client = new Client();
                 $res = $client->request('GET', $url);
                 $resData  = json_decode((string) $res->getBody(), true);
