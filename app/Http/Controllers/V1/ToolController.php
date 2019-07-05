@@ -63,6 +63,7 @@ class ToolController extends Controller
         $price = 0;
 
         if ($lbankPrice = $this->__getPriceFromLbank($symbol)) {
+            \Log::info('lbank price============>' . $lbankPrice);
             $count ++;
             $price += $lbankPrice;
         }
