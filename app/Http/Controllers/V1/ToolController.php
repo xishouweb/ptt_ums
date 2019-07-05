@@ -699,7 +699,7 @@ class ToolController extends Controller
                     'vcContent' => '币海茫茫，韭妹儿能力有限，寻它不着~
 添加币种，请加好友 xiaoyu238491
 [' . date('Y-m-d H:i:s') .  ']
-http://8i1.cn/ujj',
+http://tinyurl.com/yy82vqc9',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
@@ -734,7 +734,7 @@ http://8i1.cn/ujj',
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . ($tip ? '\n' . $tip : '' ) .'
 [' . date('Y-m-d H:i:s') .  ']
-http://8i1.cn/ujj',
+http://tinyurl.com/yy82vqc9',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
