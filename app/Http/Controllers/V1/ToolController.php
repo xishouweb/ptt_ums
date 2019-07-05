@@ -301,6 +301,7 @@ class ToolController extends Controller
             \Log::error($e->getMessage());
             $price = 0;
             if ($switch) {
+                \Log::info('------lbank---price--switch---->' . $switch);
                 sleep(2);
                 $price = $this->__getPriceFromLbank($symbol, --$switch);
             }
