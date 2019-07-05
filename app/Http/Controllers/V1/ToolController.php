@@ -699,8 +699,10 @@ class ToolController extends Controller
                 'data' => [
                     'nMsgType' => 2001,
                     'vcContent' => '币海茫茫，韭妹儿能力有限，寻它不着~
-添加币种，请加好友 xiaoyu238491
+添加币种请填写申请表
+https://jinshuju.net/f/0x6w55
 [' . date('Y-m-d H:i:s') .  ']
+自助领养：
 http://tinyurl.com/yy82vqc9',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
