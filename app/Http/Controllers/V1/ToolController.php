@@ -831,4 +831,176 @@ http://tinyurl.com/yy82vqc9',
 
         return ['total' => $total, 'detail' => $detail];
     }
+
+    private function __get24hChangeFromBinanceWith($symbol)
+    {
+        try{
+            $symbol = strtoupper($symbol);
+            if (!DataCache::getSymbols('symbol_binance_ETH_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_binance_BTC_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_binance_USDT_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_binance_BNB_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= 'BNB';
+                        }
+                    }else {
+                        $symbol .= 'USDT';
+                    }
+                } else {
+                    $symbol .= 'BTC';
+                }
+            } else {
+                $symbol .= 'ETH';
+            }
+
+            $url = 'https://api.binance.com/api/v1/ticker/24hr?symbol=' . $symbol;
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            return isset($resData->priceChangePercent) ? $resData->priceChangePercent : 0;
+        } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }
+    }
+
+    private function __get24hChangeFromHuobiWith($symbol)
+    {
+         try{
+            if (!DataCache::getSymbols('symbol_huobi_eth_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_huobi_btc_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_huobi_usdt_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_huobi_ht_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= 'ht';
+                        }
+                    }else {
+                        $symbol .= 'usdt';
+                    }
+                } else {
+                    $symbol .= 'btc';
+                }
+            } else {
+                $symbol .= 'eth';
+            }
+
+            $url='https://api.huobi.com/market/detail?symbol=' . $symbol;
+
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            if ($resData->status == 'ok') {
+                return isset($resData->tick) ? ($resData->tick->close - $resData->tic->open) / $resData->tick->open * 100 : 0;
+            } else {
+                return 0;
+            }
+        } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }
+    }
+
+    private function __get24hChangeFromLbankWith($symbol)
+    {
+        try{
+            if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_lbank_btc_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
+                        return 0;
+                    }else {
+                        $symbol .= '_usdt';
+                    }
+                } else {
+                    $symbol .= '_btc';
+                }
+            } else {
+                $symbol .= '_eth';
+            }
+
+            $url='https://www.lbkex.net/v1/ticker.do?symbol=' . $symbol;
+
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            return isset($resData->ticker) ? $resData->ticker->change : 0;
+        } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }
+    }
+
+    private function __get24hChangeFromCointigerWith($symbol)
+    {
+        try{
+            if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_lbank_btc_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
+                        return 0;
+                    }else {
+                        $symbol .= '_usdt';
+                    }
+                } else {
+                    $symbol .= '_btc';
+                }
+            } else {
+                $symbol .= '_eth';
+            }
+
+            $url='https://api.cointiger.com/exchange/trading/api/market/detail?symbol=' . $symbol;
+
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            if ($resData->code == '0') {
+                return isset($resData->data->trade_ticker_data) ? $resData->data->trade_ticker_data->tick->rose * 100 : 0;
+            } else {
+                return 0;
+            }
+        } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }
+    }
+
+    private function __get24hChangeFromOkexWith($symbol)
+    {
+        try{
+            $symbol = strtoupper($symbol);
+
+            if (!DataCache::getSymbols('symbol_okex_ETH_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_okex_BTC_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_okex_USDT_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_okex_OKB_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= '-OKB';
+                        }
+                    } else {
+                        $symbol .= '-USDT';
+                    }
+                } else {
+                    $symbol .= '-BTC';
+                }
+            } else {
+                $symbol .= '-ETH';
+            }
+
+            $url='https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/ticker' ;
+
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            return isset($resData->laset) ? ($resData->last - $resData->open_24h) / $resData->open_24h * 100 : 0;
+        } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }
+    }
 }
