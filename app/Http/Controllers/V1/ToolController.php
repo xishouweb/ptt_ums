@@ -1003,4 +1003,44 @@ http://tinyurl.com/yy82vqc9',
             return 0;
         }
     }
+
+    public function get24hChangeFor($symbol)
+    {
+\Log::info('=======================================================');
+        $count = 0;
+        $rose = 0;
+        if ($lbankDetail = $this->__get24hChangeFromLbankWith($symbol)) {
+            \Log::info('lbank----------------------->' . $lbankDetail);
+            $count ++;
+            $rose += $lbankDetail;
+        }
+
+        if ($binanceDetail = $this->__get24hChangeFromBinanceWith($symbol)) {
+            \Log::info('binance----------------------->' . $binanceDetail);
+            $count ++;
+            $rose += $binanceDetail;
+        }
+
+        if ($huoBiDetail = $this->__get24hChangeFromHuobiWith($symbol)) {
+            \Log::info('huobi----------------------->' . $huoBiDetail);
+            $count ++;
+            $rose += $huoBiDetail;
+        }
+
+        if ($cointigerDetail = $this->__get24hChangeFromCointigerWith($symbol)) {
+            \Log::info('cointiger----------------------->' . $cointigerDetail);
+            $count ++;
+            $rose += $cointigerDetail;
+        }
+
+        if ($okexDetail = $this->__get24hChangeFromOkexWith($symbol)) {
+            \Log::info('okex------------------------>' . $okexDetail);
+            $count ++;
+            $rose += $okexDetail;
+        }
+\Log::info('******************************************************');
+        $cou = $count > 0  ? $count : 1;
+
+        return round($rose / $cou, 4);
+    }
 }
