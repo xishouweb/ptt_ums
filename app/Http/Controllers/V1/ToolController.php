@@ -894,7 +894,7 @@ http://tinyurl.com/yy82vqc9',
             $resData  = json_decode((string) $res->getBody());
 
             if ($resData->status == 'ok') {
-                return isset($resData->tick) ? ($resData->tick->close - $resData->tic->open) / $resData->tick->open * 100 : 0;
+                return isset($resData->tick) ? ($resData->tick->close - $resData->tick->open) / $resData->tick->open * 100 : 0;
             } else {
                 return 0;
             }
