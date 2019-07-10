@@ -31,7 +31,7 @@ class WeChatUserAuthorizedListener
         \Log::info('event => ', [$event] );
 
 
-            $user = $event->original;
+            $user = $event->user->original;
             WechatOpenid::firstOrCreate([
                 'openid' => $user['openid'],
                 'unionid' => $user['unionid'],
