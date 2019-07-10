@@ -12,10 +12,18 @@ use App\Http\Controllers\Controller;
 
 class XuRankController extends Controller
 {
+    public function index()
+    {
+        $wechatInfo = session('wechat.oauth_user.default'); // 拿到授权用户资料
+        dd($wechatInfo);
+        $wechatUser = $wechatInfo['original'];
+
+
+
+    }
+
     public function rank()
     {
-        $user = session('wechat.oauth_user.default'); // 拿到授权用户资料
 
-        dd($user);
     }
 }
