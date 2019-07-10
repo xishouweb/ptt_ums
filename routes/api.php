@@ -67,7 +67,7 @@ Route::prefix('v1')->group(function() {
        $router->get('symbol/test/{aaa}', 'ToolController@test');
 
        Route::middleware('wechat.oauth')->group(function(){
-            Route::get('query/rank', 'XuRankController@test');
+            Route::get('query/index', 'XuRankController@index');
         });
     });
 });
