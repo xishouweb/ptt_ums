@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 
 class XuRankController extends Controller
 {
-    public function test()
+    public function rank()
     {
         $user = session('wechat.oauth_user.default'); // 拿到授权用户资料
 

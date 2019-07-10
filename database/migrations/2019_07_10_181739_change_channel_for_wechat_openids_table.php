@@ -14,7 +14,7 @@ class ChangeChannelForWechatOpenidsTable extends Migration
     public function up()
     {
         Schema::table('wechat_openids', function (Blueprint $table) {
-            //
+            $table->string('channel')->nullable()->change();
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeChannelForWechatOpenidsTable extends Migration
     public function down()
     {
         Schema::table('wechat_openids', function (Blueprint $table) {
-            //
+            $table->string('channel')->change();
         });
     }
 }
