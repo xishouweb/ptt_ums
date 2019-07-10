@@ -236,7 +236,7 @@ class User extends Authenticatable
         $wechat = Session::get('wechat.oauth_user.default');
 
         if ($wechat) {
-            $openid = WechatOpenid::whereOpenid($openid)->whereChannel('super_campaign')->first();
+            $openid = WechatOpenid::whereOpenid($wechat['original']['openid'])->whereUnionid($wechat['original']['unionid'])->first();
 
             if ($openid) {
                 $openid->user_id = $this->id;

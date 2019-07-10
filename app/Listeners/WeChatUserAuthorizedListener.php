@@ -30,12 +30,11 @@ class WeChatUserAuthorizedListener
     {
         \Log::info('event => ', [$event] );
 
-        if ($event->isNewSession) {
+
             $user = $event->original;
             WechatOpenid::firstOrCreate([
                 'openid' => $user['openid'],
                 'unionid' => $user['unionid'],
-                'channel' => 'super_campaign'
             ]);
 
             if (isset($user['unionid'])) {
@@ -68,8 +67,5 @@ class WeChatUserAuthorizedListener
                     ]
                 );
             }
-
-
-        }
     }
 }
