@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Campaign;
+namespace App\Http\Controllers;
 
 use EasyWeChat\Factory;
 use Illuminate\Http\Request;
