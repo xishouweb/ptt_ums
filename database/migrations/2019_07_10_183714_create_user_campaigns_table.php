@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePriceQueryLogsTable extends Migration
+class CreateUserCampaignsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreatePriceQueryLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('price_query_logs', function (Blueprint $table) {
+        Schema::create('user_campaigns', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('user_id')->nullable();
-            $table->string('xu_host_id');
-            $table->string('xu_group_id');
-            $table->string('xu_robot_id');
-            $table->string('symbol', 16);
+            $table->integer('user_id');
+            $table->integer('campaign_id');
             $table->timestamps();
+
             $table->softDeletes();
         });
     }
@@ -32,6 +30,6 @@ class CreatePriceQueryLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('price_query_logs');
+        Schema::dropIfExists('user_campaigns');
     }
 }
