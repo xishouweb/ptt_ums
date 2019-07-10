@@ -19,6 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::any('wechat', 'WechatController@serve');
+
 Route::prefix('app')->group(function () {
     Route::namespace('App')->group(function (Router $router) {
         $router->get('/announcement', 'AnnouncementController@index');
