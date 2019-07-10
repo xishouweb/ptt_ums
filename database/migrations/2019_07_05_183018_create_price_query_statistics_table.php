@@ -23,8 +23,6 @@ class CreatePriceQueryStatisticsTable extends Migration
             $table->string('symbol', 16);
             $table->integer('query_count');
             $table->timestamps();
-
-            $table->index(['user_id', 'xu_host_id', 'xu_group_id', 'type','campaign_id']);
         });
     }
 
