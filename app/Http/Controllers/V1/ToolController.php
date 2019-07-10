@@ -595,6 +595,8 @@ class ToolController extends Controller
 
             if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("lbank-". $symbol)){
                 \Log::info('lbank rose cache symbol = '. $symbol);
+                \Log::info('lbank rose cache  yesterdaylastPrice= '. $yesterdaylastPrice);
+                \Log::info('lbank rose cache lastPrice = '. $lastPrice);
                 return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
             } else {
                 if (time() - strtotime(date('Y-m-d 07:59:59')) > 0) {
