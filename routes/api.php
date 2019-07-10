@@ -63,6 +63,10 @@ Route::prefix('v1')->group(function() {
        $router->post('symbol/message/callback', 'ToolController@wechatMessageCallback');
        $router->get('symbol/statistic', 'ToolController@getStatistic');
        $router->get('symbol/test/{aaa}', 'ToolController@test');
+
+       Route::middleware('wechat.oauth')->group(function(){
+            Route::get('query/rank', 'XuRankController@test');
+        });
     });
 });
 
