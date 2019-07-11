@@ -62,6 +62,7 @@ class User extends Authenticatable
     const SRC_SUPER_USER = 'super_user'; //超级广告主
 
     const TYPE_SYSTEM = 'system';
+    const TYPE_CAMPAIGN = 'campaign';
 
     const CREDIT_TOKEN_RATIO = 0.1;
 
