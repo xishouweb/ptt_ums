@@ -54,7 +54,11 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        return strtotime(date('Y-m-d 08:00:00',strtotime('-1 day')));
+        $a = new XuRankController();
+        $userRank = $a->rank(1, 61);
+        $rankList = $a->rank();
+
+        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList'));
     }
 
     public function getPrice($symbol)

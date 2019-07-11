@@ -1,0 +1,37 @@
+.header {
+    width:375px;
+    height:151px;
+    background:linear-gradient(234deg,rgba(115,141,167,1) 0%,rgba(48,67,90,1) 100%);
+
+}
+
+.header-img {
+    margin-top: 20px;
+}
+
+.header img{
+    width:132px;
+    height:70px;
+}
+.header-text{
+    margin-top: 8px;
+    text-align: center;
+    font-size:12px;
+    font-family:SFProText-Regular;
+    font-weight:400;
+    color:rgba(255,255,255,0.7);
+    line-height:6px;
+}
+
+.th-text{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size:14px;
+    font-family:PingFangSC-Regular;
+    color:rgba(48,67,90, 0.6);
+    line-height:15px;
+}
+
+.th-text-3 {
+    padding-right: 10px;
+}
