@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\User;
 
 class XuRankController extends Controller
 {
