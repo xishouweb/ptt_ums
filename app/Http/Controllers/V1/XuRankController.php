@@ -67,7 +67,7 @@ class XuRankController extends Controller
     public function rank($page = 1, $user_id = null)
     {
         $sql = "select c.*, users.nickname, users.avatar from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select user_id,count(1) gt, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, gt desc) as a,
+(select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
 (SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
 
         if ($user_id) {

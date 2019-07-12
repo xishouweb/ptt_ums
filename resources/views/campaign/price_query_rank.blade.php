@@ -22,19 +22,69 @@
     </div>
     <div class="container-fluid">
         <div class="row th-text">
-            <div class="col-xs-5"><p class="text-center">参与者</p></div>
-            <div class="col-xs-3"><p class="text-right">入群数</p></div>
-            <div class="col-xs-4"><p class="text-right th-text-3">报价次数</p></div>
+            <div class="col-xs-7"><p class="text-center">参与者</p></div>
+            <div class="col-xs-2 th-text-3"><p class="text-center">入群数</p></div>
+            <div class="col-xs-3 th-text-3"><p class="text-center">报价次数</p></div>
         </div>
-        <div id="content">
-
-            @foreach ($rankList['data'] as $rank)
-                <div class="row">
-                    {{$rank->nickname}}
+    </div>
+    <div  class="container" id="content">
+        @if($userRank)
+            <div class="row rank-list self-bg">
+                <div class="col-xs-2 text-center">
+                    @if($userRank->rank == 1)
+                        <img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">
+                    @elseif($userRank->rank == 2)
+                        <img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">
+                    @elseif($userRank->rank == 3)
+                        <img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">
+                    @else
+                        <p>{{$userRank->rank}}</p>
+                    @endif
                 </div>
-            @endforeach
+                <div class="col-xs-2 ">
+                    <img src="{{$userRank->avatar}}" class="center-block img-avatar" alt="">
+                </div>
+                <div class="col-xs-3">
+                    <p>{{$userRank->nickname}}</p>
+                </div>
+                <div class="col-xs-2 text-right">
+                    <p>{{$userRank->group_count}}</p>
+                </div>
+                <div class="col-xs-3 text-right query-total">
+                    <p>{{$userRank->total}}</p>
+                </div>
+            </div>
+            <div class="divider"> </div>
+        @endif
+        @foreach ($rankList['data'] as $rank)
+            <div class="row rank-list @if($userRank && $userRank->user_id == $rank->user_id) self-bg @endif">
+                <div class="col-xs-2 text-center">
+                    @if($rank->rank == 1)
+                        <img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">
+                    @elseif($rank->rank == 2)
+                        <img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">
+                    @elseif($rank->rank == 3)
+                        <img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">
+                    @else
+                        <p>{{$rank->rank}}</p>
+                    @endif
+                </div>
+                <div class="col-xs-2 ">
+                    <img src="{{$rank->avatar}}" class="center-block img-avatar" alt="">
+                </div>
+                <div class="col-xs-3">
+                    <p>{{$rank->nickname}}</p>
+                </div>
+                <div class="col-xs-2 text-right">
+                    <p>{{$rank->group_count}}</p>
+                </div>
+                <div class="col-xs-3 text-right query-total">
+                    <p>{{$rank->total}}</p>
+                </div>
+            </div>
+            <div class="divider"> </div>
+        @endforeach
 
-        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
