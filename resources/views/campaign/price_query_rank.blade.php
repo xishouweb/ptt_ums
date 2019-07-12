@@ -5,13 +5,13 @@
     <title>报价挖矿活动排名</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 
     <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css">
 </head>
 <body>
     <div class="container-fluid header">
-        <div class="row header-img">
+        <div class="header-img">
             <img src="/img/price_query_rank/header.png" class="img-responsive center-block" alt="">
         </div>
         <div class="header-text">
@@ -86,12 +86,59 @@
         @endforeach
 
     </div>
+        <!-- 模态框（Modal） -->
+    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: block;@else display: block; @endif">
+        <div class="main-content">
+            <div class="main-header">
+                <img src="/img/price_query_rank/bv-logo.png" class="center-block" alt="">
+                <p>本次报价即挖矿活动活动由 BCV 主办</p>
+            </div>
+            <div class="main-body">
+                <p>满足活动条件则可瓜分奖池，活动<br>
+                    最终解释权归 BCV 所有<br><br>
+                    活动时间<br>
+                    2019.7.8 - 2019.7.12
+                </p>
+            </div>
+            <div class="main-footer">
+                <img src="/img/price_query_rank/proton@2x.png"  class="center-block" alt="">
+                <button type="button" id="joinButton" data-loading-text="加入中..." class="center-block btn btn-join" autocomplete="off">
+                    立即参加
+                </button>
+                <button type="button" id="cancelButton" class="center-block btn-cancel" autocomplete="off">
+                    暂不参加
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
- <script type="text/javascript">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+   <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    $('#joinButton').on('click', function () {
+        // var $btn = $(this).button('加入中...');
+        $.ajax({
+            url: '/api/v1/price/query/'+ {{$user->id}} + '/join/2' ,
+        })
+        .done(function(data) {
+            if (data['code'] == 0) {
+                $('#main-modal').css("display","none");
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
 
+        // $btn.button('reset')
+    })
+
+    $('#cancelButton').on('click', function () {
+        $('#main-modal').css("display","none");
+    })
 
  </script>
 </body>

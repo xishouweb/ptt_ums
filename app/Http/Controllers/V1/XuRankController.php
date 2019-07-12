@@ -54,14 +54,15 @@ class XuRankController extends Controller
         }
 
         $userRank = null;
-        $record = UserCampaign::whereUserId($user->id)->whereCampaignId()->first();
+        $record = UserCampaign::whereUserId($user->id)->whereCampaignId(2)->first();
         if ($record) {
             $userRank = $this->rank(1, $user->id);
         }
+        $userJoin = $record ? 1 : 0;
 
         $rankList = $this->rank();
 
-        return view('campaign.price_query_rank')->compact(['userRank' , 'rankList']);
+        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user'));
     }
 
     public function rank($page = 1, $user_id = null)
@@ -91,5 +92,38 @@ class XuRankController extends Controller
             'page_size' => 10,
             'total_size' => $count[0]->total_size,
         ];
+    }
+
+    public function join($user_id, $campaign_id)
+    {
+        $campaign = Campaign::find($campaign_id);
+        if (!$campaign){
+            return $this->apiResponse([], '未找到该活动!', 1);
+        }
+        $now = date('Y-m-d H:i:s');
+        if ($now > $campaign->end_date) {
+            return $this->apiResponse([], '活动已结束!', 1);
+        }
+
+        if ($now < $campaign->start_date) {
+            return $this->apiResponse([], '活动未开始!', 1);
+        }
+
+        $record = UserCampaign::whereUserId($user_id)->whereCampaignId($campaign_id)->first();
+
+        if ($record) {
+            return $this->apiResponse([], '已经加入该活动', 1);
+        }
+
+        $uc = UserCampaign::create([
+            'user_id' => $user_id,
+            'campaign_id' => $campaign_id
+        ]);
+
+        if ($uc) {
+            return $this->apiResponse([], '加入成功', 0);
+        }
+
+        return $this->apiResponse([], '加入失败', 1);
     }
 }

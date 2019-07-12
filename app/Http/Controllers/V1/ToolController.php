@@ -57,8 +57,9 @@ class ToolController extends Controller
         $a = new XuRankController();
         $userRank = $a->rank(1, 61);
         $rankList = $a->rank();
-
-        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList'));
+        $userJoin = $userRank ? 1 : 0;
+        $user = \App\User::find(1);
+        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user'));
     }
 
     public function getPrice($symbol)
