@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\Models\UserCampaign;
+use App\Models\Campaign;
 
 class XuRankController extends Controller
 {
