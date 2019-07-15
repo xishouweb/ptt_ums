@@ -54,7 +54,12 @@ class ToolController extends Controller
 
     public function test($symbol)
     {
-        return strtotime(date('Y-m-d 08:00:00',strtotime('-1 day')));
+        $a = new XuRankController();
+        $userRank = $a->rank(1, 61);
+        $rankList = $a->rank();
+        $userJoin = $userRank ? 1 : 0;
+        $user = \App\User::find(1);
+        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user'));
     }
 
     public function getPrice($symbol)
@@ -725,7 +730,7 @@ http://tinyurl.com/yy82vqc9',
             }
             $p = $this->getPrice($symbol);
             $price = $p >= 1 ? round($p, 5) : round($p, 6);
-            $rose = round($this->get24DetailFor($symbol), 2);
+            $rose = round($this->get24hChangeFor($symbol), 2);
             DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
         $cny = DataCache::getCurrency('cny');
@@ -999,7 +1004,7 @@ http://tinyurl.com/yy82vqc9',
             $res = $client->request('GET', $url);
             $resData  = json_decode((string) $res->getBody());
 
-            return isset($resData->laset) ? ($resData->last - $resData->open_24h) / $resData->open_24h * 100 : 0;
+            return isset($resData->last) ? ($resData->last - $resData->open_24h) / $resData->open_24h * 100 : 0;
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;

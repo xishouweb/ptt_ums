@@ -9,6 +9,7 @@ class Campaign extends BaseModel implements FormatInterface
     use SoftDeletes;
 
     const STATUS_NORMAL = 1;
+    const PRICE_QUERY = 2;
 
     public function format($source = [])
     {
