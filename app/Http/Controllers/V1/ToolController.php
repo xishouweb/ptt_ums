@@ -730,7 +730,7 @@ http://tinyurl.com/yy82vqc9',
             }
             $p = $this->getPrice($symbol);
             $price = $p >= 1 ? round($p, 5) : round($p, 6);
-            $rose = round($this->get24DetailFor($symbol), 2);
+            $rose = round($this->get24hChangeFor($symbol), 2);
             DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
         $cny = DataCache::getCurrency('cny');
@@ -1004,7 +1004,7 @@ http://tinyurl.com/yy82vqc9',
             $res = $client->request('GET', $url);
             $resData  = json_decode((string) $res->getBody());
 
-            return isset($resData->laset) ? ($resData->last - $resData->open_24h) / $resData->open_24h * 100 : 0;
+            return isset($resData->last) ? ($resData->last - $resData->open_24h) / $resData->open_24h * 100 : 0;
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
