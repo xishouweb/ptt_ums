@@ -944,18 +944,18 @@ http://tinyurl.com/yy82vqc9',
     private function __get24hChangeFromCointigerWith($symbol)
     {
         try{
-            if (!DataCache::getSymbols('symbol_lbank_eth_' . $symbol)) {
-                if (!DataCache::getSymbols('symbol_lbank_btc_' . $symbol)) {
-                    if (!DataCache::getSymbols('symbol_lbank_usdt_' . $symbol)) {
+            if (!DataCache::getSymbols('symbol_cointiger_eth_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_cointiger_btc_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_cointiger_usdt_' . $symbol)) {
                         return 0;
                     }else {
-                        $symbol .= '_usdt';
+                        $symbol .= 'usdt';
                     }
                 } else {
-                    $symbol .= '_btc';
+                    $symbol .= 'btc';
                 }
             } else {
-                $symbol .= '_eth';
+                $symbol .= 'eth';
             }
 
             $url='https://api.cointiger.com/exchange/trading/api/market/detail?symbol=' . $symbol;
