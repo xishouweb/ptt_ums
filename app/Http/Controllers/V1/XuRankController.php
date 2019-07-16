@@ -68,9 +68,12 @@ class XuRankController extends Controller
 
     public function rank($page = 1, $user_id = null)
     {
-        $sql = "select c.*, users.nickname, users.avatar from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
-(SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
+//         $sql = "select c.*, users.nickname, users.avatar from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+// (select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
+// (SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
+        $sql = "select c.*, user_xu_hosts.xu_nickname from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+(select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY xu_host_id ORDER BY total DESC, group_count desc) as a,
+(SELECT (@rowNum :=0) ) b) as c left join user_xu_hosts on c.xu_host_id = user_xu_hosts.xu_host_id ";
 
         if ($user_id) {
             $userSql = $sql . " where c.user_id = " . $user_id;
@@ -82,7 +85,10 @@ class XuRankController extends Controller
         $sql .= "limit " . ($page - 1) * 10 . " , 10";
         $data = \DB::select($sql);
 
-        $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+//         $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+// (select user_id,count(1) gt, sum(query_count) from price_query_statistics  GROUP BY user_id ) as a,
+// (SELECT (@rowNum :=0) ) b) as c";
+$countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
 (select user_id,count(1) gt, sum(query_count) from price_query_statistics  GROUP BY user_id ) as a,
 (SELECT (@rowNum :=0) ) b) as c";
         $count = \DB::select($countQuery);
