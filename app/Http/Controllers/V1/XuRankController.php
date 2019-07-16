@@ -72,31 +72,33 @@ class XuRankController extends Controller
 // (select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
 // (SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
         $sql = "select c.*, user_xu_hosts.xu_nickname from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY xu_host_id ORDER BY total DESC, group_count desc) as a,
+(select xu_host_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY xu_host_id ORDER BY total DESC, group_count desc) as a,
 (SELECT (@rowNum :=0) ) b) as c left join user_xu_hosts on c.xu_host_id = user_xu_hosts.xu_host_id ";
 
         if ($user_id) {
+
+            return null;
             $userSql = $sql . " where c.user_id = " . $user_id;
             $data = \DB::select($userSql);
 
             return $data ? $data[0] : null;
         }
 
-        $sql .= "limit " . ($page - 1) * 10 . " , 10";
+        $sql .= "limit " . ($page - 1) * 2 . " , 2";
         $data = \DB::select($sql);
 
 //         $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
 // (select user_id,count(1) gt, sum(query_count) from price_query_statistics  GROUP BY user_id ) as a,
 // (SELECT (@rowNum :=0) ) b) as c";
 $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select user_id,count(1) gt, sum(query_count) from price_query_statistics  GROUP BY user_id ) as a,
+(select xu_host_id,count(1) gt, sum(query_count) from price_query_statistics  GROUP BY xu_host_id ) as a,
 (SELECT (@rowNum :=0) ) b) as c";
         $count = \DB::select($countQuery);
 
         return [
             'data' => $data,
             'page' => $page,
-            'page_size' => 10,
+            'page_size' => 2,
             'total_size' => $count[0]->total_size,
         ];
     }

@@ -26,8 +26,6 @@ use App\Jobs\XuCallbackRecord;
 
 class ToolController extends Controller
 {
-    use Dispatchable;
-
     const JIA_QUN_LA_APPID = 'BJBTK-1000001';
     const JIA_QUN_LA_SECRET = 'BJBTK-a5195c503957b7e8c024454a0f8ea2c5';
 
