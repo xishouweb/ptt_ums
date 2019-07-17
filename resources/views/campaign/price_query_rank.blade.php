@@ -15,14 +15,14 @@
             <img src="/img/price_query_rank/header.png" class="img-responsive center-block" alt="">
         </div>
         <div class="header-text">
-            <p>BVC 报价即挖矿活动</p>
+            <p>BCV 报价即挖矿活动</p>
             <p>2019.7.8 - 2019.7.12</p>
             <p>Powered by Proton</p>
         </div>
     </div>
     <div class="container-fluid">
         <div class="row th-text">
-            <div class="col-xs-7"><p class="text-center">参与者</p></div>
+            <div class="col-xs-5 col-xs-offset-2"><p class="text-left">参与者</p></div>
             <div class="col-xs-2 th-text-3"><p class="text-center">入群数</p></div>
             <div class="col-xs-3 th-text-3"><p class="text-center">报价次数</p></div>
         </div>
@@ -91,7 +91,7 @@
         </div>
     </div>
         <!-- 模态框（Modal） -->
-    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: none;@else display: none; @endif">
+    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: block;@else display: none; @endif">
         <div class="main-content">
             <div class="main-header">
                 <img src="/img/price_query_rank/bv-logo.png" class="center-block" alt="">
