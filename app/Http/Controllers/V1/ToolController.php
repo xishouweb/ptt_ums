@@ -740,7 +740,7 @@ http://tinyurl.com/yy82vqc9',
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . ($tip ? '\n' . $tip : '' ) .'
 [' . date('Y-m-d H:i:s') .  ']
-http://tinyurl.com/yy82vqc9',
+免费领取: http://tinyurl.com/yy82vqc9',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
