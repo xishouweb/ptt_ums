@@ -6,7 +6,7 @@
 }
 
 .header-img {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .header img{
@@ -17,7 +17,7 @@
     margin-top: 8px;
     text-align: center;
     font-size:12px;
-    font-family:SFProText-Regular;
+    /*font-family:SFProText-Regular;*/
     font-weight:400;
     color:rgba(255,255,255,0.7);
     line-height:6px;
@@ -28,7 +28,7 @@
     margin-top: 10px;
     margin-bottom: 10px;
     font-size:14px;
-    font-family:PingFangSC-Regular;
+    /*font-family:PingFangSC-Regular;*/
     color:rgba(48,67,90, 0.6);
     line-height:14px;
 }
@@ -57,7 +57,7 @@
     margin: 0 0;
     padding: 0 0;
     font-size:12px;
-    font-family:SFProText-Semibold;
+    /*font-family:SFProText-Semibold;*/
     font-weight:600;
     color:rgba(48,67,90,1);
     line-height: 68px;
@@ -130,7 +130,7 @@
 .main-header p{
     text-align: center;
     font-size:20px;
-    font-family:PingFangSC-Medium;
+    /*font-family:PingFangSC-Medium;*/
     font-weight:500;
     color:rgba(48,67,90,1);
     line-height:24px;
@@ -152,7 +152,7 @@
     margin-top:25px;
     text-align: center;
     font-size:16px;
-    font-family:PingFangSC-Regular;
+    /*font-family:PingFangSC-Regular;*/
     font-weight:400;
     color:rgba(48,67,90,1);
     line-height:24px;
@@ -183,7 +183,7 @@
     background:linear-gradient(234deg,rgba(115,141,167,1) 0%,rgba(48,67,90,1) 100%);
     border-radius:8px;
     font-size:18px;
-    font-family:PingFangSC-Regular;
+    /*font-family:PingFangSC-Regular;*/
     font-weight:400;
     color:rgba(255,255,255,1);
     line-height:25px;
@@ -191,7 +191,7 @@
 .btn-cancel{
     margin-top: 20px;
     font-size:18px;
-    font-family:PingFangSC-Regular;
+    /*font-family:PingFangSC-Regular;*/
     font-weight:400;
     color:rgba(48,67,90,1);
     line-height:18px;
@@ -206,14 +206,15 @@
     margin-top: 10px;
     margin-bottom: 10px;
     text-align: center;
-    font-family:PingFangSC-Semibold;
+    /*font-family:PingFangSC-Semibold;*/
     font-weight:600;
+    line-height: 48px;
     color:rgba(244,246,255,1);
 }
 
 .pull-loading{
     font-size:14px;
-    font-family:PingFangSC-Regular;
+    /*font-family:PingFangSC-Regular;*/
     color:rgba(48,67,90, 0.6);
     line-height:14px;
     margin-top: 10px;
