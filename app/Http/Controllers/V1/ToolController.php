@@ -553,7 +553,7 @@ class ToolController extends Controller
                     $size = ceil((time() -strtotime(date('Y-m-d 07:00:00',strtotime('-1 day')))) / 3600);
                 }
 
-                $url='https://api.huobi.com/market/history/kline?symbol=' . $symbol . '&period=60min&size=' . $size;
+                $url='https://api.huobi.pro/market/history/kline?symbol=' . $symbol . '&period=60min&size=' . $size;
 
                 $client = new Client();
                 $res = $client->request('GET', $url);
@@ -897,7 +897,7 @@ http://tinyurl.com/yy82vqc9',
                 $symbol .= 'eth';
             }
 
-            $url='https://api.huobi.com/market/detail?symbol=' . $symbol;
+            $url='https://api.huobi.pro/market/detail?symbol=' . $symbol;
 
             $client = new Client();
             $res = $client->request('GET', $url);
