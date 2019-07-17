@@ -220,3 +220,13 @@
     margin-bottom: 10px;
     text-align: center;
 }
+
+.nickname{
+    display: table;
+    height: 68px;
+}
+
+.nickname-text {
+    display: table-cell;
+    vertical-align: middle;
+}

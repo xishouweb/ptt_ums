@@ -71,12 +71,12 @@
                             @endif
                         </div>
                         <div class="col-xs-2">
-                            <div class="avatar-text">{{substr($rank->xu_nickname,0, 1)}}</div>
+                            <div class="avatar-text">{{mb_substr($rank->xu_nickname,0, 1)}}</div>
                         </div>
-                        <div class="col-xs-3">
-                            <p>{{$rank->xu_nickname}}</p>
+                        <div class="col-xs-4 nickname">
+                            <div class="nickname-text">{{$rank->xu_nickname}}</div>
                         </div>
-                        <div class="col-xs-2 text-right">
+                        <div class="col-xs-1 text-right">
                             <p>{{$rank->group_count}}</p>
                         </div>
                         <div class="col-xs-3 text-right query-total">
