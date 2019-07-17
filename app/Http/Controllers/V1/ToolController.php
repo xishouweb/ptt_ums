@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use QL\QueryList;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Jobs\XuCallbackRecord;
 
 class ToolController extends Controller
 {
@@ -720,6 +722,7 @@ http://tinyurl.com/yy82vqc9',
 
         DataCache::callTotal();
         DataCache::zincrOfScoreFor($symbol, 1);
+        $this->dispatch((new XuCallbackRecord($data, 2))->onQueue('xu_callback_record'));
 
         if ($d = DataCache::getSymbolInfo('symbol-info-data-' . $symbol)) {
             $price = $d['price'];

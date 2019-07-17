@@ -28,66 +28,70 @@
         </div>
     </div>
     <div  class="container" id="content">
-        @if($userRank)
-            <div class="row rank-list self-bg">
-                <div class="col-xs-2 text-center">
-                    @if($userRank->rank == 1)
-                        <img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">
-                    @elseif($userRank->rank == 2)
-                        <img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">
-                    @elseif($userRank->rank == 3)
-                        <img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">
-                    @else
-                        <p>{{$userRank->rank}}</p>
-                    @endif
-                </div>
-                <div class="col-xs-2 ">
-                    <img src="{{$userRank->avatar}}" class="center-block img-avatar" alt="">
-                </div>
-                <div class="col-xs-3">
-                    <p>{{$userRank->nickname}}</p>
-                </div>
-                <div class="col-xs-2 text-right">
-                    <p>{{$userRank->group_count}}</p>
-                </div>
-                <div class="col-xs-3 text-right query-total">
-                    <p>{{$userRank->total}}</p>
-                </div>
+        <div id="scroller">
+            <div id="list">
+                @if($userRank)
+                    <div class="row rank-list self-bg">
+                        <div class="col-xs-2 text-center">
+                            @if($userRank->rank == 1)
+                                <img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">
+                            @elseif($userRank->rank == 2)
+                                <img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">
+                            @elseif($userRank->rank == 3)
+                                <img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">
+                            @else
+                                <p>{{$userRank->rank}}</p>
+                            @endif
+                        </div>
+                        <div class="col-xs-2 ">
+                            <img src="{{$userRank->avatar}}" class="center-block img-avatar" alt="">
+                        </div>
+                        <div class="col-xs-3">
+                            <p>{{$userRank->nickname}}</p>
+                        </div>
+                        <div class="col-xs-2 text-right">
+                            <p>{{$userRank->group_count}}</p>
+                        </div>
+                        <div class="col-xs-3 text-right query-total">
+                            <p>{{$userRank->total}}</p>
+                        </div>
+                    </div>
+                @endif
+                @foreach ($rankList['data'] as $rank)
+                    <div class="row rank-list @if($userRank && $userRank->user_id == $rank->user_id) self-bg @endif">
+                        <div class="col-xs-2 text-center">
+                            @if($rank->rank == 1)
+                                <img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">
+                            @elseif($rank->rank == 2)
+                                <img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">
+                            @elseif($rank->rank == 3)
+                                <img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">
+                            @else
+                                <p>{{$rank->rank}}</p>
+                            @endif
+                        </div>
+                        <div class="col-xs-2">
+                            <div class="avatar-text">{{substr($rank->xu_nickname,0, 1)}}</div>
+                        </div>
+                        <div class="col-xs-3">
+                            <p>{{$rank->xu_nickname}}</p>
+                        </div>
+                        <div class="col-xs-2 text-right">
+                            <p>{{$rank->group_count}}</p>
+                        </div>
+                        <div class="col-xs-3 text-right query-total">
+                            <p>{{$rank->total}}</p>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            <div class="divider"> </div>
-        @endif
-        @foreach ($rankList['data'] as $rank)
-            <div class="row rank-list @if($userRank && $userRank->user_id == $rank->user_id) self-bg @endif">
-                <div class="col-xs-2 text-center">
-                    @if($rank->rank == 1)
-                        <img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">
-                    @elseif($rank->rank == 2)
-                        <img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">
-                    @elseif($rank->rank == 3)
-                        <img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">
-                    @else
-                        <p>{{$rank->rank}}</p>
-                    @endif
-                </div>
-                <div class="col-xs-2 ">
-                    <img src="{{$rank->avatar}}" class="center-block img-avatar" alt="">
-                </div>
-                <div class="col-xs-3">
-                    <p>{{$rank->nickname}}</p>
-                </div>
-                <div class="col-xs-2 text-right">
-                    <p>{{$rank->group_count}}</p>
-                </div>
-                <div class="col-xs-3 text-right query-total">
-                    <p>{{$rank->total}}</p>
-                </div>
+            <div class="pull-loading">
+                上拉加载
             </div>
-            <div class="divider"> </div>
-        @endforeach
-
+        </div>
     </div>
         <!-- 模态框（Modal） -->
-    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: block;@else display: block; @endif">
+    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: none;@else display: none; @endif">
         <div class="main-content">
             <div class="main-header">
                 <img src="/img/price_query_rank/bv-logo.png" class="center-block" alt="">
@@ -113,60 +117,13 @@
     </div>
 
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/js/iscroll.js"></script>
    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
         $(function(){
-            // 页数
-            var page = 2;
-            // 每页展示5个
-            var size = 10;
 
-            // dropload调用
-            // $('#content').dropload({
-            //     scrollArea : window,
-            //     loadDownFn : function(me){
-            //         page++;
-            //         // 拼接HTML
-            //         var result = '';
-            //         $.ajax({
-            //             type: 'GET',
-            //             url: '/api/v1/price/query/rank/'+page,//配合后台接口
-            //             dataType: 'json',
-            //             success: function(data){
-            //                 var arrLen = data.length;
-            //                 if(arrLen > 0){
-            //                     for(var i=0; i<arrLen; i++){
-            //                         result +=   '<a class="item opacity" href="'+data[i].link+'">'
-            //                                         +'<img src="'+data[i].pic+'" alt="">'
-            //                                         +'<h3>'+data[i].title+'</h3>'
-            //                                         +'<span class="date">'+data[i].date+'</span>'
-            //                                     +'</a>';
-            //                     }
-            //                 // 如果没有数据
-            //                 }else{
-            //                     // 锁定
-            //                     me.lock();
-            //                     // 无数据
-            //                     me.noData();
-            //                 }
-            //                 // 为了测试，延迟1秒加载
-            //                 setTimeout(function(){
-            //                     // 插入数据到页面，放到最后面
-            //                     $('.lists').append(result);
-            //                     // 每次数据插入，必须重置
-            //                     me.resetload();
-            //                 },1000);
-            //             },
-            //             error: function(xhr, type){
-            //                 alert('Ajax error!');
-            //                 // 即使加载出错，也得重置
-            //                 me.resetload();
-            //             }
-            //         });
-            //     }
-            // });
             $('#joinButton').on('click', function () {
                 // var $btn = $(this).button('加入中...');
                 $.ajax({
@@ -191,6 +148,89 @@
                 $('#main-modal').css("display","none");
             })
 
+            var myscroll = new iScroll("content", {
+                    onScrollMove: function () { //拉动时
+                        //上拉加载
+                        if (this.y < this.maxScrollY) {
+                            $(".pull-loading").html("释放加载");
+                            $(".pull-loading").addClass("loading");
+                        } else {
+                            $(".pull-loading").html("上拉加载");
+                            $(".pull-loading").removeClass("loading");
+                        }
+                    },
+                    onScrollEnd: function () { //拉动结束时
+                        //上拉加载
+                        if ($(".pull-loading").hasClass('loading')) {
+                            $(".pull-loading").html("加载中...");
+                            pullOnLoad();
+                        }
+                    }
+                });
+
+              //上拉加载函数,ajax
+            var page = 2;
+            function pullOnLoad() {
+                setTimeout(function () {
+                    $.ajax({
+                        url: "/api/v1/price/query/rank/" + page,
+                        success: function (data) {
+                            console.log('33333333333333333');
+                            var html = '';
+                            if (data.data.length){
+                                var html = getHtml(data.data);
+                                $("#list").append(html);
+                                $('.pull-loading').html("上拉加载");
+                            }else{
+                                $('.pull-loading').html("没有了哟");
+                            }
+                            myscroll.refresh();
+                            page ++;
+                        },
+                        error: function () {
+                            console.log("出错了");
+                        }
+                    });
+                    myscroll.refresh();
+                }, 500);
+            }
+
+            function getHtml(data) {
+                var html = '';
+                $.each(data, function(index, el) {
+                        html += '<div class="row rank-list"><div class="col-xs-2 text-center">';
+                        if(el.rank == 1) {
+                            html += '<img src="/img/price_query_rank/no-01.png" class="img-responsive center-block img-no" alt="">';
+                        }
+                        else if(el.rank == 2) {
+                            html += '<img src="/img/price_query_rank/no-02.png" class="img-responsive center-block img-no" alt="">';
+                        }
+                        else if(el.rank == 3) {
+                           html += '<img src="/img/price_query_rank/no-03.png" class="img-responsive center-block img-no" alt="">' ;
+                        }
+                        else{
+                            html += '<p>' + el.rank + '</p>';
+                        }
+                        var subHtml = '</div>' +
+                            '<div class="col-xs-2">' +
+                                '<div class="avatar-text">' + el.xu_nickname.substr(0, 1) + '</div>' +
+                        '</div>' +
+                        '<div class="col-xs-3">' +
+                            '<p>' + el.xu_nickname + '</p>' +
+                        '</div>' +
+                        '<div class="col-xs-2 text-right">' +
+                            '<p>' + el.group_count + '</p>' +
+                        '</div>'+
+                        '<div class="col-xs-3 text-right query-total">' +
+                            '<p>' + el.total + '</p>' +
+                        '</div>' +
+                    '</div>';
+
+                    html += subHtml;
+                });
+
+                return html;
+            }
 
         });
 
