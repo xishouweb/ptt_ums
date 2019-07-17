@@ -84,7 +84,7 @@ class XuRankController extends Controller
             return $data ? $data[0] : null;
         }
 
-        $sql .= "limit " . ($page - 1) * 2 . " , 2";
+        $sql .= "order by c.rank limit " . ($page - 1) * 2 . " , 2";
         $data = \DB::select($sql);
 
 //         $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
