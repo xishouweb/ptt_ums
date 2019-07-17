@@ -125,7 +125,7 @@
         $(function(){
 
             $('#joinButton').on('click', function () {
-                // var $btn = $(this).button('加入中...');
+                $(this).attr("disabled","disabled");
                 $.ajax({
                     url: '/api/v1/price/query/'+ {{$user->id}} + '/join/2' ,
                 })
@@ -139,9 +139,9 @@
                 })
                 .always(function() {
                     console.log("complete");
+                    $('#joinButton').removeAttr("disabled");
                 });
 
-                // $btn.button('reset')
             })
 
             $('#cancelButton').on('click', function () {
@@ -175,7 +175,6 @@
                     $.ajax({
                         url: "/api/v1/price/query/rank/" + page,
                         success: function (data) {
-                            console.log('33333333333333333');
                             var html = '';
                             if (data.data.length){
                                 var html = getHtml(data.data);

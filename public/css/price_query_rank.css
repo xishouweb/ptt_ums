@@ -187,6 +187,7 @@
     font-weight:400;
     color:rgba(255,255,255,1);
     line-height:25px;
+    outline:none;
 }
 .btn-cancel{
     margin-top: 20px;
@@ -195,6 +196,7 @@
     font-weight:400;
     color:rgba(48,67,90,1);
     line-height:18px;
+    outline:none;
 }
 
 .avatar-text {
