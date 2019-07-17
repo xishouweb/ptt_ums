@@ -711,8 +711,7 @@ class ToolController extends Controller
 添加币种请填写申请表
 https://jinshuju.net/f/0x6w55
 [' . date('Y-m-d H:i:s') .  ']
-自助领养：
-http://tinyurl.com/yy82vqc9',
+https://www.proton.global',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
@@ -748,7 +747,7 @@ http://tinyurl.com/yy82vqc9',
 涨跌幅:
 24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . ($tip ? '\n' . $tip : '' ) .'
 [' . date('Y-m-d H:i:s') .  ']
-免费领取: http://tinyurl.com/yy82vqc9',
+https://www.proton.global',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
