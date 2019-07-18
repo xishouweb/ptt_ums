@@ -188,7 +188,13 @@
     color:rgba(255,255,255,1);
     line-height:25px;
     outline:none;
+    border: none;
 }
+
+.btn-join:hover {
+    color: #FFFFFF;
+}
+
 .btn-cancel{
     margin-top: 20px;
     font-size:18px;
@@ -233,4 +239,42 @@
 .nickname-text {
     display: table-cell;
     vertical-align: middle;
+}
+
+
+.alert {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 225px;
+    height: 56px;
+    transform: translate(-50%,-50%);
+    z-index: 99999;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-info {
+    color: #FFFFFF;
+    background:rgba(45,57,82,0.8);
+}
+
+.alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
 }
