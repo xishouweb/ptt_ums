@@ -31,8 +31,8 @@
         </div>
     </div>
     <div  class="container" id="content">
-        <div id="scroller" class="list">
-            <div id="list" >
+        <div id="scroller">
+            <div id="list">
                 @if($userRank)
                     <div class="row rank-list self-bg">
                         <div class="col-xs-2 text-center">
