@@ -218,10 +218,10 @@
                             '<div class="col-xs-2">' +
                                 '<div class="avatar-text">' + el.xu_nickname.substr(0, 1) + '</div>' +
                         '</div>' +
-                        '<div class="col-xs-3">' +
-                            '<p>' + el.xu_nickname + '</p>' +
+                        '<div class="col-xs-4 nickname">' +
+                            '<div class="nickname-text">' + el.xu_nickname + '</div>' +
                         '</div>' +
-                        '<div class="col-xs-2 text-right">' +
+                        '<div class="col-xs-1 text-right">' +
                             '<p>' + el.group_count + '</p>' +
                         '</div>'+
                         '<div class="col-xs-3 text-right query-total">' +
