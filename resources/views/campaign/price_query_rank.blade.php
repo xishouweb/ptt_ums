@@ -115,7 +115,7 @@
             </div>
         </div>
     </div>
-
+    <div class="alert"></div>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="/js/iscroll.js"></script>
    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
@@ -130,15 +130,19 @@
                     url: '/api/v1/price/query/'+ {{$user->id}} + '/join/2' ,
                 })
                 .done(function(data) {
-                    if (data['code'] == 0) {
+                    if (data.code == 0) {
                         $('#main-modal').css("display","none");
+                        $('.alert').html(data.message).addClass('alert-info ').show().delay(1500).fadeOut();
+                    }
+
+                    if (data.code == 1) {
+                        $('.alert').html(data.message).addClass('alert-info ').show().delay(1500).fadeOut();
                     }
                 })
                 .fail(function() {
-                    console.log("error");
+                    $('.alert').html('操作失败').addClass('alert-info ').show().delay(1500).fadeOut();
                 })
                 .always(function() {
-                    console.log("complete");
                     $('#joinButton').removeAttr("disabled");
                 });
 
