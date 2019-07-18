@@ -279,3 +279,13 @@
     background-color: #f2dede;
     border-color: #ebccd1;
 }
+
+.list{
+    overflow-y: scroll;
+    width: 100%;
+    height: 700px;
+}
+
+.group-count{
+    padding: 0 0;
+}

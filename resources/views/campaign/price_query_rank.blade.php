@@ -31,8 +31,8 @@
         </div>
     </div>
     <div  class="container" id="content">
-        <div id="scroller">
-            <div id="list">
+        <div id="scroller" class="list">
+            <div id="list" >
                 @if($userRank)
                     <div class="row rank-list self-bg">
                         <div class="col-xs-2 text-center">
@@ -80,7 +80,7 @@
                             <div class="nickname-text">{{$rank->xu_nickname}}</div>
                         </div>
                         <div class="col-xs-1 text-right">
-                            <p>{{$rank->group_count}}</p>
+                            <p class="group-count">{{$rank->group_count}}</p>
                         </div>
                         <div class="col-xs-3 text-right query-total">
                             <p>{{$rank->total}}</p>
@@ -225,7 +225,7 @@
                             '<div class="nickname-text">' + el.xu_nickname + '</div>' +
                         '</div>' +
                         '<div class="col-xs-1 text-right">' +
-                            '<p>' + el.group_count + '</p>' +
+                            '<p class="group-count">' + el.group_count + '</p>' +
                         '</div>'+
                         '<div class="col-xs-3 text-right query-total">' +
                             '<p>' + el.total + '</p>' +
