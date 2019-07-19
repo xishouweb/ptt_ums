@@ -72,7 +72,7 @@ class XuRankController extends Controller
 // (select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
 // (SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
         $sql = "select c.*, user_xu_hosts.xu_nickname from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select xu_host_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY xu_host_id ORDER BY total DESC, group_count desc) as a,
+(select xu_host_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY xu_host_id ORDER BY total DESC, group_count desc, xu_host_id) as a,
 (SELECT (@rowNum :=0) ) b) as c left join user_xu_hosts on c.xu_host_id = user_xu_hosts.xu_host_id ";
 
         if ($user_id) {
