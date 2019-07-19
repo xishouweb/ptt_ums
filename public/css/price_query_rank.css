@@ -292,3 +292,63 @@
 .group-count{
     padding: 0 0;
 }
+
+.service {
+    position: fixed;
+    bottom: 41px;
+    right: 16px;
+    z-index: 2;
+}
+
+.service img{
+    width:48px;
+    height:48px;
+}
+
+.qrcode{
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    background:rgba(48,67,90,0.8);
+    z-index: 1000;
+    display: none;
+}
+
+.qrcode-content{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width:285px;
+    height:300px;
+    background:rgba(255,255,255,1);
+    border-radius:8px;
+}
+
+.qrcode-content img{
+    width:140px;
+    height:140px;
+    margin: 50px 72px 17px 72px;
+}
+
+.qrcode-content p{
+    font-size:16px;
+    font-weight:400;
+    color:rgba(48,67,90,1);
+    line-height:24px;
+    text-align: center;
+}
+
+.closepop{
+    position:absolute;
+    top: 77%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.closepop img{
+    width:30px;
+    height:30px;
+}

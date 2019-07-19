@@ -10,7 +10,7 @@
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css?v2">
+    <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css?v1">
 </head>
 <body>
     <div class="container-fluid header">
@@ -94,7 +94,7 @@
         </div>
     </div>
         <!-- 模态框（Modal） -->
-    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: block;@else display: none; @endif">
+    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: none;@else display: none; @endif">
         <div class="main-content">
             <div class="main-header">
                 <img src="/img/price_query_rank/bv-logo.png" class="center-block" alt="">
@@ -119,6 +119,14 @@
         </div>
     </div>
     <div class="alert"></div>
+    <div class="service" id="service"><img src="/img/price_query_rank/home_service_big@2x.png" alt=""></div>
+    <div class="qrcode" id="qrcode">
+        <div class="qrcode-content">
+            <img src="/img/price_query_rank/WechatIMG44@2x.png" alt="">
+            <p>活动详情<br>请扫码添加质子链客服咨询</p>
+        </div>
+        <div class="closepop" id="closepop"><img src="/img/price_query_rank/closepop@2x.png" alt=""></div>
+    </div>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="/js/iscroll.js"></script>
    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
@@ -154,6 +162,14 @@
             $('#cancelButton').on('click', function () {
                 $('#main-modal').css("display","none");
             })
+
+            $('#service').on('click',  function() {
+                $('#qrcode').css('display', 'block');
+            });
+
+            $('#closepop').on('click',  function() {
+                $('#qrcode').css('display', 'none');
+            });
 
             var myscroll = new iScroll("content", {
                     onScrollMove: function () { //拉动时
