@@ -26,7 +26,7 @@
     <div class="container-fluid">
         <div class="row th-text">
             <div class="col-xs-5 col-xs-offset-2"><p class="text-left">参与者</p></div>
-            <div class="col-xs-2 th-text-3"><p class="text-center">入群数</p></div>
+            <div class="col-xs-2 th-text-3"><p class="text-right">入群数</p></div>
             <div class="col-xs-3 th-text-3"><p class="text-center">报价次数</p></div>
         </div>
     </div>
