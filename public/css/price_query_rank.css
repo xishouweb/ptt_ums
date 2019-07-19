@@ -327,7 +327,7 @@
     border-radius:8px;
 }
 
-.qrcode-content img{
+.qrcode-img{
     width:140px;
     height:140px;
     margin: 50px 72px 17px 72px;
@@ -343,12 +343,9 @@
 
 .closepop{
     position:absolute;
-    top: 77%;
     left: 50%;
+    bottom: -75px;
     transform: translate(-50%,-50%);
-}
-
-.closepop img{
     width:30px;
     height:30px;
 }

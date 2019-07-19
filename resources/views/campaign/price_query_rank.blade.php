@@ -10,7 +10,7 @@
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css?v1">
+    <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css?v1.1">
 </head>
 <body>
     <div class="container-fluid header">
@@ -122,10 +122,10 @@
     <div class="service" id="service"><img src="/img/price_query_rank/home_service_big@2x.png" alt=""></div>
     <div class="qrcode" id="qrcode">
         <div class="qrcode-content">
-            <img src="/img/price_query_rank/WechatIMG44@2x.png" alt="">
+            <img class="qrcode-img" src="/img/price_query_rank/WechatIMG44@2x.png" alt="">
             <p>活动详情<br>请扫码添加质子链客服咨询</p>
+            <img class="closepop" id="closepop" src="/img/price_query_rank/closepop@2x.png" alt="">
         </div>
-        <div class="closepop" id="closepop"><img src="/img/price_query_rank/closepop@2x.png" alt=""></div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="/js/iscroll.js"></script>
