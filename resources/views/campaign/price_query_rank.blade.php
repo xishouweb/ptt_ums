@@ -10,7 +10,7 @@
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css">
+    <link rel="stylesheet" type="text/css" href="/css/price_query_rank.css?v2">
 </head>
 <body>
     <div class="container-fluid header">
