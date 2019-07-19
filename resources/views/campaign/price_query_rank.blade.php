@@ -76,10 +76,10 @@
                         <div class="col-xs-2">
                             <div class="avatar-text">{{mb_substr($rank->xu_nickname,0, 1)}}</div>
                         </div>
-                        <div class="col-xs-4 nickname">
+                        <div class="col-xs-3 nickname">
                             <div class="nickname-text">{{$rank->xu_nickname}}</div>
                         </div>
-                        <div class="col-xs-1 text-right">
+                        <div class="col-xs-2 text-right">
                             <p class="group-count">{{$rank->group_count}}</p>
                         </div>
                         <div class="col-xs-3 text-right query-total">
@@ -237,10 +237,10 @@
                             '<div class="col-xs-2">' +
                                 '<div class="avatar-text">' + el.xu_nickname.substr(0, 1) + '</div>' +
                         '</div>' +
-                        '<div class="col-xs-4 nickname">' +
+                        '<div class="col-xs-3 nickname">' +
                             '<div class="nickname-text">' + el.xu_nickname + '</div>' +
                         '</div>' +
-                        '<div class="col-xs-1 text-right">' +
+                        '<div class="col-xs-2 text-right">' +
                             '<p class="group-count">' + el.group_count + '</p>' +
                         '</div>'+
                         '<div class="col-xs-3 text-right query-total">' +
