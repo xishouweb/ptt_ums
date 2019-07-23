@@ -33,6 +33,8 @@ Route::group([
     $router->resource('user/tokens', 'UserTokenController');
     $router->resource('campaign', 'CampaignController');
 
+    $router->resource('xu_rank', 'PriceQueryStatisticController');
+
     //公告相关路由
     $router->get('/wallet/announcement', 'AnnouncementController@index');
     $router->post('/wallet/announcement', 'AnnouncementController@create');
