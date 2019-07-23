@@ -64,7 +64,7 @@ class XuCallbackRecord implements ShouldQueue
             if ($record) {
                 $record->query_count += 1;
                 if (!$record->xu_group_name) {
-                    $record->xuGroupName = $xuGroupName;
+                    $record->xu_group_name = $xuGroupName;
                 }
                 $record->save();
             } else {
