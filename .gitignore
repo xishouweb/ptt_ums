@@ -13,5 +13,5 @@ yarn-error.log
 .env
 readme.md
 README.md
-.DS_Store
+*/.DS_Store
 
