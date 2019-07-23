@@ -108,6 +108,8 @@ class PriceQueryStatisticController extends Controller
             // 在这里添加字段过滤器
             $filter->like('user_xu_hosts.xu_nickname', 'xu_nickname');
             $filter->like('xu_group_name', 'xu_group_name');
+            $filter->equal('xu_group_id', 'xu_group_id');
+            $filter->equal('symbol', 'symbol');
         });
 
 
