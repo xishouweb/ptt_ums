@@ -14,7 +14,7 @@ class AddGroupNameForPriceQueryLogsTable extends Migration
     public function up()
     {
         Schema::table('price_query_logs', function (Blueprint $table) {
-            $table->string('group_name')->nullable();
+            $table->string('xu_group_name')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddGroupNameForPriceQueryLogsTable extends Migration
     public function down()
     {
         Schema::table('price_query_logs', function (Blueprint $table) {
-            $table->dropColumn('group_name');
+            $table->dropColumn('xu_group_name');
         });
     }
 }

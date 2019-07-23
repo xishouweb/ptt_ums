@@ -40,6 +40,7 @@ class XuCallbackRecord implements ShouldQueue
         $xuHostId = $data->vcWxUserSerialNo;
         $xuNickname = $data->vcWxUserNickName;
         $xuGroupId = $data->vcChatRoomSerialNo;
+        $xuGroupName = $data->vcChatRoomName;
         $xuRobotId = $data->vcRobotSerialNo;
 
         try {
@@ -49,6 +50,7 @@ class XuCallbackRecord implements ShouldQueue
                 'campaign_id' => $this->campaign_id,
                 'xu_host_id' => $xuHostId,
                 'xu_group_id' => $xuGroupId,
+                'xu_group_name' => $xuGroupName,
                 'xu_robot_id' => $xuRobotId,
                 'symbol' => $symbol,
             ]);
@@ -61,12 +63,16 @@ class XuCallbackRecord implements ShouldQueue
                 ->first();
             if ($record) {
                 $record->query_count += 1;
+                if (!$record->xu_group_name) {
+                    $record->xuGroupName = $xuGroupName;
+                }
                 $record->save();
             } else {
                 PriceQueryStatistic::create([
                     'campaign_id' => $this->campaign_id,
                     'xu_host_id' => $xuHostId,
                     'xu_group_id' => $xuGroupId,
+                    'xu_group_name' => $xuGroupName,
                     'xu_robot_id' => $xuRobotId,
                     'symbol' => $symbol,
                     'query_count' => 1,
