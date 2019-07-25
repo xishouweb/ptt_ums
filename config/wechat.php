@@ -75,6 +75,24 @@ return [
                  'callback' => env('WECHAT_OFFICIAL_ACCOUNT_OAUTH_CALLBACK', '/api/campaign/wechat/info'),
              ],
         ],
+
+        'user_base' => [
+            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'wx901c3f28c41e737f'),         // AppID
+            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', '09d7b0e638faa806f162ee8a82e0c65c'),    // AppSecret
+            'token' => env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'super_campaign'),           // Token
+            'aes_key' => env('WECHAT_OFFICIAL_ACCOUNT_AES_KEY', 'super_campaign'),                 // EncodingAESKey
+
+            /*
+             * OAuth 配置
+             *
+             * scopes：公众平台（snsapi_userinfo / snsapi_base），开放平台：snsapi_login
+             * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
+             */
+             'oauth' => [
+                 'scopes'   => array_map('trim', explode(',', env('WECHAT_OFFICIAL_ACCOUNT_OAUTH_SCOPES', 'snsapi_base'))),
+                 'callback' => env('WECHAT_OFFICIAL_ACCOUNT_OAUTH_CALLBACK', '/api/campaign/wechat/info'),
+             ],
+        ],
     ],
 
     /*
