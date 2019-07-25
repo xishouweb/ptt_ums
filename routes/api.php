@@ -71,6 +71,15 @@ Route::prefix('v1')->group(function() {
     });
 });
 
+Route::group(['middleware' => ['wechat.oauth:user_base, snsapi_base']], function (Router $router) {
+    $router->get('/user', function () {
+        $user = session('wechat.oauth_user.user_base'); // 拿到授权用户资料
+
+        dd($user);
+    });
+});
+
+
 Route::prefix('campaign')->group(function() {
     Route::get('captcha', 'CaptchaController@send');
     Route::namespace('Campaign')->group(function () {
