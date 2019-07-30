@@ -52,7 +52,7 @@ class ToolController extends Controller
         ],
     ];
 
-    const OTHER_SYMBOL =  ["dc","cusdt","ceth","dt","safe","cht","snet","fdz","imt","eosdac","xmc","vns","eop","eon","meetone","kt","keos","lrn","add","cet","buc","atd","palt","bqt","horus","iq","black","eox","inb","pt","dk","ode","rstr","zib","dcv","pct","ddt","tmo","karma","kat","ade","busd","vee","beam","ktn","news","usdteth","usdttron","plo","da0001","ltk","hsn", "nmc","trc","ppc","nvc","ftc","mnc","frc","ixc","btb","wdc","dgc","glc","arg","mec","ifc","xpm","anc","csc","emd","qrk","zet","src","sxc","tag","flo","uno","dtc","bet","dem","dmd","orb","tips","moon","dime","42","vtc","smc","rdd","nyan","utc","pot","blc","max","xcp","mint","dope","aur","ptc","cash","pnd","ufo","blk","pho","zeit","xmy","note","skc","emc2","btcs","ecc","mona","rby","bela","slr","efl","nlg","xpd","plnc","pop","bits","qbc","blu","maid","xbc","talk","nyc","pink","drm","enrg","vrc","lcp","cure","super","bost","moto","bsd","c2","aby","start","kore","xdn","bbr","thc","brit","xst","clam","ioc","xcn","carbon","cann","tit","vta","hyp","j","sjcx","emc","rbbt","burst","game","n8v","ubq","opal","acoin","fldc","bitusd","bitcny","bitbtc","usnbt","xmg","excl","troll","bsty","dp","pxi","nsr","spr","rbt","mue","block","crw","bay","gcn","xqn","ok","xpy","bitgold","smly","bitsilver","kobo","bitb","geo","wbb","grc","xco","ldoge","song","crave","pura","ntrn","xaur","cf","aib","sphr","medic","bub","xsd","unit","pkb","arb","bta","adc","snrg","biteur","fjc","gxx","xra","creva","irl","zny","bsc","acp","sprts","hnc","manna","axiom","aeon","tx","gcc","ams","agrs","euc","gcr","shift","vec2","boli","bcy","pak","exp","sib","swing","fct","duo","sandg","shnd","1337","scrt","dft","obits","amp","club","adz","moin","av","egc","crb","rads","ltcr","yoc","sls","frn","evil","sft","rbies","trump","meme","ims","hodl","bigup","neva","bumba","rvr","pex","cab","mojo","edrc","post","bern","qwark","esp","fuzz","xhi","arco","xbtc21","el","zur","611","2give","xptx","lana","ponzi","mxt","ctl","icoo","pwr","ion","hvco","gb","rise","chess","lbc","synx","cj","heat","sbd","bit","ele","krb","aces","taj","edc","xp","vlt","kb3","golf","lmc","btdx","nlc2","vrm","zyd","jin","plu","tell","dlc","mst","proud","seq","1st","pepecash","levo","arc","dmc","asafe","zcl","lkk","iop","vrs","hush","kurt","pasc","ent","incnt","golos","nxc","vsl","pcs","gbyte","posw","luna","frgc","dar","iflt","xspec","xstc","benji","ccrb","vidz","icob","ibank","frst","mgm","wct","icon","boat","ery","els","gbg","cnt","mscn","mln","time","argus","rns","swt","milo","music","zer","honey","netko","dyn","tks","mer","taas","soar","edg","b@","dtb","uni","xlr","imx","dbix","gup","usc","blazr","hpc","zeni","cxt","conx","xby","trst","wgo","proc","scs","btx","volt","gno","tkn","rain","hmq","iti","mne","cnnc","dice","insn","hallo","ant","pzm","rlt","eqt","dmb","nanox","may","sumo","etbs","v","etp","ebst","adk","ptoy","veri","eca","qrl","ett","mgo","ammo","nro","ppy","miota","myst","more","linx","adl","zrc","glt","nmr","unify","xel","mrt","dcy","onx","btpl","atcc","good","bro","flash","efyt","bria","d","socc","adt","ping","wgr","ecob","plbt","jet","women","bdl","rup","pcn","san","ter","cvn","linda","ethos","sta","coal","lbtc","part","smart","skin","toa","plr","sigt","oct","pbt","cc","emb","ixt","gsr","birds","crm","era","kek","stx","minex","wink","mao","tix","dcn","rupx","shdw","onion","cat","ads","ift","xcxt","riya","tcc","bln","myb","tfl","dalc","acc","bbp","bq","sigma","xmcc","brat","opt","sur","ltcu","mcc","avt","hvn","vsx","vivo","ocl","rex","buzz","credo","ind","xpa","scl","atb","iqt","pro","bmc","elix","xbl","day","pix","coss","csno","rvt","itz","tgt","orme","kln","colx","tzc","odn","cob","rec","msd","bis","voise","xin","atm","kick","rhoc","inxt","flik","cnx","real","hbt","cct","bco","ppp","alis","btcz","hgt","ctic3","bsn","zsc","ecash","sic","ats","pipl","cag","trct","art","xgox","evr","dutch","otn","drt","b2x","etg","blue","runners","life","kcs","exrn","poll","la","btcred","prg","bos","js","elite","itt","ieth","pirl","lux","dov","placo","btcm","ella","fyp","ebtc","ibtc","grid","atl","mnx","sono","for","xsh","eltcoin","dsr","ukg","nio","phr","inn","erc20","tie","grim","epy","dbet","hst","ufr","stu","prix","lthn","payx","grx","sgr","viu","xlq","gbx","wc","b2b","pnx","dna","ink","zzc","tsl","mag","spank","vot","monk","flixx","wish","evc","cco","qbt","drgn","pfr","pre","bcdn","capp","ero","jiyo","send","bon","nuko","snov","bwk","cms","wand","spf","cred","sct","uqc","ignis","hwc","pkt","fil","trdt","amm","loc","wrc","ytn","star","dtr","med","dew","ngc","dai","sphtx","bnty","dim","cpay","html","neu","play","hpy","pylnt","stak","fdx","tau","blt","cov","can","gcs","cl","opc","cfun","polis","hkn","zap","aix","rebl","god","utt","cdx","bdg","lev","krm","atn","sxdt","sxut","swtc","vzt","kzc","bca","tel","ic","weth","sense","moac","tokc","ait","qube","spc","ore","horse","arct","mvc","nox","ipl","idxm","gat","sexc","mobi","read","tnc","c20","ary","crpt","spk","cv","tbx","prs","idh","qbic","guess","aid","eve","bpt","axpr","trac","slt","fota","grlc","nkc","cofi","eql","hlc","oc","candy","sms","vlc","btw","trf","pareto","jnt","chsb","adb","dmt","ing","swm","drpu","esz","dxt","ucash","mntp","jew","mlm","loci","jc","bio","sup","tig","utnp","acat","evn","rmt","dth","fsn","mwat","ntk","gem","nec","lcc","stq","tdx","cpy","rem","exy","xnk","bez","seth","bee","instar","tube","ledu","hqx","stac","j8t","chp","tomo","grft","bax","elec","btcp","tfd","ship","ldc","shp","lala","occ","deb","cennz","snx","fluz","getx","drop","banca","drg","latx","nanj","ckusd","up","bbn","noah","lgo","1wo","npx","bitg","amlt","lst","pcl","sig","rntb","xbp","lnc","spd","ipsx","scc","bstn","swth","sen","xclr","senc","vit","tpay","berry","xtc","nct","xsn","xdce","tds","sent","adh","snip","bsm","dev","cbt","grmd","auc","bubo","dan","mfg","dig","adi","xhv","kst","crc","dero","efx","ftx","earth","mrk","pxc","crop","srcoin","chx","msr","phi","bbc","dml","hbz","ori","trak","aph","lnd","xes","vips","rblx","btrn","nbai","vme","hydro","ss","cel","ttt","bci","betr","amn","flp","cmct","mitx","mtc","cjt","bouts","pal","cre","gene","apr","ac3","fxt","zipt","gen","bznt","lif","team","oot","atx","frec","dgx","skb","joint","grn","bmh","loki","sgn","fnd","dtrc","cln","hero","clo","ubt","pat","open","mrph","sntr","xyo","cpt","apis","ft","xrh","caz","red","dgtx","gin","inv","face","ava","luc","navi","soul","repo","ivy","cnet","bbo","0xbtc","pi","lyl","bnk","etz","omx","medx","fto","abyss","pmnt","hur","tmt","pkc","cbc","ceek","sal","cou","hold","trtt","upp","bwt","dag","etk","met","aoa","alx","tern","zcn","zinc","fsbt","car","bob","kndc","card","wwb","onl","otb","coni","cccx","got","thrt","pch","quro","ess","hsc","like","yup","xsg","dtx","moc","nim","bz","dws","zxc","olt","atmi","xmct","fnkos","susd","tgame","engt","nobs","bmx","cdm","gard","xd","spx","aeg","rpl","ely","sop","jot","krl","lemo","gbc","bwx","wys","cosm","nrve","trtl","wt","toto","rlx","chex","view","vikky","foxt","brdg","lcs","zpr","empr","lpc","fundz","ryo","aced","lfc","wab","csm","mvl","xxx","ncp","dacc","pgn","eurs","exmr","nix","apl","bws","dpn","vex","hdac","kwh","mct","wsd","acdc","nbr","hrc","vivid","purex","cen","bitx","priv","rmesh","bbk","coin","klks","bhp","incx","zmn","sem","aro","acre","iov","web","fmf","zel","bnn","obt","exc","czr","pts","opcx","bnd","xun","btk","dtem","eli","dacs","ebc","esco","gmcn","vitae","rock2","xtrd","btcn","nam","euno","mgd","est","eds","kind","x8x","cmm","ecom","lina","ino","knt","croat","btcone","avinoc","wiki","spn","nug","scr","nbc","npxsxem","xov","ust","opti","gic","abdt","pkg","boc","rdc","newos","pdx","xpat","icr","mxm","gio","sds","own","ig","hth","gse","dgs","xdna","xpx","nyex","tic","egem","arepa","xet","cedex","noku","dx","pass","baas","pco","thr","cyfm","metm","aka","obtc","tkt","qnt","sac","zcr","xap","ifp","svd","ylc","mero","pma","arion","xbi","ftt","hyb","hb","lgs","fntb","ttc","altx","seal","lky","abx","hand","gpkr","zp","ect","mftu","cato","rrc","rating","ctc","know","grph","kxc","nsd","prtx","lobs","vdg","sat","yuki","kwatt","mib","cotn","soniq","gtm","delta","nrg","ftxt","dav","bnc","dow","qbit","btn","vulc","str","flm","tmc","at","esn","fkx","beet","mic","ubc","flot","use","zba","mri","cymt","btr","gze","ccl","din","dit","havy","care","prj","cif","echt","imp","c2p","c8","sno","vsc","peng","rth","ret","qntu","tv","foin","bir","daxt","ben","elli","btxc","cit","olmp","btad","bu","urals","ihf","ucn","molk","edn","spnd","xcg","ccc","alc","cstl","evi","cfl","boxx","aog","ctrt","tcn","bunny","pyn","plura","rox","che","six","cmit","wiz","goss","sol","xcash","shard","iqn","qch","paxex","pgts","mlc","phon","anon","ecoreal","daps","carat","mnp","pyx","dachx","zb","mas","well","trxc","azart","tmtg","dagt","wit","ert","aux","wxc","plc","vsf","sins","crd","kue","ner","mir","rpm","ragna","dec","xgs","labh","wbl","civ","bcard","benz","xg","acm","blast","tol","quan","fox","mash","our","steep","nrp","scriv","wsp","x12","shade","ifood","egx","wix","pndm","bc","eta","bsx","wtl","sim","ndx","zeus","bczero","wage","f1c","meta","qac","cobra","psc","shping","s","qno","aec","inco","aglt","icnq","rpd","ents","smq","oxy","deal","wire","divi","xind","huzu","kun","znt","ath","mmo","szc","etho","cjs","datp","deex","plus1","ird","zt","help","rpi","cheese","alt","isr","hlm","fbn","tdp","robet","jse","yeed","itl","asa","modx","shmn","pny","telos","omen","gst","ddx","pedi","gzro","esce","vlu","ezw","vld","sake","rock","mtrc","bzx","xcd","lqd","deliz","cgen","hndc","type","ionc","mbc","bzl","voco","traid","apc","sin","dex","dkpc","snr","brzc","paws","messe","snd","mfit","apot","cyl","pnk","medibit","poss","ttv","wet","bgg","abs","ethm","cryp","lion","ptn","xnv","inve","osa","eti","hum","shb","vites","vest","cwv","micro","nor","bcac","dashg","hqt","bcdt","stacs","beat","btnt","nos","oio","nzl","equad","bltg","lrm","herc","foam","opq","lml","aergo","skch","lpt","tiox","tvnt","shvr","herb","cnus","nplc","next","b2n","brc","fiii","becn","quin","shx","xfc","agvc","impl","awc","prx","wco","rom","kze","dogec","btmx","gbt","roco","ibt","cent","xta","aen","b2g","btcl","mox","mcw","bul","tok","m2o","inx","hyn","xsm","gmbc","obsr","ctx","rif","adm","vsys","dxr","alb","tosc","exo","pla","clb","wib","lto","caj","veo","wbtc","sdusd","temco","solve","dooh","flc","halo","wlo","tcat","ccx","s4f","elac","vgw","mrs","btu","dcto","const","blcr","ecte","bnana","qusd","webn","777","eld","aunit","hxro","ichx","xpc","labx","upx","pltc","evy","mhc","gmb","mpg","jnb","swc","1sg","owc","set","serv","fat","1x2","pib","hbx","ccn","etx","twins","gfun","spt","evos","cot","ankr","ovc","lunes","innbcl","net","boltt","rc20","jwl","araw","gali","zeon","mesg","xbx","xuez","fex","bora","ctt","dra","spec","navy","orox","dos","etgp","ine","fxc","pton","vra","slrm","gpt","bhig","xqr","olxa","pub","bud","jct","nex","veil","sha","bbgc","hypx","dxg","orbs","mfc","hlt","xrc","fst","xlb","csp","bolt","xtx","vidt","vbk","obx","when","oto","alln","huddl","mtv","und","locus","sfcp","gfr","fnb","pti","inf","uts","con","sica","a","lit","bia","botx","valor","entrc","webd","xwp","esbc","oce","stash","arq","qcx","fx","wpp","ict","bceo","nat","now","cspn","mac","axe","hn","kubo","xmv","e2c","bitc","dio","spdr","peos","ocean","wgp","ttn","meri","thx","sntvt","doget","dpt","hlx","tas","vjc","drep","trat","xlmg","atls","idex","bqtx","elet","xcon","swift","cnns","srk","gny","nnb","mzk","trp","p2px","fab","qwc","neox","tera","afin","ntr","arrr","iotw","eved","odex","bomb","rfox","neal","bze","vdx","dream","toc","bhd","eum","try","grat","tro","aya","btc2","snl","chr","tcash","tqn","lbn","ogo","bdx","lvl","wfx","alp","coti","emt","smartup","ioux","bst","kri","tagz","mpay","skt","znn","stpt","bcz","izi","sprk","bqqq","minx","mcpc","eosdt","kts","usdq","raven","dvt","jar","hnst","cos","mbl","nbot","mgc","par","qdao","igg"];
+    const OTHER_SYMBOL =  ["dc","cusdt","ceth","dt","safe","cht","snet","fdz","imt","eosdac","xmc","vns","eop","eon","kt","keos","lrn","add","cet","atd","palt","horus","black","eox","inb","pt","dk","ode","rstr","zib","dcv","pct","ddt","tmo","karma","kat","ade","busd","vee","beam","ktn","news","usdteth","usdttron","plo","da0001","ltk","nmc","trc","ppc","nvc","ftc","mnc","frc","ixc","btb","wdc","dgc","glc","arg","mec","ifc","xpm","anc","csc","emd","qrk","zet","src","sxc","tag","flo","uno","dtc","bet","dem","dmd","orb","tips","moon","dime","42","vtc","smc","rdd","nyan","utc","pot","blc","max","xcp","mint","dope","aur","ptc","cash","pnd","ufo","blk","pho","zeit","xmy","note","skc","emc2","btcs","ecc","mona","rby","bela","slr","efl","nlg","xpd","plnc","pop","bits","qbc","blu","maid","xbc","talk","nyc","pink","drm","enrg","vrc","lcp","cure","super","bost","moto","bsd","c2","aby","start","kore","xdn","bbr","thc","brit","xst","clam","ioc","xcn","carbon","cann","tit","vta","hyp","j","sjcx","emc","rbbt","burst","game","ubq","opal","acoin","fldc","bitusd","bitcny","bitbtc","usnbt","xmg","excl","troll","bsty","dp","pxi","nsr","spr","rbt","mue","block","crw","bay","gcn","xqn","ok","xpy","bitgold","smly","bitsilver","kobo","bitb","geo","wbb","grc","xco","ldoge","song","crave","pura","ntrn","xaur","cf","aib","sphr","medic","bub","xsd","unit","pkb","arb","bta","adc","snrg","biteur","fjc","gxx","xra","creva","irl","zny","bsc","acp","sprts","hnc","manna","axiom","aeon","tx","gcc","ams","agrs","euc","gcr","shift","vec2","boli","bcy","pak","exp","sib","swing","fct","duo","sandg","shnd","1337","scrt","dft","obits","amp","club","adz","moin","av","egc","crb","rads","ltcr","yoc","sls","frn","evil","sft","rbies","trump","meme","ims","hodl","bigup","neva","bumba","rvr","pex","cab","mojo","edrc","post","bern","qwark","esp","fuzz","xhi","arco","xbtc21","el","zur","611","2give","xptx","lana","ponzi","mxt","ctl","icoo","pwr","ion","hvco","gb","rise","chess","lbc","synx","cj","heat","sbd","bit","ele","krb","aces","taj","edc","xp","vlt","kb3","golf","lmc","btdx","nlc2","vrm","zyd","jin","plu","tell","dlc","mst","proud","seq","1st","pepecash","levo","arc","dmc","asafe","zcl","lkk","iop","vrs","hush","kurt","pasc","ent","incnt","golos","nxc","vsl","pcs","gbyte","posw","luna","frgc","dar","iflt","xspec","xstc","benji","ccrb","vidz","icob","ibank","frst","mgm","wct","icon","boat","ery","els","gbg","cnt","mscn","mln","time","argus","rns","swt","milo","music","zer","honey","netko","dyn","tks","mer","taas","soar","edg","b@","dtb","uni","xlr","imx","dbix","gup","usc","blazr","hpc","zeni","cxt","conx","xby","trst","wgo","proc","scs","btx","volt","gno","tkn","rain","hmq","iti","mne","cnnc","dice","insn","hallo","ant","pzm","rlt","eqt","dmb","nanox","may","sumo","etbs","v","ebst","adk","ptoy","veri","eca","qrl","ett","mgo","ammo","nro","ppy","miota","myst","more","linx","adl","zrc","glt","nmr","unify","xel","mrt","dcy","onx","btpl","atcc","good","bro","flash","efyt","bria","d","socc","adt","ping","wgr","ecob","plbt","jet","women","bdl","rup","pcn","san","ter","cvn","linda","ethos","sta","coal","part","smart","skin","toa","plr","sigt","oct","pbt","cc","emb","ixt","gsr","birds","crm","era","kek","stx","minex","wink","mao","tix","dcn","rupx","shdw","onion","cat","ads","ift","xcxt","riya","tcc","bln","myb","tfl","dalc","acc","bbp","bq","sigma","xmcc","brat","opt","sur","ltcu","mcc","avt","hvn","vsx","vivo","ocl","rex","buzz","credo","ind","xpa","scl","atb","iqt","pro","bmc","elix","xbl","day","pix","coss","csno","rvt","itz","tgt","orme","kln","colx","tzc","odn","cob","rec","msd","bis","voise","xin","atm","kick","rhoc","inxt","flik","cnx","real","hbt","cct","bco","ppp","alis","btcz","hgt","ctic3","bsn","zsc","ecash","sic","ats","pipl","cag","trct","art","xgox","evr","dutch","otn","drt","b2x","etg","blue","runners","life","kcs","exrn","poll","la","btcred","prg","bos","js","elite","itt","ieth","pirl","lux","dov","placo","btcm","ella","fyp","ebtc","ibtc","grid","atl","mnx","sono","xsh","eltcoin","dsr","ukg","nio","phr","inn","erc20","tie","grim","epy","dbet","hst","ufr","stu","prix","lthn","payx","grx","sgr","viu","xlq","gbx","wc","b2b","pnx","dna","ink","zzc","tsl","mag","spank","vot","monk","flixx","wish","evc","cco","qbt","drgn","pfr","pre","bcdn","capp","ero","jiyo","send","bon","nuko","snov","bwk","cms","wand","spf","cred","sct","uqc","ignis","hwc","pkt","fil","trdt","amm","loc","wrc","ytn","star","dtr","med","dew","ngc","dai","sphtx","bnty","dim","cpay","html","neu","play","hpy","pylnt","stak","fdx","tau","blt","cov","can","gcs","cl","opc","cfun","polis","hkn","zap","aix","rebl","god","utt","cdx","bdg","lev","krm","atn","sxdt","sxut","swtc","vzt","kzc","bca","tel","ic","weth","sense","moac","tokc","ait","qube","spc","ore","horse","arct","mvc","nox","ipl","idxm","gat","sexc","mobi","read","c20","ary","crpt","spk","cv","tbx","prs","idh","qbic","guess","aid","eve","bpt","axpr","trac","slt","fota","grlc","nkc","cofi","eql","hlc","oc","candy","sms","vlc","btw","trf","pareto","jnt","chsb","adb","dmt","ing","swm","drpu","esz","dxt","ucash","mntp","jew","mlm","loci","jc","bio","sup","tig","utnp","acat","evn","rmt","dth","mwat","ntk","gem","nec","lcc","stq","tdx","cpy","rem","exy","xnk","bez","seth","bee","instar","tube","ledu","hqx","stac","j8t","chp","tomo","grft","bax","elec","btcp","tfd","ship","ldc","shp","lala","occ","deb","cennz","snx","fluz","getx","drop","banca","drg","latx","nanj","ckusd","up","bbn","noah","lgo","1wo","npx","bitg","amlt","lst","pcl","sig","rntb","xbp","lnc","spd","ipsx","scc","bstn","swth","sen","xclr","senc","vit","tpay","berry","xtc","nct","xsn","xdce","tds","sent","adh","snip","bsm","dev","cbt","grmd","auc","bubo","dan","mfg","dig","adi","xhv","kst","crc","dero","efx","ftx","earth","mrk","pxc","crop","srcoin","chx","msr","phi","bbc","dml","hbz","ori","trak","aph","lnd","xes","vips","rblx","btrn","nbai","vme","hydro","ss","cel","ttt","bci","betr","amn","flp","cmct","mitx","mtc","cjt","bouts","pal","cre","gene","apr","ac3","fxt","zipt","gen","bznt","lif","team","oot","atx","frec","dgx","skb","joint","grn","bmh","loki","sgn","fnd","dtrc","cln","hero","clo","ubt","pat","open","mrph","sntr","xyo","cpt","apis","ft","xrh","caz","red","dgtx","gin","inv","face","ava","luc","navi","soul","repo","ivy","cnet","bbo","0xbtc","pi","lyl","bnk","etz","omx","medx","fto","abyss","pmnt","hur","tmt","pkc","cbc","ceek","sal","cou","hold","trtt","upp","bwt","dag","etk","met","alx","tern","zcn","zinc","fsbt","car","bob","kndc","card","wwb","onl","otb","coni","cccx","got","thrt","pch","quro","ess","hsc","like","yup","xsg","dtx","moc","nim","bz","dws","zxc","olt","atmi","xmct","fnkos","susd","tgame","engt","nobs","bmx","cdm","gard","xd","spx","aeg","rpl","ely","sop","jot","krl","lemo","gbc","bwx","wys","cosm","nrve","wt","toto","rlx","chex","view","vikky","foxt","brdg","lcs","zpr","empr","lpc","fundz","ryo","aced","lfc","wab","csm","mvl","xxx","ncp","dacc","pgn","eurs","exmr","nix","apl","bws","dpn","vex","hdac","kwh","mct","wsd","acdc","nbr","hrc","vivid","purex","cen","bitx","priv","rmesh","bbk","coin","klks","bhp","incx","zmn","sem","aro","acre","iov","web","fmf","bnn","obt","exc","czr","pts","opcx","bnd","xun","btk","dtem","eli","dacs","ebc","esco","gmcn","vitae","rock2","xtrd","btcn","nam","euno","mgd","est","eds","kind","x8x","cmm","ecom","lina","ino","knt","croat","btcone","avinoc","wiki","spn","nug","scr","nbc","npxsxem","xov","ust","opti","gic","abdt","pkg","boc","rdc","newos","pdx","xpat","icr","mxm","gio","sds","own","ig","hth","gse","dgs","xdna","nyex","egem","arepa","xet","cedex","noku","dx","pass","baas","pco","thr","cyfm","metm","aka","obtc","tkt","qnt","sac","zcr","xap","ifp","svd","ylc","mero","pma","arion","xbi","ftt","hyb","hb","lgs","fntb","ttc","altx","lky","abx","hand","gpkr","zp","ect","mftu","cato","rrc","rating","ctc","know","grph","kxc","nsd","prtx","lobs","vdg","sat","yuki","kwatt","mib","cotn","soniq","gtm","delta","nrg","ftxt","dav","bnc","dow","qbit","btn","vulc","str","flm","tmc","esn","fkx","beet","mic","ubc","flot","use","zba","mri","cymt","btr","gze","ccl","din","dit","havy","care","prj","cif","echt","imp","c2p","c8","sno","vsc","peng","rth","ret","qntu","tv","foin","bir","daxt","ben","elli","btxc","cit","olmp","btad","bu","urals","ihf","ucn","molk","edn","spnd","xcg","ccc","alc","cstl","evi","cfl","boxx","aog","ctrt","tcn","bunny","pyn","plura","rox","che","six","cmit","wiz","goss","sol","xcash","shard","iqn","qch","paxex","pgts","mlc","phon","anon","ecoreal","daps","carat","mnp","pyx","dachx","zb","mas","well","trxc","azart","tmtg","dagt","wit","ert","aux","wxc","plc","vsf","sins","crd","kue","ner","mir","rpm","ragna","dec","xgs","labh","wbl","civ","bcard","benz","xg","acm","blast","tol","quan","fox","mash","our","steep","nrp","scriv","wsp","x12","shade","ifood","egx","wix","pndm","bc","eta","bsx","wtl","sim","ndx","zeus","bczero","wage","f1c","meta","qac","cobra","psc","shping","s","qno","aec","inco","aglt","icnq","rpd","ents","smq","oxy","deal","wire","divi","xind","huzu","kun","znt","ath","mmo","szc","etho","cjs","datp","deex","plus1","ird","zt","help","rpi","cheese","alt","isr","hlm","fbn","tdp","robet","jse","yeed","itl","asa","modx","shmn","pny","telos","omen","gst","ddx","pedi","gzro","esce","vlu","ezw","vld","sake","rock","mtrc","bzx","xcd","lqd","deliz","cgen","hndc","type","ionc","mbc","bzl","voco","traid","apc","sin","dex","dkpc","snr","brzc","paws","messe","snd","mfit","apot","cyl","pnk","medibit","poss","ttv","wet","bgg","abs","ethm","cryp","lion","ptn","xnv","inve","osa","eti","hum","shb","vites","vest","cwv","micro","nor","bcac","dashg","hqt","bcdt","stacs","beat","btnt","nos","oio","nzl","equad","bltg","lrm","herc","foam","opq","lml","skch","lpt","tiox","tvnt","shvr","herb","cnus","nplc","next","b2n","fiii","becn","quin","shx","xfc","agvc","impl","awc","prx","wco","rom","kze","dogec","btmx","gbt","roco","ibt","cent","xta","aen","b2g","btcl","mox","mcw","bul","tok","m2o","inx","hyn","xsm","gmbc","obsr","ctx","adm","dxr","alb","tosc","exo","pla","clb","wib","lto","caj","veo","wbtc","sdusd","temco","solve","dooh","flc","halo","wlo","tcat","ccx","s4f","elac","vgw","mrs","dcto","const","blcr","ecte","bnana","qusd","webn","777","eld","aunit","hxro","ichx","xpc","labx","upx","pltc","evy","mhc","gmb","mpg","jnb","swc","1sg","owc","set","serv","fat","1x2","pib","hbx","ccn","etx","twins","gfun","spt","evos","cot","ovc","lunes","innbcl","net","boltt","rc20","jwl","araw","gali","zeon","mesg","xbx","xuez","fex","bora","ctt","dra","spec","navy","orox","etgp","ine","fxc","vra","slrm","gpt","bhig","xqr","olxa","pub","bud","jct","veil","sha","bbgc","hypx","dxg","mfc","hlt","xrc","xlb","bolt","xtx","vidt","vbk","obx","when","oto","alln","huddl","mtv","und","locus","sfcp","gfr","fnb","pti","inf","uts","con","sica","a","lit","bia","botx","valor","entrc","webd","xwp","esbc","oce","stash","arq","qcx","fx","wpp","ict","bceo","nat","now","cspn","mac","axe","hn","kubo","xmv","e2c","dio","spdr","peos","wgp","ttn","meri","thx","sntvt","doget","dpt","hlx","tas","vjc","drep","trat","xlmg","atls","idex","bqtx","elet","xcon","swift","srk","gny","mzk","trp","p2px","fab","qwc","neox","afin","ntr","arrr","iotw","eved","odex","bomb","rfox","neal","bze","vdx","dream","toc","eum","try","grat","tro","aya","btc2","snl","chr","tcash","tqn","lbn","bdx","lvl","wfx","alp","coti","emt","smartup","ioux","kri","tagz","mpay","skt","znn","stpt","bcz","izi","sprk","bqqq","minx","mcpc","eosdt","kts","usdq","raven","dvt","jar","hnst","cos","nbot","mgc","par","qdao","igg","dxn","aaa","cap","ten","bot","hnb"];
 
     public function test($symbol)
     {
@@ -91,6 +91,11 @@ class ToolController extends Controller
         }
 
         if ($okexPrice = $this->__getPriceFromOkex($symbol)) {
+            $count ++;
+            $price += $okexPrice;
+        }
+
+        if ($okexPrice = $this->__getPriceFromMxc($symbol)) {
             $count ++;
             $price += $okexPrice;
         }
@@ -166,6 +171,9 @@ class ToolController extends Controller
                 break;
             case "okb":
                 $price = $this->__getPriceFromOkex("OKB-USDT", false);
+                break;
+            case "mx":
+                $price = $this->__getPriceFromMxc("MX_USDT", false);
                 break;
         }
 
@@ -360,6 +368,59 @@ class ToolController extends Controller
             DataCache::setSymbolInfo('symbol-info-okex-' . $symbol, $resData);
 
             return isset($resData->last) ? $resData->last * $basePrice : 0;
+         } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+
+            return 0;
+        }
+    }
+
+    private function __getPriceFromMxc($symbol, $is_check = true)
+    {
+        try{
+            $basePrice = 1;
+            $symbol = strtoupper($symbol);
+
+            if ($is_check) {
+                if (!DataCache::getSymbols('symbol_mxc_ETH_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_mxc_BTC_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_mxc_USDT_' . $symbol)) {
+                            if (!DataCache::getSymbols('symbol_mxc_MX_' . $symbol)) {
+                                return 0;
+                            } else {
+                                $symbol .= '_MX';
+                                $basePrice = $this->__getBasePrice('mx');
+                            }
+                        }else {
+                            $symbol .= '_USDT';
+                        }
+                    } else {
+                        $symbol .= '_BTC';
+                        $basePrice = $this->__getBasePrice('btc');
+                    }
+                } else {
+                    $symbol .= '_ETH';
+                    $basePrice = $this->__getBasePrice('eth');
+                }
+            }
+
+            \Log::info('mxc price symbol = '. $symbol);
+            if ($cache = DataCache::getSymbolInfo('symbol-info-mxc-' . $symbol)) {
+                $res = isset($cache['data']) ? $cache['data']['last'] * $basePrice : 0;
+                \Log::info('mxc cache >>>>>>>>>>>>>>>>>' . $res);
+                return $res;
+            }
+
+            $url = 'https://www.mxc.com/open/api/v1/data/ticker?market=' . $symbol;
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            //由于mxc 需要算出来涨跌幅 而这个接口给了 最新价格 所以需要缓存一下 方便下面__getDetailOfmxc 用
+            DataCache::setSymbolInfo('symbol-info-mxc-' . $symbol, $resData->data);
+            $res = $resData->code == 200 ? $resData->data->last * $basePrice : 0;
+            \Log::info('mxc  >>>>>>>>>>>>>>>>>' . $res);
+            return $res;
          } catch (ConnectException $e) {
             \Log::error($e->getMessage());
 
@@ -1014,6 +1075,46 @@ http://tinyurl.com/yy82vqc9',
         }
     }
 
+    private function __get24hChangeFromMxcWith($symbol)
+    {
+        try{
+            $symbol = strtoupper($symbol);
+
+            if (!DataCache::getSymbols('symbol_mxc_ETH_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_mxc_BTC_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_mxc_USDT_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_mxc_MX_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= '_MX';
+                        }
+                    } else {
+                        $symbol .= '_USDT';
+                    }
+                } else {
+                    $symbol .= '_BTC';
+                }
+            } else {
+                $symbol .= '_ETH';
+            }
+
+             if ($cache = DataCache::getSymbolInfo('symbol-info-mxc-' . $symbol)) {
+                return isset($cache['data']['percentChange']) ? $cache['data']['percentChange'] * 100 : 0;
+            }
+
+            $url = 'https://www.mxc.com/open/api/v1/data/ticker?market=' . $symbol;
+
+            $client = new Client();
+            $res = $client->request('GET', $url);
+            $resData  = json_decode((string) $res->getBody());
+
+            return isset($resData->data) && isset($resData->data->percentChange) ? $resData->data->percentChange * 100 : 0;
+        } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }
+    }
+
     public function get24hChangeFor($symbol)
     {
 \Log::info('=======================================================');
@@ -1047,6 +1148,12 @@ http://tinyurl.com/yy82vqc9',
             \Log::info('okex------------------------>' . $okexDetail);
             $count ++;
             $rose += $okexDetail;
+        }
+
+        if ($mxcDetail = $this->__get24hChangeFromMxcWith($symbol)) {
+            \Log::info('mxc------------------------>' . $mxcDetail);
+            $count ++;
+            $rose += $mxcDetail;
         }
 \Log::info('******************************************************');
         $cou = $count > 0  ? $count : 1;
