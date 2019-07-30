@@ -31,8 +31,20 @@ class WeChatUserAuthorizedListener
         \Log::info('event => ', [$event] );
 
 
-            $user = $event->user->original;
-            WechatOpenid::firstOrCreate([
+        $user = $event->user->original;
+        if (isset($user['scope']) && $user['scope'] == 'snsapi_base') {
+            UserXuhost::create([
+                'union_id' => $user['openid'],
+            ]);
+        } else {
+            $this->__recordUserInfo($user);
+        }
+
+    }
+
+    private function __recordUserInfo($user)
+    {
+         WechatOpenid::firstOrCreate([
                 'openid' => $user['openid'],
                 'unionid' => $user['unionid'],
             ]);

@@ -45,6 +45,7 @@ class GetExchangesSymbols extends Command
         $this->__setCointigerSymbol($keywords);
         $this->__setLbankSymbol($keywords);
         $this->__setOkexSymbol($keywords);
+        $this->__setMxcSymbol($keywords);
 
         DataCache::setSymbolsFor('keywords-symbol', $keywords);
     }
@@ -56,7 +57,6 @@ class GetExchangesSymbols extends Command
         $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody());
 
-        $data = [];
         foreach ($resData->symbols as $d) {
             DataCache::setSymbolsFor('symbol_binance_' . $d->quoteAsset . '_' . $d->baseAsset, 1);
             $keyword = strtolower($d->baseAsset);
@@ -73,7 +73,6 @@ class GetExchangesSymbols extends Command
         $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody(), true);
 
-        $data = [];
         foreach ($resData['data'] as $d) {
             DataCache::setSymbolsFor('symbol_huobi_' . $d['quote-currency'] . '_' . $d['base-currency'], 1);
             $keyword = strtolower($d['base-currency']);
@@ -90,8 +89,6 @@ class GetExchangesSymbols extends Command
         $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody(), true);
         $info = $resData['data'];
-
-        $data = [];
 
         foreach ($info as $key => $value) {
             $arr = explode('-', $key);
@@ -111,10 +108,9 @@ class GetExchangesSymbols extends Command
         $client = new Client();
         $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody());
-        $data = [];
+
         foreach ($resData as $value) {
             $arr = explode('_', $value);
-            $data[$arr[1]][] = $arr[0];
             DataCache::setSymbolsFor('symbol_lbank_' .$arr[1] . '_' . $arr[0], 1);
             $keyword = strtolower($arr[0]);
             if (!in_array($keyword, $keywords)) {
@@ -130,10 +126,27 @@ class GetExchangesSymbols extends Command
         $res = $client->request('GET', $url);
         $resData  = json_decode((string) $res->getBody(), true);
 
-        $data = [];
         foreach ($resData as $d) {
             DataCache::setSymbolsFor('symbol_okex_' . $d['quote_currency'] . '_' . $d['base_currency'], 1);
             $keyword = strtolower($d['base_currency']);
+            if (!in_array($keyword, $keywords)) {
+                $keywords[] = $keyword;
+            }
+        }
+    }
+
+    private function __setMxcSymbol(&$keywords)
+    {
+        $url = 'https://www.mxc.com/open/api/v1/data/markets_info';
+        $client = new Client();
+        $res = $client->request('GET', $url);
+        $resData  = json_decode((string) $res->getBody(), true);
+
+        $data = array_keys($resData['data']);
+        foreach ($data as $d) {
+            $arr = explode('_', $value);
+            DataCache::setSymbolsFor('symbol_mxc_' .$arr[1] . '_' . $arr[0], 1);
+            $keyword = strtolower($arr[0]);
             if (!in_array($keyword, $keywords)) {
                 $keywords[] = $keyword;
             }
