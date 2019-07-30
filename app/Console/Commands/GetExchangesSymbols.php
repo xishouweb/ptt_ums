@@ -144,7 +144,7 @@ class GetExchangesSymbols extends Command
 
         $data = array_keys($resData['data']);
         foreach ($data as $d) {
-            $arr = explode('_', $value);
+            $arr = explode('_', $d);
             DataCache::setSymbolsFor('symbol_mxc_' .$arr[1] . '_' . $arr[0], 1);
             $keyword = strtolower($arr[0]);
             if (!in_array($keyword, $keywords)) {
