@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Models\WechatOpenid;
 use App\Models\WechatUsers;
+use App\Models\UserXuhost;
 use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
