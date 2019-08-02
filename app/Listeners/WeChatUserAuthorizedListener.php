@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Models\WechatOpenid;
 use App\Models\WechatUsers;
-use App\Models\UserXuhost;
+use App\Models\UserXuHost;
 use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,7 +34,7 @@ class WeChatUserAuthorizedListener
 
         $user = $event->user->original;
         if (isset($user['scope']) && $user['scope'] == 'snsapi_base') {
-            UserXuhost::create([
+            UserXuHost::create([
                 'union_id' => $user['openid'],
             ]);
         } else {
