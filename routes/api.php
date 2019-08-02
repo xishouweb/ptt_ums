@@ -68,11 +68,11 @@ Route::prefix('v1')->group(function() {
 
        $router->get('price/query/rank/{page}', 'XuRankController@rank');
        $router->get('price/query/{user_id}/join/{campaign_id}', 'XuRankController@join');
-    });
-});
 
-Route::group(['middleware' => ['wechat.oauth:user_base, snsapi_base']], function (Router $router) {
-    $router->get('/xu', 'UserController@redirectXu');
+       Route::group(['middleware' => ['wechat.oauth:user_base, snsapi_base']], function (Router $router) {
+            $router->get('/xu', 'UserController@redirectXu');
+        });
+    });
 });
 
 
