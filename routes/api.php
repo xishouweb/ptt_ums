@@ -63,6 +63,7 @@ Route::prefix('v1')->group(function() {
        $router->get('symbol/{symbol}/info', 'ToolController@getPrice');
        $router->get('symbol/keyword', 'ToolController@setKeyword');
        $router->post('symbol/message/callback', 'ToolController@wechatMessageCallback');
+       $router->post('user/xu/callback', 'UserController@xuUserCallBack');
        $router->get('symbol/statistic', 'ToolController@getStatistic');
        $router->get('symbol/test/{aaa}', 'ToolController@test');
 
