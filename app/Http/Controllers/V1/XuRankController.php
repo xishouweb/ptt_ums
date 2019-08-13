@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\Models\UserCampaign;
 use App\Models\Campaign;
+use App\Models\UserXuHost;
 
 class XuRankController extends Controller
 {
@@ -20,6 +21,10 @@ class XuRankController extends Controller
     {
         $wechatInfo = session('wechat.oauth_user.default'); // 拿到授权用户资料
         $wechatUser = $wechatInfo['original'];
+        $userXuHost = UserXuHost::whereUnionid($wechatUser['openid'])->first();
+        if (!$userXuHost || !$userXuHost->xu_host_id) {
+            header(UserXuHost::XU_URL . encrypt($wechatUser['openid']));
+        }
 
         if ($wechatInfo['email']) {
             $user = User::whereEmail($wechatInfo['email'])->orWhereUnionid($wechatUser['unionid'])->first();

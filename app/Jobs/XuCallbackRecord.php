@@ -10,6 +10,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\PriceQueryLog;
 use App\Models\UserXuHost;
 use App\Models\PriceQueryStatistic;
+use App\Models\WechatUsers;
+use App\User;
 
 class XuCallbackRecord implements ShouldQueue
 {
@@ -43,8 +45,25 @@ class XuCallbackRecord implements ShouldQueue
         $xuGroupName = $data->vcChatRoomName;
         $xuRobotId = $data->vcRobotSerialNo;
 
+        $xuUser = UserXuHost::whereXuHostId($xuHostId)->first();
+        if (!$xuUser) {
+            return;
+        }
+
+        $wechatUser = WechatUsers::whereOpenid($xuUser->unionid)->first();
+
+        if (!$wechatUser) {
+            return;
+        }
+
+        $user = User::whereUnionid($wechatUser->unionid)->first();
+        if (!$user) {
+            return;
+        }
+
         try {
             \DB::beginTransaction();
+
 
             PriceQueryLog::create([
                 'campaign_id' => $this->campaign_id,
@@ -53,6 +72,7 @@ class XuCallbackRecord implements ShouldQueue
                 'xu_group_name' => $xuGroupName,
                 'xu_robot_id' => $xuRobotId,
                 'symbol' => $symbol,
+                'user_id' => $user->id,
             ]);
 
             $record = PriceQueryStatistic::whereCampaignId($this->campaign_id)
@@ -76,14 +96,7 @@ class XuCallbackRecord implements ShouldQueue
                     'xu_robot_id' => $xuRobotId,
                     'symbol' => $symbol,
                     'query_count' => 1,
-                ]);
-            }
-
-            $user = UserXuHost::whereXuHostId($xuHostId)->whereXuNickname($xuNickname)->first();
-            if (!$user) {
-                UserXuHost::create([
-                    'xu_host_id' => $xuHostId,
-                    'xu_nickname' => $xuNickname,
+                    'user_id' => $user->id,
                 ]);
             }
 
