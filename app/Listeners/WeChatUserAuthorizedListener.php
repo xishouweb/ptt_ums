@@ -34,7 +34,7 @@ class WeChatUserAuthorizedListener
 
         $user = $event->user->original;
         if (isset($user['scope']) && $user['scope'] == 'snsapi_base') {
-            UserXuHost::create([
+            UserXuHost::firstOrCreate([
                 'union_id' => $user['openid'],
             ]);
         } else {

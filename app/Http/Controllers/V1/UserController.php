@@ -21,7 +21,7 @@ class UserController extends Controller
         header($xuUrl);
     }
 
-    public function xuUserCallBack()
+    public function xuUserCallBack(Request $request)
     {
         $appid = $request->get('appid');
         $timestamp = $request->get('timestamp');
