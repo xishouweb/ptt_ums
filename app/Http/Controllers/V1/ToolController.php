@@ -15,6 +15,7 @@ use App\Models\Contract;
 use App\Models\DataCache;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -372,6 +373,14 @@ class ToolController extends Controller
             \Log::error($e->getMessage());
 
             return 0;
+        } catch (ClientException $e) {
+            \Log::error($e->getMessage());
+
+            return 0;
+        } catch (Exception $e) {
+            \Log::error($e->getMessage());
+
+            return 0;
         }
     }
 
@@ -697,42 +706,57 @@ class ToolController extends Controller
 
     private function __getDetailOfOkex($symbol)
     {
-        $symbol = strtoupper($symbol);
+        try{
+            $symbol = strtoupper($symbol);
 
-        if (!DataCache::getSymbols('symbol_okex_ETH_' . $symbol)) {
-            if (!DataCache::getSymbols('symbol_okex_BTC_' . $symbol)) {
-                if (!DataCache::getSymbols('symbol_okex_USDT_' . $symbol)) {
-                    if (!DataCache::getSymbols('symbol_okex_OKB_' . $symbol)) {
-                        return 0;
+            if (!DataCache::getSymbols('symbol_okex_ETH_' . $symbol)) {
+                if (!DataCache::getSymbols('symbol_okex_BTC_' . $symbol)) {
+                    if (!DataCache::getSymbols('symbol_okex_USDT_' . $symbol)) {
+                        if (!DataCache::getSymbols('symbol_okex_OKB_' . $symbol)) {
+                            return 0;
+                        } else {
+                            $symbol .= '-OKB';
+                        }
                     } else {
-                        $symbol .= '-OKB';
+                        $symbol .= '-USDT';
                     }
                 } else {
-                    $symbol .= '-USDT';
+                    $symbol .= '-BTC';
                 }
             } else {
-                $symbol .= '-BTC';
+                $symbol .= '-ETH';
             }
-        } else {
-            $symbol .= '-ETH';
-        }
 
-        $cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol);
-        $lastPrice = $cache['last'];
+            $cache = DataCache::getSymbolInfo('symbol-info-okex-' . $symbol);
+            $lastPrice = $cache['last'];
 
-        if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("okex-". $symbol)){
-            \Log::info('okex rose cache symbol = '. $symbol);
-            return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
-        } else {
-            $date = date('Y-m-d', strtotime('-1 day'));
-            $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/candles?granularity=3600&start='. $date .'T00%3A00%3A00.000Z&end=' . $date . 'T23%3A59%3A59.999Z';
-            $client = new Client();
-            $res = $client->request('GET', $url);
-            $resData  = json_decode((string) $res->getBody(), true);
-            \Log::info('okex rose symbol = '. $symbol);
-            DataCache::setSymbolYesterdayLastPrice("okex-". $symbol, $resData[0][4]);
+            if($yesterdaylastPrice = DataCache::getSymbolYesterdayLastPrice("okex-". $symbol)){
+                \Log::info('okex rose cache symbol = '. $symbol);
+                return ($lastPrice - $yesterdaylastPrice) / $yesterdaylastPrice * 100;
+            } else {
+                $date = date('Y-m-d', strtotime('-1 day'));
+                $url = 'https://www.okex.com/api/spot/v3/instruments/' . $symbol . '/candles?granularity=3600&start='. $date .'T00%3A00%3A00.000Z&end=' . $date . 'T23%3A59%3A59.999Z';
+                $client = new Client();
+                $res = $client->request('GET', $url);
+                $resData  = json_decode((string) $res->getBody(), true);
+                \Log::info('okex rose symbol = '. $symbol);
+                DataCache::setSymbolYesterdayLastPrice("okex-". $symbol, $resData[0][4]);
 
-            return isset($resData[0][4]) ? ($lastPrice - $resData[0][4]) / $resData[0][4] * 100 : 0;
+                return isset($resData[0][4]) ? ($lastPrice - $resData[0][4]) / $resData[0][4] * 100 : 0;
+            }
+
+         } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+
+            return 0;
+        } catch (ClientException $e) {
+            \Log::error($e->getMessage());
+
+            return 0;
+        } catch (Exception $e) {
+            \Log::error($e->getMessage());
+
+            return 0;
         }
     }
 
