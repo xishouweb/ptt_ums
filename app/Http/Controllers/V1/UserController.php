@@ -13,9 +13,8 @@ class UserController extends Controller
         $wechatInfo = session('wechat.oauth_user.user_base'); // 拿到授权用户资料
         $wechatUser = $wechatInfo['original'];
         $openid =  encrypt($wechatUser['openid']);
-        // $xuUrl = 'Location: http://xzs.jinqunla.com/step2Preview?vcSerialNo=0023a1e3447fdb31836536cc903f1310.1';
-        $xuUrl = 'Location: http://hytestcallback.jinqunla.com/step2Preview?vcSerialNo=e847d18006f6d945e8a9ee2f4d3e23f5.2,';
-        $xuUrl = $xuUrl . $openid;
+
+        $xuUrl = UserXuHost::XU_URL . $openid;
         \Log::info('xuUrl = ' . $xuUrl);
         \Log::info('openid  = ' . decrypt($openid));
         header($xuUrl);
@@ -31,7 +30,7 @@ class UserController extends Controller
         $key = '47886fd0de1asdf135sq22fy56w2kl';
         $secret = '1equEcRkT2hirJhbYByNGCZPRHgFg132rtlb0IZ3vf4=';
 
-          $checkSign = md5($appid . $secret . $timestamp . $data);
+        $checkSign = md5($appid . $secret . $timestamp . $data);
 
         if ($sign != $checkSign) {
            return response()->json([
@@ -48,8 +47,8 @@ class UserController extends Controller
            ], 200);
         }
 
-        $openid = decrypt($data->btk_uid);
-        $user = UserXuHost::whereUnionId($openid)->first();
+        $openid = decrypt(urldecode($data->btk_uid));
+        $user = UserXuHost::whereUnionId($openid)->orderBy('id', 'desc')->first();
 
         if (!$user) {
             return response()->json(['code' => 1004, 'msg' => '未找到该用户'], 200);
