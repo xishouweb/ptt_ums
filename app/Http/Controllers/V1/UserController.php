@@ -30,7 +30,7 @@ class UserController extends Controller
         $key = '47886fd0de1asdf135sq22fy56w2kl';
         $secret = '1equEcRkT2hirJhbYByNGCZPRHgFg132rtlb0IZ3vf4=';
 
-          $checkSign = md5($appid . $secret . $timestamp . $data);
+        $checkSign = md5($appid . $secret . $timestamp . $data);
 
         if ($sign != $checkSign) {
            return response()->json([
@@ -47,8 +47,8 @@ class UserController extends Controller
            ], 200);
         }
 
-        $openid = decrypt($data->btk_uid);
-        $user = UserXuHost::whereUnionId($openid)->first();
+        $openid = decrypt(urldecode($data->btk_uid));
+        $user = UserXuHost::whereUnionId($openid)->orderBy('id', 'desc')->first();
 
         if (!$user) {
             return response()->json(['code' => 1004, 'msg' => '未找到该用户'], 200);
