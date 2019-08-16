@@ -85,10 +85,10 @@ class ToolController extends Controller
             $price += $huoBiPrice;
         }
 
-        if ($cointigerPrice = $this->__getPriceFromCointiger($symbol)) {
-            $count ++;
-            $price += $cointigerPrice;
-        }
+        // if ($cointigerPrice = $this->__getPriceFromCointiger($symbol)) {
+        //     $count ++;
+        //     $price += $cointigerPrice;
+        // }
 
         if ($okexPrice = $this->__getPriceFromOkex($symbol)) {
             $count ++;
@@ -1138,11 +1138,11 @@ http://tinyurl.com/yy82vqc9',
             $rose += $huoBiDetail;
         }
 
-        if ($cointigerDetail = $this->__get24hChangeFromCointigerWith($symbol)) {
-            \Log::info('cointiger----------------------->' . $cointigerDetail);
-            $count ++;
-            $rose += $cointigerDetail;
-        }
+        // if ($cointigerDetail = $this->__get24hChangeFromCointigerWith($symbol)) {
+        //     \Log::info('cointiger----------------------->' . $cointigerDetail);
+        //     $count ++;
+        //     $rose += $cointigerDetail;
+        // }
 
         if ($okexDetail = $this->__get24hChangeFromOkexWith($symbol)) {
             \Log::info('okex------------------------>' . $okexDetail);
