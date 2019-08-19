@@ -59,8 +59,8 @@ return [
      */
     'official_account' => [
         'default' => [
-            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'wx901c3f28c41e737f'),         // AppID
-            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', '09d7b0e638faa806f162ee8a82e0c65c'),    // AppSecret
+            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'wx1b28b967276e1cd9'),         // AppID
+            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', '97737269e9d3a1d050f7e54de9845554'),    // AppSecret
             'token' => env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'super_campaign'),           // Token
             'aes_key' => env('WECHAT_OFFICIAL_ACCOUNT_AES_KEY', 'super_campaign'),                 // EncodingAESKey
 
@@ -77,8 +77,8 @@ return [
         ],
 
         'user_base' => [
-            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'wx901c3f28c41e737f'),         // AppID
-            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', '09d7b0e638faa806f162ee8a82e0c65c'),    // AppSecret
+            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'wx1b28b967276e1cd9'),         // AppID
+            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', '97737269e9d3a1d050f7e54de9845554'),    // AppSecret
             'token' => env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'super_campaign'),           // Token
             'aes_key' => env('WECHAT_OFFICIAL_ACCOUNT_AES_KEY', 'super_campaign'),                 // EncodingAESKey
 
