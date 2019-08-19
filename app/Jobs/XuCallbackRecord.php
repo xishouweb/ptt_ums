@@ -46,7 +46,7 @@ class XuCallbackRecord implements ShouldQueue
         $xuRobotId = $data->vcRobotSerialNo;
 
         $xuUser = UserXuHost::whereXuHostId($xuHostId)->first();
-        if (!$xuUser) {
+        if (!$xuUser || !$xuUser->unionid) {
             return;
         }
 
