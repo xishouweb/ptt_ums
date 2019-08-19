@@ -45,20 +45,16 @@ class XuCallbackRecord implements ShouldQueue
         $xuGroupName = $data->vcChatRoomName;
         $xuRobotId = $data->vcRobotSerialNo;
 
+        $user_id = null;
         $xuUser = UserXuHost::whereXuHostId($xuHostId)->first();
-        if (!$xuUser || !$xuUser->unionid) {
-            return;
-        }
-
-        $wechatUser = WechatUsers::whereOpenid($xuUser->unionid)->first();
-
-        if (!$wechatUser) {
-            return;
-        }
-
-        $user = User::whereUnionid($wechatUser->unionid)->first();
-        if (!$user) {
-            return;
+        if ($xuUser && $xuUser->unionid) {
+            $wechatUser = WechatUsers::whereOpenid($xuUser->unionid)->first();
+            if ($wechatUser) {
+                $user = User::whereUnionid($wechatUser->unionid)->first();
+                if ($user) {
+                    $user_id = $user->id;
+                }
+            }
         }
 
         try {
@@ -72,7 +68,7 @@ class XuCallbackRecord implements ShouldQueue
                 'xu_group_name' => $xuGroupName,
                 'xu_robot_id' => $xuRobotId,
                 'symbol' => $symbol,
-                'user_id' => $user->id,
+                'user_id' => $user_id,
             ]);
 
             $record = PriceQueryStatistic::whereCampaignId($this->campaign_id)
@@ -96,7 +92,7 @@ class XuCallbackRecord implements ShouldQueue
                     'xu_robot_id' => $xuRobotId,
                     'symbol' => $symbol,
                     'query_count' => 1,
-                    'user_id' => $user->id,
+                    'user_id' => $user_id,
                 ]);
             }
 
