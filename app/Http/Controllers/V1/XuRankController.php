@@ -14,6 +14,8 @@ use App\User;
 use App\Models\UserCampaign;
 use App\Models\Campaign;
 use App\Models\UserXuHost;
+use App\Models\WechatOpenid;
+use App\Models\WechatUsers;
 
 class XuRankController extends Controller
 {
