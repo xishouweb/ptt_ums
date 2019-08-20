@@ -39,45 +39,6 @@ class UserController extends Controller
         header($xuUrl);
     }
 
-    private function __recordUserInfo($user)
-    {
-         WechatOpenid::firstOrCreate([
-                'openid' => $user['openid'],
-                'unionid' => $user['unionid'],
-            ]);
-
-            if (isset($user['unionid'])) {
-                WechatUsers::updateOrCreate(
-                    [
-                        'openid' => $user['openid'],
-                        'unionid' => $user['unionid']
-                    ],
-                    [
-                        'nickname' => $user['nickname'],
-                        'headimgurl' => $user['headimgurl'],
-                        'sex' => $user['sex'],
-                        'city' => $user['city'],
-                        'country' => $user['country'],
-                        'province' => $user['province'],
-                        'language' => $user['language'],
-                    ]
-                );
-            } else {
-                WechatUsers::create(
-                    [
-                        'openid' => $user['openid'],
-                        'nickname' => $user['nickname'],
-                        'headimgurl' => $user['headimgurl'],
-                        'sex' => $user['sex'],
-                        'city' => $user['city'],
-                        'country' => $user['country'],
-                        'province' => $user['province'],
-                        'language' => $user['language'],
-                    ]
-                );
-            }
-    }
-
     public function xuUserCallBack(Request $request)
     {
         $appid = $request->get('appid');
