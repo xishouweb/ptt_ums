@@ -68,8 +68,9 @@ Route::prefix('api/vendor')->group(function () {
 
 Route::prefix('price/query')->group(function () {
     Route::namespace('V1')->group(function () {
-        Route::middleware('wechat.oauth')->group(function(){
-            Route::get('index', 'XuRankController@index');
-        });
+        Route::get('index', 'XuRankController@index');
+        // Route::middleware('wechat.oauth')->group(function(){
+
+        // });
     });
 });

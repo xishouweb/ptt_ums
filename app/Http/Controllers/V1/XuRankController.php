@@ -19,8 +19,9 @@ class XuRankController extends Controller
 {
     public function index()
     {
-        $wechatInfo = session('wechat.oauth_user.default'); // 拿到授权用户资料
-        $wechatUser = $wechatInfo['original'];
+        $wechatUser = request()->get('user');
+        $wechatUser = json_decode(base64_decode($wechatUser));
+        dd($wechatUser);
         $userXuHost = UserXuHost::whereUnionid($wechatUser['openid'])->first();
         if (!$userXuHost || !$userXuHost->xu_host_id) {
             header(UserXuHost::XU_URL . encrypt($wechatUser['openid']));
@@ -69,6 +70,45 @@ class XuRankController extends Controller
         $rankList = $this->rank();
 
         return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user'));
+    }
+
+    private function __recordUserInfo($user)
+    {
+         WechatOpenid::firstOrCreate([
+                'openid' => $user['openid'],
+                'unionid' => $user['unionid'],
+            ]);
+
+            if (isset($user['unionid'])) {
+                WechatUsers::updateOrCreate(
+                    [
+                        'openid' => $user['openid'],
+                        'unionid' => $user['unionid']
+                    ],
+                    [
+                        'nickname' => $user['nickname'],
+                        'headimgurl' => $user['headimgurl'],
+                        'sex' => $user['sex'],
+                        'city' => $user['city'],
+                        'country' => $user['country'],
+                        'province' => $user['province'],
+                        'language' => $user['language'],
+                    ]
+                );
+            } else {
+                WechatUsers::create(
+                    [
+                        'openid' => $user['openid'],
+                        'nickname' => $user['nickname'],
+                        'headimgurl' => $user['headimgurl'],
+                        'sex' => $user['sex'],
+                        'city' => $user['city'],
+                        'country' => $user['country'],
+                        'province' => $user['province'],
+                        'language' => $user['language'],
+                    ]
+                );
+            }
     }
 
     public function rank($page = 1, $user_id = null)
