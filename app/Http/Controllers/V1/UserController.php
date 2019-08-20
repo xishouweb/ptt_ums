@@ -22,14 +22,21 @@ class UserController extends Controller
         header($xuUrl);
     }
 
-    public function xuRedirect(Request $request)
+    public function btkRedirectXu(Request $request)
     {
-        \Log::info(json_encode($request->all()));
-        // UserXuHost::firstOrCreate([
-        //     'union_id' => $user['openid'],
-        // ]);
+        $openid = $request->get('openid');
+        if (!$openid) {
+            return;
+        }
+        UserXuHost::firstOrCreate([
+            'union_id' => $openid,
+        ]);
+        $openid =  encrypt($openid);
 
-        // return $user['openid'];
+        $xuUrl = UserXuHost::XU_URL . $openid;
+        \Log::info('xuUrl = ' . $xuUrl);
+        \Log::info('openid  = ' . decrypt($openid));
+        header($xuUrl);
     }
 
     private function __recordUserInfo($user)

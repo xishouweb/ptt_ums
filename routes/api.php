@@ -67,7 +67,7 @@ Route::prefix('v1')->group(function() {
        $router->get('symbol/statistic', 'ToolController@getStatistic');
        $router->get('symbol/test/{aaa}', 'ToolController@test');
 
-       $router->get('xu_redirect', 'UserController@xuRedirect');
+       $router->get('btk_redirect_xu', 'UserController@btkRedirectXu');
 
        $router->get('price/query/rank/{page}', 'XuRankController@rank');
        $router->get('price/query/{user_id}/join/{campaign_id}', 'XuRankController@join');
