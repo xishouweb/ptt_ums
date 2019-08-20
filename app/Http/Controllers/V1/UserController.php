@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserXuHost;
+use App\Models\WechatOpenid;
+use App\Models\WechatUsers;
 
 class UserController extends Controller
 {
@@ -18,6 +20,55 @@ class UserController extends Controller
         \Log::info('xuUrl = ' . $xuUrl);
         \Log::info('openid  = ' . decrypt($openid));
         header($xuUrl);
+    }
+
+    public function xuRedirect(Request $request)
+    {
+        \Log::info(json_encode($request->all()));
+        // UserXuHost::firstOrCreate([
+        //     'union_id' => $user['openid'],
+        // ]);
+
+        // return $user['openid'];
+    }
+
+    private function __recordUserInfo($user)
+    {
+         WechatOpenid::firstOrCreate([
+                'openid' => $user['openid'],
+                'unionid' => $user['unionid'],
+            ]);
+
+            if (isset($user['unionid'])) {
+                WechatUsers::updateOrCreate(
+                    [
+                        'openid' => $user['openid'],
+                        'unionid' => $user['unionid']
+                    ],
+                    [
+                        'nickname' => $user['nickname'],
+                        'headimgurl' => $user['headimgurl'],
+                        'sex' => $user['sex'],
+                        'city' => $user['city'],
+                        'country' => $user['country'],
+                        'province' => $user['province'],
+                        'language' => $user['language'],
+                    ]
+                );
+            } else {
+                WechatUsers::create(
+                    [
+                        'openid' => $user['openid'],
+                        'nickname' => $user['nickname'],
+                        'headimgurl' => $user['headimgurl'],
+                        'sex' => $user['sex'],
+                        'city' => $user['city'],
+                        'country' => $user['country'],
+                        'province' => $user['province'],
+                        'language' => $user['language'],
+                    ]
+                );
+            }
     }
 
     public function xuUserCallBack(Request $request)
