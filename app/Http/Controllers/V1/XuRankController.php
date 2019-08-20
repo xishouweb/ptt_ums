@@ -20,7 +20,7 @@ class XuRankController extends Controller
     public function index()
     {
         $wechatUser = request()->get('user');
-        $wechatUser = json_decode(base64_decode($wechatUser));
+        $wechatUser = json_decode(base64_decode($wechatUser), true);
 
         $userXuHost = UserXuHost::whereUnionid($wechatUser['openid'])->first();
         if (!$userXuHost || !$userXuHost->xu_host_id) {
