@@ -24,13 +24,6 @@ class XuRankController extends Controller
         $wechatUser = request()->get('user');
         $wechatUser = json_decode(base64_decode($wechatUser), true);
 
-        $userXuHost = UserXuHost::whereUnionId($wechatUser['openid'])->first();
-        if (!$userXuHost || !$userXuHost->xu_host_id) {
-            header(UserXuHost::XU_URL . encrypt($wechatUser['openid']));
-        }
-
-        $this->__recordUserInfo($wechatUser);
-
         $user = User::whereUnionid($wechatUser['unionid'])->first();
 
         if (!$user) {
@@ -43,9 +36,16 @@ class XuRankController extends Controller
                 'password' => Hash::make(substr($wechatUser['unionid'], 18, 8)),
                 'channel' => 'price_query_xu',
             ]);
+
+            $this->__recordUserInfo($wechatUser);
         } elseif (!$user->unionid) {
             $user->unionid = $wechatUser['unionid'];
             $user->save();
+        }
+
+        $userXuHost = UserXuHost::whereUnionId($wechatUser['openid'])->first();
+        if (!$userXuHost || !$userXuHost->xu_host_id) {
+            header(UserXuHost::XU_URL . encrypt($wechatUser['openid']));
         }
 
         $userRank = null;
