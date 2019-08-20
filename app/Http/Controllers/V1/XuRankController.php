@@ -21,43 +21,29 @@ class XuRankController extends Controller
     {
         $wechatUser = request()->get('user');
         $wechatUser = json_decode(base64_decode($wechatUser));
-        dd($wechatUser);
+
         $userXuHost = UserXuHost::whereUnionid($wechatUser['openid'])->first();
         if (!$userXuHost || !$userXuHost->xu_host_id) {
             header(UserXuHost::XU_URL . encrypt($wechatUser['openid']));
         }
 
-        if ($wechatInfo['email']) {
-            $user = User::whereEmail($wechatInfo['email'])->orWhereUnionid($wechatUser['unionid'])->first();
-            if (!$user) {
-                $user = User::create([
-                    'email' => $wechatInfo['email'],
-                    'unionid' => $wechatUser['unionid'],
-                    'nickname' => $wechatUser['nickname'],
-                    'avatar' => $wechatUser['headimgurl'],
-                    'country' => $wechatUser['country'],
-                    'type' => User::TYPE_CAMPAIGN,
-                    'password' => Hash::make($wechatInfo['email']),
-                    'channel' => 'price_query_xu',
-                ]);
-            } elseif (!$user->unionid) {
-                $user->unionid = $wechatUser['unionid'];
-                $user->save();
-            }
-        } else {
-            $user = User::whereUnionid($wechatUser['unionid'])->first();
+        $this->__recordUserInfo($wechatUser);
 
-            if (!$user) {
-                $user = User::create([
-                    'unionid' => $wechatUser['unionid'],
-                    'nickname' => $wechatUser['nickname'],
-                    'avatar' => $wechatUser['headimgurl'],
-                    'country' => $wechatUser['country'],
-                    'type' => User::TYPE_CAMPAIGN,
-                    'password' => Hash::make(substr($wechatUser['unionid'], 18, 8)),
-                    'channel' => 'price_query_xu',
-                ]);
-            }
+        $user = User::whereUnionid($wechatUser['unionid'])->first();
+
+        if (!$user) {
+            $user = User::create([
+                'unionid' => $wechatUser['unionid'],
+                'nickname' => $wechatUser['nickname'],
+                'avatar' => $wechatUser['headimgurl'],
+                'country' => $wechatUser['country'],
+                'type' => User::TYPE_CAMPAIGN,
+                'password' => Hash::make(substr($wechatUser['unionid'], 18, 8)),
+                'channel' => 'price_query_xu',
+            ]);
+        } elseif (!$user->unionid) {
+            $user->unionid = $wechatUser['unionid'];
+            $user->save();
         }
 
         $userRank = null;
