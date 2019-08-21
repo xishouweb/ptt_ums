@@ -74,10 +74,10 @@
                             @endif
                         </div>
                         <div class="col-xs-2">
-                            <div class="avatar-text">{{mb_substr($rank->xu_nickname,0, 1)}}</div>
+                            <img src="{{$rank->avatar}}" class="center-block img-avatar" alt="">
                         </div>
                         <div class="col-xs-4 nickname">
-                            <div class="nickname-text">{{$rank->xu_nickname}}</div>
+                            <div class="nickname-text">{{$rank->nickname}}</div>
                         </div>
                         <div class="col-xs-1 text-right">
                             <p class="group-count">{{$rank->group_count}}</p>
@@ -94,7 +94,7 @@
         </div>
     </div>
         <!-- 模态框（Modal） -->
-    <div class="main-modal" id="main-modal" style="@if(!$userJoin) display: none;@else display: none; @endif">
+    <div class="main-modal" id="main-modal" style="@if(!$userJoin) @else display: none; @endif">
         <div class="main-content">
             <div class="main-header">
                 <img src="/img/price_query_rank/bv-logo.png" class="center-block" alt="">
@@ -134,11 +134,11 @@
     <script type="text/javascript">
 
         $(function(){
-
+            var campaign_id = {{ $campaign_id }}
             $('#joinButton').on('click', function () {
                 $(this).attr("disabled","disabled");
                 $.ajax({
-                    url: '/api/v1/price/query/'+ {{$user->id}} + '/join/2' ,
+                    url: '/api/v1/price/query/'+ {{$user->id}} + '/join/' +  campaign_id,
                 })
                 .done(function(data) {
                     if (data.code == 0) {
@@ -235,10 +235,11 @@
                         }
                         var subHtml = '</div>' +
                             '<div class="col-xs-2">' +
-                                '<div class="avatar-text">' + el.xu_nickname.substr(0, 1) + '</div>' +
+                                // '<div class="avatar-text">' + el.xu_nickname.substr(0, 1) + '</div>' +
+                                '<img src="' + el.avatar + '" class="center-block img-avatar" alt="">' +
                         '</div>' +
                         '<div class="col-xs-4 nickname">' +
-                            '<div class="nickname-text">' + el.xu_nickname + '</div>' +
+                            '<div class="nickname-text">' + el.nickname + '</div>' +
                         '</div>' +
                         '<div class="col-xs-1 text-right">' +
                             '<p class="group-count">' + el.group_count + '</p>' +
