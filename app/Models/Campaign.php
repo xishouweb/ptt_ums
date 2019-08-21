@@ -9,7 +9,7 @@ class Campaign extends BaseModel implements FormatInterface
     use SoftDeletes;
 
     const STATUS_NORMAL = 1;
-    const PRICE_QUERY = 2;
+    const PRICE_QUERY_RANK = 3;   //币价查询排行榜 活动id
 
     public function format($source = [])
     {

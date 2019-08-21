@@ -38,9 +38,6 @@ class XuRankController extends Controller
             ]);
 
             $this->__recordUserInfo($wechatUser);
-        } elseif (!$user->unionid) {
-            $user->unionid = $wechatUser['unionid'];
-            $user->save();
         }
 
         $userXuHost = UserXuHost::whereUnionId($wechatUser['openid'])->first();
@@ -49,7 +46,8 @@ class XuRankController extends Controller
         }
 
         $userRank = null;
-        $record = UserCampaign::whereUserId($user->id)->whereCampaignId(2)->first();
+        $campaign_id = Campaign::PRICE_QUERY_RANK;
+        $record = UserCampaign::whereUserId($user->id)->whereCampaignId($campaign_id)->first();
         if ($record) {
             $userRank = $this->rank(1, $user->id);
         }
@@ -57,7 +55,7 @@ class XuRankController extends Controller
 
         $rankList = $this->rank();
 
-        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user'));
+        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user', 'campaign_id'));
     }
 
     private function __recordUserInfo($user)
@@ -101,12 +99,12 @@ class XuRankController extends Controller
 
     public function rank($page = 1, $user_id = null)
     {
-//         $sql = "select c.*, users.nickname, users.avatar from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-// (select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics  GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
-// (SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
-        $sql = "select c.*, user_xu_hosts.xu_nickname from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select xu_host_id,count(1) as group_count, sum(query_count) total from price_query_statistics  where status != 1 GROUP BY xu_host_id ORDER BY total DESC, group_count desc, xu_host_id) as a,
-(SELECT (@rowNum :=0) ) b) as c left join user_xu_hosts on c.xu_host_id = user_xu_hosts.xu_host_id ";
+        $sql = "select c.*, users.nickname, users.avatar from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+(select user_id,count(1) as group_count, sum(query_count) total from price_query_statistics where campaign_id = " . Campaign::PRICE_QUERY_RANK . "  and status != 1 GROUP BY user_id ORDER BY total DESC, group_count desc) as a,
+(SELECT (@rowNum :=0) ) b) as c left join users on c.user_id = users.id ";
+//         $sql = "select c.*, user_xu_hosts.xu_nickname from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+// (select xu_host_id,count(1) as group_count, sum(query_count) total from price_query_statistics  where status != 1 GROUP BY xu_host_id ORDER BY total DESC, group_count desc, xu_host_id) as a,
+// (SELECT (@rowNum :=0) ) b) as c left join user_xu_hosts on c.xu_host_id = user_xu_hosts.xu_host_id ";
 
         if ($user_id) {
 
@@ -120,12 +118,12 @@ class XuRankController extends Controller
         $sql .= "order by c.rank limit " . ($page - 1) * 10 . " , 10";
         $data = \DB::select($sql);
 
-//         $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-// (select user_id,count(1) gt, sum(query_count) from price_query_statistics  GROUP BY user_id ) as a,
-// (SELECT (@rowNum :=0) ) b) as c";
-$countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
-(select xu_host_id,count(1) gt, sum(query_count) from price_query_statistics where status != 1 GROUP BY xu_host_id ) as a,
+        $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+(select user_id,count(1) gt, sum(query_count) from price_query_statistics where campaign_id =" . Campaign::PRICE_QUERY_RANK . " and status != 1 GROUP BY user_id ) as a,
 (SELECT (@rowNum :=0) ) b) as c";
+// $countQuery = "select count(1) as total_size from (select a.*, (@rowNum:=@rowNum+1) AS rank from
+// (select xu_host_id,count(1) gt, sum(query_count) from price_query_statistics where  status != 1 GROUP BY xu_host_id ) as a,
+// (SELECT (@rowNum :=0) ) b) as c";
         $count = \DB::select($countQuery);
 
         return [

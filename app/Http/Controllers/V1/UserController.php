@@ -5,8 +5,7 @@ namespace App\Http\Controllers\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserXuHost;
-use App\Models\WechatOpenid;
-use App\Models\WechatUsers;
+
 
 class UserController extends Controller
 {

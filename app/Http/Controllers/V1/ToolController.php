@@ -62,7 +62,9 @@ class ToolController extends Controller
         $rankList = $a->rank();
         $userJoin = $userRank ? 1 : 0;
         $user = \App\User::find(1);
-        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user'));
+
+        $campaign_id = 1;
+        return view('campaign.price_query_rank')->with(compact('userRank' , 'rankList', 'userJoin', 'user', 'campaign_id'));
     }
 
     public function getPrice($symbol)
