@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\Contract;
 use App\Models\DataCache;
+use App\Models\Campaign;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ClientException;
@@ -809,7 +810,7 @@ http://tinyurl.com/yy82vqc9',
 
         DataCache::callTotal();
         DataCache::zincrOfScoreFor($symbol, 1);
-        $this->dispatch((new XuCallbackRecord($data, 2))->onQueue('xu_callback_record'));
+        $this->dispatch((new XuCallbackRecord($data, Campaign::PRICE_QUERY_RANK))->onQueue('xu_callback_record'));
 
         if ($d = DataCache::getSymbolInfo('symbol-info-data-' . $symbol)) {
             $price = $d['price'];
