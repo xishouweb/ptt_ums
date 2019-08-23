@@ -17,6 +17,7 @@ use App\Models\Campaign;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -583,6 +584,9 @@ class ToolController extends Controller
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
+        }  catch (ServerException $e) {
+            \Log::error($e->getMessage());
+            return 0;
         }
     }
 
@@ -645,6 +649,9 @@ class ToolController extends Controller
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
+        }  catch (ServerException $e) {
+            \Log::error($e->getMessage());
+            return 0;
         }
     }
 
@@ -704,6 +711,9 @@ class ToolController extends Controller
                 $rose = $this->__getDetailOfLbank($symbol, --$switch);
             }
             return $rose;
+        } catch (ServerException $e) {
+            \Log::error($e->getMessage());
+            return 0;
         }
     }
 
@@ -817,7 +827,7 @@ http://tinyurl.com/yy82vqc9',
             $rose = $d['rose'];
         } else {
             if (!DataCache::lock('symbol-info-lock', 1)) {
-               sleep(1);
+               sleep(2);
             }
             $p = $this->getPrice($symbol);
             $price = $p >= 1 ? round($p, 5) : round($p, 6);
@@ -961,6 +971,9 @@ http://tinyurl.com/yy82vqc9',
         } catch (ConnectException $e) {
             \Log::error($e->getMessage());
             return 0;
+        }  catch (ServerException $e) {
+            \Log::error($e->getMessage());
+            return 0;
         }
     }
 
@@ -997,6 +1010,9 @@ http://tinyurl.com/yy82vqc9',
                 return 0;
             }
         } catch (ConnectException $e) {
+            \Log::error($e->getMessage());
+            return 0;
+        }  catch (ServerException $e) {
             \Log::error($e->getMessage());
             return 0;
         }
