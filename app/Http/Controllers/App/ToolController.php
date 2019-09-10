@@ -235,7 +235,9 @@ class ToolController extends Controller
     public function downloadWallet()
     {
         if(strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'iphone') || strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'ipad')){
-            return view('download_wallet');
+            $to_url = "http://ums.proton.global/downloadwallet.html";
+            Header("Location: $to_url");
+            return;
          }
         
         $to_url = "https://fir.im/ProtonWallet";
