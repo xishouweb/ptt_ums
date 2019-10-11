@@ -46,7 +46,7 @@ Route::prefix('app')->group(function () {
 
 Route::prefix('sdk/v1')->group(function () {
     Route::namespace('SDK')->group(function (Router $router) {
-        Route::post('/data_records', 'DataRecordController@store');
+        Route::post('/data_records', 'TrackController@upload');
     });
 });
 
