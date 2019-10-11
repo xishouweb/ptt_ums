@@ -14,6 +14,7 @@ use App\Jobs\CreateBlockChainAccount;
 use App\Models\Dashboard;
 use App\Models\DataRecord;
 use App\Models\DataUid;
+use App\Models\UserApplication;
 use App\User;
 
 class TrackController extends Controller
@@ -40,21 +41,29 @@ class TrackController extends Controller
 
 	public function upload(Request $request)
 	{
-		$content = $request->get('content');
+		$content = $params['content'] = $request->get('content');
 		$sign = $request->get('sign');
-		$api_key = $request->get('api_key');
-		$timestamp = $request->get('timestamp');
-		$user_application_id = $request->input('user_application');
+		$api_key = $params['api_key'] = $request->get('api_key');
+		$timestamp = $params['timestamp'] = $request->get('timestamp');
+		$user_application_id = $params['user_application'] = $request->input('user_application');
 
-		$vender = User::where('ptt_address', $api_key)->first();
+		$vendor = User::where('ptt_address', $api_key)->first();
 
-		if(!$vender){
+		if(!$vendor){
 			return response()->json(['code' => -11001, 'msg'=>'invalid credentials']);
 		};
 
-		if($this->__checkSign($sign, $vender, $user_application_id, $content, $api_key, $timestamp)){
-			return response()->json(['code' => -11002, 'msg'=>'invalid credentials']);
+		//相应数据源中的数据数量+1
+		$user_application = UserApplication::where('id', $user_application_id)->first();
+
+		if(!$user_application) {
+			return response()->json(['code' => -11004, 'msg'=>'Do not find the data source, please check it!']);
 		}
+
+		if(!$this->__checkSign($sign, $vendor, $params)){
+			return response()->json(['code' => -11001, 'msg'=>'invalid sign']);
+		}
+
 		$content_array = json_decode($content, true);
 
 		if (User::where('phone', $content_array['phone'])->count() <= 0) {
@@ -110,7 +119,8 @@ class TrackController extends Controller
                 ]));
             } catch (\Exception $exception) {
                 Log::info($exception->getMessage());
-                Log::info('存储redis失败 , anchor数据id : ' . $data_result->id);
+				Log::info('存储redis失败 , anchor数据id : ' . $data_result->id);
+				return response()->json(['code' => -11003, 'msg'=>'存储失败 请联系管理员']);
 			}
 			
 			//相应数据源中的数据数量+1
@@ -143,13 +153,15 @@ class TrackController extends Controller
         return response()->json(['code' => -11002, 'msg'=>'failed']);	
 	}
 
-	private function __checkSign($sgin, $vender, $user_application_id, $content, $api_key, $timestamp)
+	private function __checkSign($sign, $vendor, $params)
 	{
-		$checkSign = md5($api_key . $content . $timestamp . $user_application_id . $vender->update_key);
+		\ksort($params);
+		
+		$checkSign = md5(http_build_query($params) . $vendor->update_key);
 
-		if($sgin != $checkSign) return fasle;
+		if($sign != $checkSign) return 0;
 
-		return true;
+		return 1;
 	}
 	
 }
