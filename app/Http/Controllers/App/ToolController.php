@@ -238,10 +238,25 @@ class ToolController extends Controller
             $to_url = "http://ums.proton.global/downloadwallet.html";
             Header("Location: $to_url");
             return;
-         }
-        
+        }
+
         $to_url = "https://fir.im/ProtonWallet";
         Header("Location: $to_url");
         return;
+    }
+
+    public function proxy(Request $request)
+    {
+        $url = $request->input('url');
+        try {
+            $client = new Client();
+            $res = $client->request('GET', $url . '&apikey=K2DX943EAXVEVFYFYHFF69HFP8X5HE1HNK');
+            $resData  = json_decode((string)$res->getBody());
+        } catch (\Exception $e) {
+            Log::error('代理接口出错');
+            Log::error($e->getMessage());
+            return $this->error('代理接口出错');
+        }
+        return $this->apiResponse($resData);
     }
 }

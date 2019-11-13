@@ -34,9 +34,8 @@ Route::prefix('app')->group(function () {
         $router->get('/search_token', 'ToolController@searchToken');
         $router->get('/version', 'ToolController@latestVersion');
         $router->get('/coinmarketcap', 'ToolController@getCryptoCurrencyPrice');
-
         $router->get('/wallet/download', 'ToolController@downloadWallet');
-
+        $router->get('/proxy', 'ToolController@proxy');
         Route::group(['middleware' => 'auth:api'], function(Router $router) {
             $router->get('/user', 'UserController@show');
             $router->post('/user', 'UserController@update');
