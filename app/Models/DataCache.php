@@ -63,7 +63,7 @@ class DataCache extends Model
             $url = "http://op.juhe.cn/onebox/exchange/currency?from=USD&to=$currency&key=4cdacbeb5039b14c171171f7a3d0e4b1";
             $client = new Client();
 
-            $res = $client->request('GEET', $url);
+            $res = $client->request('GET', $url);
             $result  = json_decode((string) $res->getBody());
 
             if ($result->error_code != 0 ) {
@@ -74,7 +74,7 @@ class DataCache extends Model
 
             $value = $data[0]->exchange;
 
-            Redis::set($key, $value, 'EX', 60 * 60 * 8);
+            Redis::set($key, $value, 'EX', 60 * 30);
         }
 
         return $value;
@@ -110,4 +110,83 @@ class DataCache extends Model
         return Redis::zrevrank('credit_rank', $key) + 1;
     }
 
+    public static function getSymbols($key)
+    {
+        return json_decode(Redis::get($key), true);
+    }
+
+    public static function setSymbolsFor($key, $data)
+    {
+        Redis::set($key, json_encode($data));
+    }
+
+    public static function getBaseSymbolPrice($symbol)
+    {
+        $key = 'base_price_' . $symbol;
+        return json_decode(Redis::get($key), true);
+    }
+
+    public static function setBaseSymbolsPrice($symbol, $data)
+    {
+        $key = 'base_price_' . $symbol;
+        Redis::set($key, json_encode($data), 'EX', 15);
+    }
+
+    public static function getSymbolInfo($key)
+    {
+        return json_decode(Redis::get($key), true);
+    }
+
+    public static function setSymbolInfo($key, $data)
+    {
+        Redis::set($key, json_encode($data), 'EX', 10);
+    }
+
+    public static function lock($key, $time)
+    {
+        return Redis::set($key, 1, 'EX' , $time, 'NX');
+    }
+
+    public static function callTotal()
+    {
+        $key = 'wechat_robot_callback_count';
+        Redis::incr($key);
+    }
+
+    public static function zincrOfScoreFor($symbol, $score)
+    {
+        Redis::zIncrBy('wechat_robot_callback_detail', $score, $symbol);
+    }
+
+    public static function getAllSymbolCount()
+    {
+        $key = 'wechat_robot_callback_count';
+        return Redis::get($key);
+    }
+
+    public static function getSymbolCountDetail()
+    {
+        return Redis::zrevrange('wechat_robot_callback_detail', 0, -1, 'WITHSCORES');
+    }
+
+    public static function getSymbolYesterdayLastPrice($key)
+    {
+        $key = 'symbol-yesterday-last-price-' . $key;
+        return Redis::get($key);
+    }
+
+    public static function setSymbolYesterdayLastPrice($key, $data)
+    {
+        $key = 'symbol-yesterday-last-price-' . $key;
+
+        $flagTime = strtotime(date('Y-m-d 08:00:00'));
+        $time = time();
+        if ($time >= $flagTime) {
+            $expire = 86400 - ($time - $flagTime);
+        } else {
+            $expire = $flagTime - $time - 1;
+        }
+
+        Redis::set($key, $data, 'EX', $expire);
+    }
 }

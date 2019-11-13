@@ -65,3 +65,12 @@ Route::prefix('api/vendor')->group(function () {
 		Route::get('/data/examples/address', 'DataController@examples_address');
 	});
 });
+
+Route::prefix('price/query')->group(function () {
+    Route::namespace('V1')->group(function () {
+        Route::get('index', 'XuRankController@index');
+        // Route::middleware('wechat.oauth')->group(function(){
+
+        // });
+    });
+});

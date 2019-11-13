@@ -32,7 +32,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'phone', 'password', 'update_key', 'type', 'country', 'nickname', 'avatar',
+        'phone', 'password', 'update_key', 'type', 'country', 'nickname', 'avatar', 'unionid', 'channel'
     ];
 
     /**
@@ -62,6 +62,7 @@ class User extends Authenticatable
     const SRC_SUPER_USER = 'super_user'; //超级广告主
 
     const TYPE_SYSTEM = 'system';
+    const TYPE_CAMPAIGN = 'campaign';
 
     const CREDIT_TOKEN_RATIO = 0.1;
 
@@ -236,7 +237,7 @@ class User extends Authenticatable
         $wechat = Session::get('wechat.oauth_user.default');
 
         if ($wechat) {
-            $openid = WechatOpenid::whereOpenid($openid)->whereChannel('super_campaign')->first();
+            $openid = WechatOpenid::whereOpenid($wechat['original']['openid'])->whereUnionid($wechat['original']['unionid'])->first();
 
             if ($openid) {
                 $openid->user_id = $this->id;

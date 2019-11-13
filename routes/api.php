@@ -19,6 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::any('wechat', 'WechatController@serve');
+
 Route::prefix('app')->group(function () {
     Route::namespace('App')->group(function (Router $router) {
         $router->get('/announcement', 'AnnouncementController@index');
@@ -32,11 +34,18 @@ Route::prefix('app')->group(function () {
         $router->get('/search_token', 'ToolController@searchToken');
         $router->get('/version', 'ToolController@latestVersion');
         $router->get('/coinmarketcap', 'ToolController@getCryptoCurrencyPrice');
+        $router->get('/wallet/download', 'ToolController@downloadWallet');
         $router->get('/proxy', 'ToolController@proxy');
         Route::group(['middleware' => 'auth:api'], function(Router $router) {
             $router->get('/user', 'UserController@show');
             $router->post('/user', 'UserController@update');
         });
+    });
+});
+
+Route::prefix('sdk/v1')->group(function () {
+    Route::namespace('SDK')->group(function (Router $router) {
+        Route::post('/data_records', 'TrackController@upload');
     });
 });
 
@@ -57,6 +66,25 @@ Route::prefix('proton')->group(function() {
     });
 });
 
+Route::prefix('v1')->group(function() {
+    Route::namespace('V1')->group(function (Router $router) {
+       $router->get('symbol/{symbol}/info', 'ToolController@getPrice');
+       $router->get('symbol/keyword', 'ToolController@setKeyword');
+       $router->post('symbol/message/callback', 'ToolController@wechatMessageCallback');
+       $router->post('user/xu/callback', 'UserController@xuUserCallBack');
+       $router->get('symbol/statistic', 'ToolController@getStatistic');
+       $router->get('symbol/test/{aaa}', 'ToolController@test');
+
+       $router->get('btk_redirect_xu', 'UserController@btkRedirectXu');
+
+       $router->get('price/query/rank/{page}', 'XuRankController@rank');
+       $router->get('price/query/{user_id}/join/{campaign_id}', 'XuRankController@join');
+
+       Route::group(['middleware' => ['wechat.oauth:user_base, snsapi_base']], function (Router $router) {
+            $router->get('/xu', 'UserController@redirectXu');
+        });
+    });
+});
 
 
 Route::prefix('campaign')->group(function() {

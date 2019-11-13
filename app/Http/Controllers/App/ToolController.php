@@ -232,6 +232,19 @@ class ToolController extends Controller
         return $this->apiResponse($response, '操作成功', 0);
     }
 
+    public function downloadWallet()
+    {
+        if(strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'iphone') || strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'ipad')){
+            $to_url = "http://ums.proton.global/downloadwallet.html";
+            Header("Location: $to_url");
+            return;
+        }
+
+        $to_url = "https://fir.im/ProtonWallet";
+        Header("Location: $to_url");
+        return;
+    }
+
     public function proxy(Request $request)
     {
         $url = $request->input('url');
