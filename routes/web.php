@@ -18,6 +18,7 @@ Route::get('/', function () {
 });
 
 Route::get('/api/v1/track', 'Vendor\TrackController@upload');
+Route::get('/api/v1/trackr', 'Vendor\TrackController@uploadData');
 Route::post('/api/v1/track_node_call', 'Vendor\TrackController@record');
 Route::get('/track', 'Vendor\TrackController@index');
 
