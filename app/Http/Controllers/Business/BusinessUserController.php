@@ -61,7 +61,7 @@ class BusinessUserController extends Controller
         $phone = $request->input('phone');
         $password = $request->input('password');
         $captcha = $request->input('captcha');
-        $c_result = Captcha::pre_valid($phone, $captcha);
+        $c_result = Captcha::valid($phone, $captcha);
         if (!$c_result) {
             $this->content['msg'] = '验证码错误或过期';
             $this->content['status'] = 401;
