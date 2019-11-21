@@ -134,7 +134,7 @@ class TrackController extends Controller
                             'data_id' => $item->id,
                             'content' => $item->content
                         ];
-                        $redis->lpush('anchor:test:channel', json_encode($upload_data));
+                        $redis->lpush('vendor:track', json_encode($upload_data));
                     } catch (\Exception $exception) {
                         Log::info($exception->getMessage());
                         Log::info('存储redis失败 , 数据id : ' . $item->id);
