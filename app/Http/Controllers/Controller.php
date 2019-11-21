@@ -68,7 +68,7 @@ class Controller extends BaseController
      * @param int          $code
      * @return mixed
      */
-    public function apiResponse($data = [], $message = '操作成功', $code = 1)
+    public function apiResponse($data = [], $message = '操作成功', $code = 0)
     {
         return response()->json(['code' => $code, 'message' => $message, 'data' => $data]);
     }
@@ -109,12 +109,12 @@ class Controller extends BaseController
         return response()->json($json, 200);
     }
 
-    public function success($message = '操作成功', $code = 1)
+    public function success($message = '操作成功', $code = 0)
     {
         return $this->apiResponse(null, $message, $code);
     }
 
-    public function error($message = '操作失败', $code = 0)
+    public function error($message = '操作失败', $code = 1)
     {
         return $this->apiResponse(null, $message, $code);
 
