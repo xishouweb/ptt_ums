@@ -27,7 +27,7 @@
     <tr>
         <td>{{$record->id}}</td>
         <td><a href="https://scan.proton.global/tx/{{$record->hx}}" target="_blank">{{$record->hx}}</a></td>
-        <td>{{$record->id}} <br/> 从链上查询：<a href="http://v1.proton.global:8888/track/{{$record->id}}" target="_blank">查询</a></td>
+        <td>{{$record->id}} <br/> 从链上查询：<a href="http://v1.proton.global:8888/track/{{$record->bc_id}}" target="_blank">查询</a></td>
         <td>{{$record->content}}</td>
         <td>{{$record->created_at}}</td>
     </tr>
