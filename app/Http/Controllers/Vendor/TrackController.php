@@ -25,10 +25,11 @@ class TrackController extends Controller
 
 	public function record(Request $request)
 	{
-		$data_id = $request->get('dataid');
-		$bc_id = $request->input('hashid');
-		$tx_hash = $request->get('txhash');
-		if ($data_record = TrackItem::where('id', $data_id)->first()) {
+        $bc_id = $request->input('hashid');
+		$data_id = $request->input('dataid');
+		$tx_hash = $request->input('txhash');
+        $data_record = TrackItem::where('id', $data_id)->first();
+		if ($data_record && $data_id && $tx_hash) {
             Log::info('track callback data_id:' . $data_id . ' bc_id:' . $bc_id . ' tx_hash : ' . $tx_hash . ' 原hx : ' . $data_record->hx);
 			$data_record->hx = $tx_hash;
 			$data_record->bc_id = $bc_id;
