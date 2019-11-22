@@ -25,15 +25,21 @@ class TrackController extends Controller
 
 	public function record(Request $request)
 	{
-		$dataid = $request->get('dataid');
-		$txhash = $request->get('txhash');
-		if ($data_record = TrackItem::where('id', $dataid)->first()) {
-            Log::info('track callback dataid:' . $dataid . ' txhash : ' . $txhash . ' hx : ' . $data_record->hx);
-			$data_record->hx = $txhash;
-			$data_record->save();
-		}
-		
-		return response()->json(['msg' => 'success']);
+        $bc_id = $request->input('hashid');
+		$data_id = $request->input('dataid');
+		$tx_hash = $request->input('txhash');
+		if (!$bc_id || !$data_id || !$tx_hash) {
+            return $this->error();
+        }
+        $data_record = TrackItem::where('id', $data_id)->first();
+        if ($data_record) {
+            Log::info('track callback data_id:' . $data_id . ' bc_id:' . $bc_id . ' tx_hash : ' . $tx_hash . ' 原hx : ' . $data_record->hx);
+            $data_record->hx = $tx_hash;
+            $data_record->bc_id = $bc_id;
+            $data_record->save();
+        }
+
+		return $this->success();
 	}
 
     public function upload(Request $request)
