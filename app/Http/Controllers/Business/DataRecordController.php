@@ -104,7 +104,7 @@ class DataRecordController extends Controller
             $data['user_application_id'] = $user_application_id;
             $data['user_id'] = $vendor->id;
             $data['UID'] = $uid_obj->id;
-            $data['txhash'] = 't';
+            $data['hx'] = 't';
             $data['type'] = TrackItem::TYPE_BUSINESS;
             if (array_key_exists('gender',$content_array) && $content_array['gender']) {
                 $data['gender'] = 1;
