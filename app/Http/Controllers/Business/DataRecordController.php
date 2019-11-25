@@ -28,10 +28,10 @@ class DataRecordController extends Controller
 	public function index()
 	{
 		$user = Auth::user();
-		$items = TrackItem::join('user_applications', 'data_records.user_application_id', '=', 'user_applications.id')
-            ->where('data_records.user_id', $user->id)
-            ->orderBy('data_records.id', 'desc')
-            ->select('data_records.id', 'data_records.txhash', 'data_records.created_at', 'data_records.bc_id', 'user_applications.name')
+		$items = TrackItem::join('user_applications', 'track_items.user_application_id', '=', 'user_applications.id')
+            ->where('track_items.user_id', $user->id)
+            ->orderBy('track_items.id', 'desc')
+            ->select('track_items.id', 'track_items.hx', 'track_items.created_at', 'track_items.bc_id', 'user_applications.name')
             ->paginate(10);
 		return response()->json(['data' => $items]);
 	}
