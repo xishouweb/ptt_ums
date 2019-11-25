@@ -113,33 +113,34 @@ class TrackController extends Controller
                     'data_id' => $data_result->id,
                     'content' => $content
                 ]));
+
+                //相应数据源中的数据数量+1
+                $user_application = UserApplication::where('id', $user_application_id)->first();
+                if ($user_application) {
+                    $user_application->count += 1;
+                    $user_application->save();
+                }
+
+                //记录当天上传数据量
+                $upload_record = Dashboard::where('user_id', $vendor->id)
+                    ->where('created_at', '>=', date('Y-m-d 00:00:00'))
+                    ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                    ->first();
+                if ($upload_record) {
+                    $upload_record->value += 1;
+                    $upload_record->save();
+                } else {
+                    Dashboard::create([
+                        'user_id' => $vendor->id,
+                        'type' => Dashboard::UPLOAD_DATA,
+                        'value' => 1,
+                    ]);
+                }
             } catch (\Exception $exception) {
                 Log::info($exception->getMessage());
 				Log::info('存储redis失败 , anchor数据id : ' . $data_result->id);
 				return response()->json(['code' => -11003, 'msg'=>'存储失败 请联系管理员']);
 			}
-			
-			//相应数据源中的数据数量+1
-			$user_application = UserApplication::where('id', $user_application_id)->first();
-			$user_application->count += 1;
-			$user_application->save();
-
-			//记录当天上传数据量
-			$upload_record = Dashboard::where('user_id', $vendor->id)
-				->where('created_at', '>=', date('Y-m-d 00:00:00'))
-				->where('created_at', '<=', date('Y-m-d 23:59:59'))
-				->first();
-			if ($upload_record) {
-				$upload_record->value += 1;
-				$upload_record->save();
-			} else {
-				Dashboard::create([
-					'user_id' => $vendor->id,
-					'type' => Dashboard::UPLOAD_DATA,
-					'value' => 1,
-				]);
-			}
-
 
             return response()->json(['code' => 200, 'msg'=>'success']);
 		}

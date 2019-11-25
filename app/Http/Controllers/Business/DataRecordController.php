@@ -130,6 +130,28 @@ class DataRecordController extends Controller
             }
 
             if ($data_result = TrackItem::create($data)) {
+                //相应数据源中的数据数量+1
+                $user_application = UserApplication::where('id', $user_application_id)->first();
+                if ($user_application) {
+                    $user_application->count += 1;
+                    $user_application->save();
+                }
+
+                //记录当天上传数据量
+                $upload_record = Dashboard::where('user_id', $vendor->id)
+                    ->where('created_at', '>=', date('Y-m-d 00:00:00'))
+                    ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                    ->first();
+                if ($upload_record) {
+                    $upload_record->value += 1;
+                    $upload_record->save();
+                } else {
+                    Dashboard::create([
+                        'user_id' => $vendor->id,
+                        'type' => Dashboard::UPLOAD_DATA,
+                        'value' => 1,
+                    ]);
+                }
                 BlockChainDataUpload::dispatch('0x0428e150f72797bdfef7135b11b0953639494f15', $content, $data_result->id)->onQueue('block_chain_data_upload');
             }
 

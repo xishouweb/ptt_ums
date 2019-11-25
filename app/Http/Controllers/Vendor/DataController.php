@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dashboard;
 use App\Models\TrackItem;
 use Illuminate\Http\Request;
 use App\Models\DataUid;
@@ -45,10 +46,6 @@ class DataController extends Controller
 			$data_record->hx = $txhash;
 			$data_record->bc_id = $hashid;
 			$data_record->save();
-			$application = UserApplication::where('id', $data_record->user_application_id)->first();
-			$application->count += 1;
-			$application->latest_tx = $txhash;
-			$application->save();
 		}
 		
 		return response()->json(['msg' => 'success']);
@@ -118,6 +115,29 @@ class DataController extends Controller
 		}
 
 		if ($data_result = TrackItem::create($data)) {
+            //相应数据源中的数据数量+1
+            $user_application = UserApplication::where('id', $user_application_id)->first();
+            if ($user_application) {
+                $user_application->count += 1;
+                $user_application->save();
+            }
+
+            //记录当天上传数据量
+            $upload_record = Dashboard::where('user_id', $vendor->id)
+                ->where('created_at', '>=', date('Y-m-d 00:00:00'))
+                ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                ->first();
+            if ($upload_record) {
+                $upload_record->value += 1;
+                $upload_record->save();
+            } else {
+                Dashboard::create([
+                    'user_id' => $vendor->id,
+                    'type' => Dashboard::UPLOAD_DATA,
+                    'value' => 1,
+                ]);
+            }
+
 			$this->dispatch((new BlockChainDataUpload($content_array->source, $content, $data_result->id))->onQueue('block_chain_data_upload'));
 		}
 
