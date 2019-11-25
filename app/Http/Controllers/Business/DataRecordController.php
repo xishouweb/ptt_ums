@@ -7,16 +7,12 @@ use App\Jobs\BlockChainDataUpload;
 use App\Jobs\CreateBlockChainAccount;
 use App\Jobs\HandleUploadFiles;
 use App\Models\Dashboard;
-use App\Models\DataRecord;
 use App\Models\DataUid;
 use App\Models\TrackItem;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
-
-use App\Models\DatRecord;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;

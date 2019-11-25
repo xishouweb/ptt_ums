@@ -2,8 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\DataRecord;
+
 use App\Models\MatchItem;
+use App\Models\TrackItem;
 use App\Models\UserApplication;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
@@ -50,7 +51,7 @@ class QueryBlockChain implements ShouldQueue
 
             $source = json_decode($this->match_item->content, true)['source'];
             $app = UserApplication::where('id', $source)->where('user_id', $this->user_id)->first();
-            $uids = DataRecord::where('user_application_id', $app->id)
+            $uids = TrackItem::where('user_application_id', $app->id)
                 ->where('user_id', $this->user_id)
                 ->select('UID')->get()->pluck('UID')->toArray();
 

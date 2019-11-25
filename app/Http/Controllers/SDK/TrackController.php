@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\SDK;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\TrackItem;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Jobs\BlockChainTrackUpload;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use App\Jobs\CreateBlockChainAccount;
 use App\Models\Dashboard;
-use App\Models\DataRecord;
 use App\Models\DataUid;
 use App\Models\UserApplication;
 use App\User;
@@ -44,7 +40,6 @@ class TrackController extends Controller
 		$content = $params['content'] = $request->get('content');
 		$sign = $request->get('sign');
 		$api_key = $params['api_key'] = $request->get('api_key');
-		$timestamp = $params['timestamp'] = $request->get('timestamp');
 		$user_application_id = $params['user_application'] = $request->input('user_application');
 
 		$vendor = User::where('ptt_address', $api_key)->first();
@@ -84,7 +79,7 @@ class TrackController extends Controller
 		$data['user_id'] = $vendor->id;
 		$data['UID'] = $uid_obj->id;
 		$data['txhash'] = 't';
-		
+		$data['type'] = TrackItem::TYPE_BUSINESS;
 		if (array_key_exists('gender',$content_array) && $content_array['gender']) {
 			$data['gender'] = 1;
 		}
@@ -108,7 +103,7 @@ class TrackController extends Controller
 		}
 
 
-		if ($data_result = DataRecord::create($data)) {
+		if ($data_result = TrackItem::create($data)) {
 
             $redis = Redis::connection('default');
             try {

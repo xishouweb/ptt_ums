@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\TrackItem;
 use Illuminate\Http\Request;
-use App\Models\MatchItem;
-use GuzzleHttp\Client;
-use App\Models\BusinessUser;
-use App\Models\DataRecord;
 use App\Models\DataUid;
 use App\Models\UserApplication;
 use App\Jobs\CreateBlockChainAccount;
@@ -32,7 +29,7 @@ class DataController extends Controller
 
 	public function index()
 	{
-		$records = DataRecord::orderBy('id', 'desc')->get();			
+		$records = TrackItem::orderBy('id', 'desc')->get();
 		return view('record')->with(['records' => $records]);
 	}
 
@@ -40,12 +37,11 @@ class DataController extends Controller
 	{
 		Log::info('callback');
 
-		$address = $request->get('address');
 		$dataid = $request->get('dataid');
 		$txhash = $request->get('txhash');
 		$hashid = $request->get('hashid');
 
-		if ($data_record = DataRecord::where('id', $dataid)->where('txhash', 't')->first()) {
+		if ($data_record = TrackItem::where('id', $dataid)->first()) {
 			$data_record->txhash = $txhash;
 			$data_record->bc_id = $hashid;
 			$data_record->save();
@@ -97,7 +93,7 @@ class DataController extends Controller
 		}
 
 		$data['UID'] = $uid_obj->id;
-
+        $data['type'] = TrackItem::TYPE_BUSINESS;
 		$data['txhash'] = 't';
 		if ($content_array->gender) {
 			$data['gender'] = 1;	
@@ -121,7 +117,7 @@ class DataController extends Controller
 			$data['model'] = 1;	
 		}
 
-		if ($data_result = DataRecord::create($data)) {
+		if ($data_result = TrackItem::create($data)) {
 			$this->dispatch((new BlockChainDataUpload($content_array->source, $content, $data_result->id))->onQueue('block_chain_data_upload'));
 		}
 
