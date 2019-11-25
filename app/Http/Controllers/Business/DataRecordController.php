@@ -7,16 +7,12 @@ use App\Jobs\BlockChainDataUpload;
 use App\Jobs\CreateBlockChainAccount;
 use App\Jobs\HandleUploadFiles;
 use App\Models\Dashboard;
-use App\Models\DataRecord;
 use App\Models\DataUid;
 use App\Models\TrackItem;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
-
-use App\Models\DatRecord;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
@@ -109,6 +105,7 @@ class DataRecordController extends Controller
             $data['user_id'] = $vendor->id;
             $data['UID'] = $uid_obj->id;
             $data['txhash'] = 't';
+            $data['type'] = TrackItem::TYPE_BUSINESS;
             if (array_key_exists('gender',$content_array) && $content_array['gender']) {
                 $data['gender'] = 1;
             }
@@ -131,7 +128,7 @@ class DataRecordController extends Controller
                 $data['model'] = 1;
             }
 
-            if ($data_result = DataRecord::create($data)) {
+            if ($data_result = TrackItem::create($data)) {
                 BlockChainDataUpload::dispatch('0x0428e150f72797bdfef7135b11b0953639494f15', $content, $data_result->id)->onQueue('block_chain_data_upload');
             }
 
@@ -154,7 +151,7 @@ class DataRecordController extends Controller
                 Dashboard::create([
                     'user_id' => $vendor->id,
                     'type' => Dashboard::UPLOAD_DATA,
-                    'value' => 1,
+                    'value' => 1
                 ]);
             }
 
