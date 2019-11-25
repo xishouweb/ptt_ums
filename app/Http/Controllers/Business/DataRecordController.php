@@ -9,6 +9,7 @@ use App\Jobs\HandleUploadFiles;
 use App\Models\Dashboard;
 use App\Models\DataRecord;
 use App\Models\DataUid;
+use App\Models\TrackItem;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
@@ -27,7 +28,7 @@ class DataRecordController extends Controller
 	public function index()
 	{
 		$user = Auth::user();
-		$items = DataRecord::join('user_applications', 'data_records.user_application_id', '=', 'user_applications.id')
+		$items = TrackItem::join('user_applications', 'data_records.user_application_id', '=', 'user_applications.id')
             ->where('data_records.user_id', $user->id)
             ->orderBy('data_records.id', 'desc')
             ->select('data_records.id', 'data_records.txhash', 'data_records.created_at', 'data_records.bc_id', 'user_applications.name')
@@ -136,8 +137,10 @@ class DataRecordController extends Controller
 
             //相应数据源中的数据数量+1
             $user_application = UserApplication::where('id', $user_application_id)->first();
-            $user_application->count += 1;
-            $user_application->save();
+            if ($user_application) {
+                $user_application->count += 1;
+                $user_application->save();
+            }
 
             //记录当天上传数据量
             $upload_record = Dashboard::where('user_id', $vendor->id)
