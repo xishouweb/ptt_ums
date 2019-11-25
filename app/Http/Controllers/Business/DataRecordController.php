@@ -133,13 +133,6 @@ class DataRecordController extends Controller
                 BlockChainDataUpload::dispatch('0x0428e150f72797bdfef7135b11b0953639494f15', $content, $data_result->id)->onQueue('block_chain_data_upload');
             }
 
-            //相应数据源中的数据数量+1
-            $user_application = UserApplication::where('id', $user_application_id)->first();
-            if ($user_application) {
-                $user_application->count += 1;
-                $user_application->save();
-            }
-
             //记录当天上传数据量
             $upload_record = Dashboard::where('user_id', $vendor->id)
                 ->where('created_at', '>=', date('Y-m-d 00:00:00'))
