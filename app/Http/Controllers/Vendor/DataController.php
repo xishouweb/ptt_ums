@@ -42,7 +42,7 @@ class DataController extends Controller
 		$hashid = $request->get('hashid');
 
 		if ($data_record = TrackItem::where('id', $dataid)->first()) {
-			$data_record->txhash = $txhash;
+			$data_record->hx = $txhash;
 			$data_record->bc_id = $hashid;
 			$data_record->save();
 
@@ -94,7 +94,7 @@ class DataController extends Controller
 
 		$data['UID'] = $uid_obj->id;
         $data['type'] = TrackItem::TYPE_BUSINESS;
-		$data['txhash'] = 't';
+		$data['hx'] = 't';
 		if ($content_array->gender) {
 			$data['gender'] = 1;	
 		}
