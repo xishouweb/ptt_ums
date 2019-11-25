@@ -95,6 +95,7 @@ class DataController extends Controller
 		$data['UID'] = $uid_obj->id;
         $data['type'] = TrackItem::TYPE_BUSINESS;
 		$data['hx'] = 't';
+        $data['content'] = $content;
 		if ($content_array->gender) {
 			$data['gender'] = 1;	
 		}

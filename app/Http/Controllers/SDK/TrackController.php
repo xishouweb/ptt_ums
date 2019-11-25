@@ -25,7 +25,7 @@ class TrackController extends Controller
 	public function record(Request $request)
 	{
 		$dataid = $request->get('dataid');
-		$txhash = $request->get('hx');
+		$txhash = $request->get('txhash');
 		if ($data_record = TrackItem::where('id', $dataid)->first()) {
             Log::info('track callback dataid:' . $dataid . ' txhash : ' . $txhash . ' hx : ' . $data_record->hx);
 			$data_record->hx = $txhash;
@@ -80,6 +80,7 @@ class TrackController extends Controller
 		$data['UID'] = $uid_obj->id;
 		$data['hx'] = 't';
 		$data['type'] = TrackItem::TYPE_BUSINESS;
+        $data['content'] = $content;
 		if (array_key_exists('gender',$content_array) && $content_array['gender']) {
 			$data['gender'] = 1;
 		}
