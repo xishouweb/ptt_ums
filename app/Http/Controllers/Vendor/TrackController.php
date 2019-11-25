@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dashboard;
 use App\Models\UserApplication;
 use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -133,6 +134,21 @@ class TrackController extends Controller
                         if ($application) {
                             $application->count += 1;
                             $application->save();
+                        }
+                        //记录当天上传数据量
+                        $upload_record = Dashboard::where('user_id', $request->input('pttuid'))
+                            ->where('created_at', '>=', date('Y-m-d 00:00:00'))
+                            ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                            ->first();
+                        if ($upload_record) {
+                            $upload_record->value += 1;
+                            $upload_record->save();
+                        } else {
+                            Dashboard::create([
+                                'user_id' => $request->input('pttuid'),
+                                'type' => Dashboard::UPLOAD_DATA,
+                                'value' => 1
+                            ]);
                         }
                         Log::info('存储redis , 数据id : ' . $item->id);
                         $upload_data = [
