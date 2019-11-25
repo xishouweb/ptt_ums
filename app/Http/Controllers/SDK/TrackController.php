@@ -80,6 +80,7 @@ class TrackController extends Controller
 		$data['UID'] = $uid_obj->id;
 		$data['hx'] = 't';
 		$data['type'] = TrackItem::TYPE_BUSINESS;
+        $data['content'] = $content;
 		if (array_key_exists('gender',$content_array) && $content_array['gender']) {
 			$data['gender'] = 1;
 		}
