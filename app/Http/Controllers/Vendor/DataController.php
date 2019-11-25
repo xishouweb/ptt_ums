@@ -35,17 +35,16 @@ class DataController extends Controller
 
 	public function record(Request $request)
 	{
-		Log::info('callback');
-
 		$dataid = $request->get('dataid');
 		$txhash = $request->get('txhash');
 		$hashid = $request->get('hashid');
 
-		if ($data_record = TrackItem::where('id', $dataid)->first()) {
+        Log::info('callback $dataid : ' . $dataid);
+
+		if ($data_record = TrackItem::where('id', $dataid)->where('hx', 't')->first()) {
 			$data_record->hx = $txhash;
 			$data_record->bc_id = $hashid;
 			$data_record->save();
-
 			$application = UserApplication::where('id', $data_record->user_application_id)->first();
 			$application->count += 1;
 			$application->latest_tx = $txhash;
