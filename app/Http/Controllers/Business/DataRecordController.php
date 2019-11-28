@@ -260,20 +260,24 @@ class DataRecordController extends Controller
         // 根据bc_id获取链上ipfs hash
         $url = 'http://v1.proton.global:8888/track/' . $bc_id;
         $bc_result = self::nodeDecrypt($url);
+        Log::info($bc_result);
         if ($bc_result) {
             // 解密ipfs hash
             $url = 'http://localhost:8888/decrypt?data=' . $bc_result . '&pwd=' . $pwd;
             $ipfs_result = self::nodeDecrypt($url);
+            Log::info($ipfs_result);
             if ($ipfs_result) {
                 // 获取ipfs已存储数据
                 $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result->data;
                 $data = self::nodeDecrypt($url);
+                Log::info($data);
                 if ($data) {
                     // 解密ipfs已存储数据
                     $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
                     $data = self::nodeDecrypt($url);
+                    Log::info($data);
                     if ($data) {
-                        return $this->apiResponse($data->data);
+                        return $this->apiResponse($data);
                     }
                 }
             }
