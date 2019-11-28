@@ -10,6 +10,7 @@ use App\Models\Dashboard;
 use App\Models\DataUid;
 use App\Models\TrackItem;
 use App\User;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Models\UserApplication;
 use Illuminate\Support\Facades\Auth;
@@ -246,5 +247,38 @@ class DataRecordController extends Controller
         $data['status'] = 200;
         $data['msg'] = '上传成功';
         return response()->json($data);
+    }
+
+    public function decrypt(Request $request)
+    {
+        $data = $request->input('data');
+        $pwd = $request->input('pwd');
+        if (!$data || !$pwd) {
+            return $this->error();
+        }
+
+        // 解密ipfs hash
+        $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
+        $ipfs_result = self::nodeDecrypt($url);
+        if ($ipfs_result->data) {
+            $url = 'http://ipfs/ipfs/' . $ipfs_result->data;
+            $data = self::nodeDecrypt($url);
+            if ($data) {
+                $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
+                $data = self::nodeDecrypt($url);
+                if ($data->data) {
+                    return $this->apiResponse($data->data);
+                }
+            }
+        }
+        return $this->error();
+    }
+
+    public static function nodeDecrypt($url)
+    {
+        $client = new Client();
+        $res = $client->request('GET', $url);
+        $result = json_decode((string)$res->getBody());
+        return $result;
     }
 }
