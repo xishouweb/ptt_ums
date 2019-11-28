@@ -253,34 +253,31 @@ class DataRecordController extends Controller
     {
         $bc_id = $request->input('bcid');
         $pwd = $request->input('pwd');
-        Log::info($bc_id . ' : ' .$pwd);
+        $type = $request->input('type', 0);
         if (!$bc_id || !$pwd) {
             return $this->error();
         }
-
-        // 根据bc_id获取链上ipfs hash
-        $url = 'http://localhost:8888/track/' . $bc_id;
-        Log::info($url);
-        $bc_result = self::nodeDecrypt($url);
-        Log::info($bc_result);
-        if ($bc_result) {
-            // 解密ipfs hash
-            $url = 'http://localhost:8888/decrypt?data=' . $bc_result . '&pwd=' . $pwd;
-            $ipfs_result = self::nodeDecrypt($url);
-            Log::info($ipfs_result);
-            if ($ipfs_result) {
-                // 获取ipfs已存储数据
-                $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result;
-                $data = self::nodeDecrypt($url);
-                $data = str_replace('"', '', $data);
-                Log::info($data);
-                if ($data) {
-                    // 解密ipfs已存储数据
-                    $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
+        // 判断数据类型
+        if ($type === 0) {
+            // 根据bc_id获取链上ipfs hash
+            $url = 'http://localhost:8888/track/' . $bc_id;
+            $bc_result = self::nodeDecrypt($url);
+            if ($bc_result) {
+                // 解密ipfs hash
+                $url = 'http://localhost:8888/decrypt?data=' . $bc_result . '&pwd=' . $pwd;
+                $ipfs_result = self::nodeDecrypt($url);
+                if ($ipfs_result) {
+                    // 获取ipfs已存储数据
+                    $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result;
                     $data = self::nodeDecrypt($url);
-                    Log::info($data);
+                    $data = str_replace('"', '', $data);
                     if ($data) {
-                        return $this->apiResponse($data);
+                        // 解密ipfs已存储数据
+                        $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
+                        $data = self::nodeDecrypt($url);
+                        if ($data) {
+                            return $this->apiResponse($data);
+                        }
                     }
                 }
             }
