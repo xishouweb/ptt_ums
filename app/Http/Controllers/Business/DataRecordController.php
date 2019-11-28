@@ -258,7 +258,7 @@ class DataRecordController extends Controller
         }
 
         // 根据bc_id获取链上ipfs hash
-        $url = 'http://v1.proton.global:8888/track/' . $bc_id;
+        $url = 'http://localhost:8888/track/' . $bc_id;
         $bc_result = self::nodeDecrypt($url);
         Log::info($bc_result);
         if ($bc_result) {
