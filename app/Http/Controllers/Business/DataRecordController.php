@@ -27,6 +27,7 @@ class DataRecordController extends Controller
 		$user = Auth::user();
 		$items = TrackItem::join('user_applications', 'track_items.user_application_id', '=', 'user_applications.id')
             ->where('track_items.user_id', $user->id)
+            ->whereNotNull('bc_id')
             ->orderBy('track_items.id', 'desc')
             ->select('track_items.id', 'track_items.hx', 'track_items.created_at', 'track_items.bc_id', 'track_items.type', 'user_applications.name')
             ->paginate(10);
