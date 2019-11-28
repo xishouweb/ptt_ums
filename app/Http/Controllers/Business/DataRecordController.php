@@ -290,6 +290,7 @@ class DataRecordController extends Controller
     public static function nodeDecrypt($url)
     {
         $client = new Client();
+        Log::info($url);
         $res = $client->request('GET', $url);
         Log::info(json_encode($res));
         $result = json_decode((string)$res->getBody());
