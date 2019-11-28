@@ -261,7 +261,7 @@ class DataRecordController extends Controller
         $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
         $ipfs_result = self::nodeDecrypt($url);
         if ($ipfs_result->data) {
-            $url = 'http://ipfs/ipfs/' . $ipfs_result->data;
+            $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result->data;
             $data = self::nodeDecrypt($url);
             if ($data) {
                 $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
