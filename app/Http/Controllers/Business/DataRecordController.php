@@ -253,7 +253,7 @@ class DataRecordController extends Controller
     {
         $bc_id = $request->input('bcid');
         $pwd = $request->input('pwd');
-        Log::info($bc_id, $pwd);
+        Log::info($bc_id . ' : ' .$pwd);
         if (!$bc_id || !$pwd) {
             return $this->error();
         }
