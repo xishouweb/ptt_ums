@@ -251,26 +251,34 @@ class DataRecordController extends Controller
 
     public function decrypt(Request $request)
     {
-        $data = $request->input('data');
+        $bc_id = $request->input('bcid');
         $pwd = $request->input('pwd');
-        if (!$data || !$pwd) {
+        if (!$bc_id || !$pwd) {
             return $this->error();
         }
 
-        // 解密ipfs hash
-        $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
-        $ipfs_result = self::nodeDecrypt($url);
-        if ($ipfs_result->data) {
-            $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result->data;
-            $data = self::nodeDecrypt($url);
-            if ($data) {
-                $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
+        // 根据bc_id获取链上ipfs hash
+        $url = 'http://v1.proton.global:8888/track/' . $bc_id;
+        $bc_result = self::nodeDecrypt($url);
+        if ($bc_result) {
+            // 解密ipfs hash
+            $url = 'http://localhost:8888/decrypt?data=' . $bc_result . '&pwd=' . $pwd;
+            $ipfs_result = self::nodeDecrypt($url);
+            if ($ipfs_result) {
+                // 获取ipfs已存储数据
+                $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result->data;
                 $data = self::nodeDecrypt($url);
-                if ($data->data) {
-                    return $this->apiResponse($data->data);
+                if ($data) {
+                    // 解密ipfs已存储数据
+                    $url = 'http://localhost:8888/decrypt?data=' . $data . '&pwd=' . $pwd;
+                    $data = self::nodeDecrypt($url);
+                    if ($data) {
+                        return $this->apiResponse($data->data);
+                    }
                 }
             }
         }
+
         return $this->error();
     }
 
