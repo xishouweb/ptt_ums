@@ -251,12 +251,13 @@ class DataRecordController extends Controller
 
     public function decrypt(Request $request)
     {
+        $user = Auth::user();
         $bc_id = $request->input('bcid');
-        $pwd = $request->input('pwd');
         $type = $request->input('type', 0);
-        if (!$bc_id || !$pwd) {
+        if (!$bc_id || !$user || !$user->ptt_address) {
             return $this->error();
         }
+        $pwd = $user->ptt_address;
         // 判断数据类型
         if ($type === 0) {
             // 根据bc_id获取链上ipfs hash
