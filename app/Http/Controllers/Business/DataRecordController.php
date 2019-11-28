@@ -272,6 +272,7 @@ class DataRecordController extends Controller
                 // 获取ipfs已存储数据
                 $url = 'http://ipfs.proton.global/ipfs/' . $ipfs_result;
                 $data = self::nodeDecrypt($url);
+                $data = str_replace('"', '', $data);
                 Log::info($data);
                 if ($data) {
                     // 解密ipfs已存储数据
