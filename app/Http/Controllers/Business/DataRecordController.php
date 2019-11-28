@@ -291,7 +291,7 @@ class DataRecordController extends Controller
     {
         $client = new Client();
         $res = $client->request('GET', $url);
-        Log::info($res);
+        Log::info(json_encode($res));
         $result = json_decode((string)$res->getBody());
         Log::info($result);
         return $result;
