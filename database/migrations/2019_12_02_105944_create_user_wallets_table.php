@@ -16,7 +16,7 @@ class CreateUserWalletsTable extends Migration
         Schema::create('user_wallets', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('create_channel');
+            $table->string('create_channel', 30);
             $table->string('address');
             $table->string('private_key');
             $table->string('key_store', 1000);
