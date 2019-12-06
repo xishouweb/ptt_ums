@@ -22,6 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::any('wechat', 'WechatController@serve');
 
 Route::prefix('app')->group(function () {
+
     Route::namespace('App')->group(function (Router $router) {
         $router->get('/announcement', 'AnnouncementController@index');
         $router->get('/banner', 'BannerController@index');
@@ -39,6 +40,17 @@ Route::prefix('app')->group(function () {
         Route::group(['middleware' => 'auth:api'], function(Router $router) {
             $router->get('/user', 'UserController@show');
             $router->post('/user', 'UserController@update');
+        });
+    });
+    Route::prefix('v1')->group(function (Router $router) {
+        $router->get('captcha', 'CaptchaController@send');
+        Route::namespace('App')->group(function (Router $router) {
+            $router->post('/user/sign_up', 'UserController@signUp');
+            $router->post('/user/login', 'UserController@signInPwd');
+            $router->post('/user/fast_login', 'UserController@signInCaptcha');
+            $router->post('/user/reset_login_pwd', 'UserController@resetSignInPwd');
+            $router->post('/user/reset_trade_pwd', 'UserController@resetTradePwd');
+            $router->post('/user/check_trade_pwd', 'UserController@checkTradePwd');
         });
     });
 });

@@ -9,6 +9,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -38,14 +39,17 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($phone, $country, $password = '')
     {
-        $phone = $request->input('phone');
-        $country = $request->input('country');
+        if (!$password) {
+            $password = Hash::make($phone);
+        } else {
+            $password = Hash::make($password);
+        }
 
         $user = User::create([
             'phone'      => $phone,
-            'password'   => Hash::make($phone),
+            'password'   => $password,
             'update_key' => md5($phone . env('APP_KEY')),
             'type'       => 'wallet',
             'country'    => $country,
@@ -158,7 +162,7 @@ class UserController extends Controller
         $content['is_new'] = false;
         $user = User::where('phone', $request->input('phone'))->first();
         if (!$user) {
-            $user = $this->store($request);
+            $user = $this->store($request->input('phone'), $request->input('country'));
             $content['is_new'] = true;
         }
 
@@ -186,5 +190,154 @@ class UserController extends Controller
         $user->password = Hash::make($request->input('password'));
         $user->save();
         return response()->json(['message' => '重置成功']);
+    }
+
+    // 验证码注册
+    public function signUp(Request $request)
+    {
+        $phone = $request->input('phone');
+        $captcha = $request->input('captcha');
+        $country = $request->input('country');
+        $password = $request->input('password');
+        if (!$phone || !$captcha || !$country || !$password) {
+            return $this->error('注册失败');
+        }
+        // 验证码
+        $valid_captcha = Captcha::valid($phone, $captcha);
+        if (!$valid_captcha) {
+            return $this->error('验证码错误');
+        }
+        //判断用户是否存在
+        try {
+            $user = User::where('phone', $phone)->first();
+            if (!$user) {
+                $user = $this->store($phone, $country, $password);
+            }
+            $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
+        } catch (\Exception $e) {
+            Log::error('注册失败，$phone ' . $phone);
+            Log::error($e->getMessage());
+            return $this->error('注册失败');
+        }
+        return $this->apiResponse($data);
+    }
+
+    // 验证码登录
+    public function signInCaptcha(Request $request)
+    {
+        $phone = $request->input('phone');
+        $captcha = $request->input('captcha');
+        if (!$phone || !$captcha) {
+            return $this->error('登录失败');
+        }
+        // 验证码
+        $valid_captcha = Captcha::valid($phone, $captcha);
+        if (!$valid_captcha) {
+            return $this->error('验证码错误');
+        }
+        $user = User::where('phone', $phone)->first();
+        if (!$user) {
+            return $this->error('用户不存在');
+        }
+        $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
+        return $this->apiResponse($data);
+    }
+
+    // 密码登录
+    public function signInPwd(Request $request)
+    {
+        $phone = $request->input('phone');
+        $password = $request->input('password');
+        if (!$phone || !$password) {
+            return $this->error('登录失败');
+        }
+
+        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
+        if (!$result) {
+            return $this->error('账号或密码错误');
+        }
+        $user = Auth::user();
+        $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
+        return $this->apiResponse($data);
+    }
+
+    // 重置登录密码
+    public function resetSignInPwd(Request $request)
+    {
+        $phone = $request->input('phone');
+        $captcha = $request->input('captcha');
+        $password = $request->input('password');
+        if (!$phone || !$password || !$captcha) {
+            return $this->error();
+        }
+        if (strlen($request->input('password')) < 8) {
+            return $this->error('密码长度需不小于8位');
+        }
+        // 验证码
+        $valid_captcha = Captcha::valid($phone, $captcha);
+        if (!$valid_captcha) {
+            return $this->error('验证码错误');
+        }
+        try {
+            $user = User::where('phone', $phone)->first();
+            if ($user) {
+                $user->password = Hash::make($request->input('password'));
+                $user->save();
+                return $this->success();
+            }
+        } catch (\Exception $e) {
+            Log::error('重置登录密码失败，$phone ' . $phone);
+            Log::error($e->getMessage());
+        }
+        return $this->error();
+    }
+
+    // 设置（重置）交易密码
+    public function resetTradePwd(Request $request)
+    {
+        $phone = $request->input('phone');
+        $captcha = $request->input('captcha');
+        $password = $request->input('password');
+        if (!$phone || !$password || !$captcha) {
+            return $this->error();
+        }
+        if (strlen($password) != 6) {
+            return $this->error('交易密码需为6位');
+        }
+        // 验证码
+        $valid_captcha = Captcha::valid($phone, $captcha);
+        if (!$valid_captcha) {
+            return $this->error('验证码错误');
+        }
+        try {
+            $user = User::where('phone', $phone)->first();
+            if ($user) {
+                $user->password = Hash::make($request->input('password'));
+                $user->save();
+                return $this->success();
+            }
+        } catch (\Exception $e) {
+            Log::error('设置（重置）交易密码失败，$phone ' . $phone);
+            Log::error($e->getMessage());
+        }
+        return $this->error();
+    }
+
+    // 验证交易密码
+    public function checkTradePwd(Request $request)
+    {
+        $phone = $request->input('phone');
+        $password = $request->input('password');
+        if (!$phone || !$password) {
+            return $this->error();
+        }
+        $user = User::where('phone', $phone)->first();
+        if ($user) {
+            $flag = Hash::check($password, $user->trade_password);
+            if ($flag) {
+                return $this->success();
+            }
+        }
+        return $this->error();
     }
 }

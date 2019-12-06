@@ -11,25 +11,23 @@ class CaptchaController extends Controller
 {
     public function send(Request $request)
     {
-
-
         $data['phone'] = (string)$request->input('phone');
         $data['country'] = (string)$request->input('country');
 
         $validator = Validator::make($data, [
-            'phone' => 'required|string|size:11',
+            'phone' => 'required|string',
             'country' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return $this->error('请输入正确的手机号');
+            return $this->error('操作失败');
         }
 
         $captcha = Captcha::send($data['phone'], $data['country']);
         if (!$captcha) {
-            return $this->error('发送失败,请重试');
+            return $this->error('操作失败');
         }
 
-        return $this->apiResponse([],'验证码已发送');
+        return $this->success('操作成功');
     }
 }
