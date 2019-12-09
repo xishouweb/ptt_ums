@@ -11,6 +11,7 @@ use App\Models\UserAddress;
 use App\Models\UserLogin;
 use App\Models\UserToken;
 use App\Models\WechatOpenid;
+use App\Models\UserWalletBalance;
 use App\Services\QrCode;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -244,6 +245,11 @@ class User extends Authenticatable
                 $openid->save();
             }
         }
+    }
+
+    public function user_wallet_balances()
+    {
+        return $this->hasMany(UserWalletBalance::class);
     }
 
 }
