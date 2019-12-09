@@ -22,6 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::any('wechat', 'WechatController@serve');
 
 Route::prefix('app')->group(function () {
+
     Route::namespace('App')->group(function (Router $router) {
         $router->get('/announcement', 'AnnouncementController@index');
         $router->get('/banner', 'BannerController@index');
@@ -41,10 +42,33 @@ Route::prefix('app')->group(function () {
             $router->post('/user', 'UserController@update');
         });
     });
+    Route::prefix('v1')->group(function (Router $router) {
+        $router->get('captcha', 'CaptchaController@send');
+        Route::namespace('App')->group(function (Router $router) {
+            Route::prefix('user')->group(function (Router $router) {
+                $router->post('/sign_up', 'UserController@signUp');
+                $router->post('/login', 'UserController@signInPwd');
+                $router->post('/fast_login', 'UserController@signInCaptcha');
+                $router->post('/reset_login_pwd', 'UserController@resetSignInPwd');
+                $router->post('/reset_trade_pwd', 'UserController@resetTradePwd');
+                $router->post('/check_trade_pwd', 'UserController@checkTradePwd');
+            });
+            Route::group(['middleware' => 'auth:api'], function() {
+                Route::prefix('wallet')->group(function (Router $router) {
+                    $router->get('/total', 'WalletController@total');
+                    $router->get('/symbol', 'WalletController@symbol');
+                    $router->get('/transaction_list', 'WalletController@transactionList');
+                    $router->get('/transaction', 'WalletController@transaction');
+                    $router->get('/condition', 'WalletController@condition');
+                    $router->post('/withdraw', 'WalletController@withdraw');
+                });
+            });
+        });
+    });
 });
 
 Route::prefix('sdk/v1')->group(function () {
-    Route::namespace('SDK')->group(function (Router $router) {
+    Route::namespace('SDK')->group(function () {
         Route::post('/data_records', 'TrackController@upload');
     });
 });

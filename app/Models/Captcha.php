@@ -97,8 +97,8 @@ class Captcha extends Model
     /**
      * Verify sms code
      *
-     * @param $mobile the mobile number of sms receiver
-     * @param $code the code sent to mobile device
+     * @param $mobile
+     * @param $code
      * @return bool
      */
     public static function valid($mobile, $code)
