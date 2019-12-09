@@ -27,6 +27,8 @@ Route::group([
     $router->put('/wallet/banner/{id}', 'BannerController@update');
     $router->delete('/wallet/banner/{id}', 'BannerController@delete');
 
+    $router->resource('/wallet/user-wallet-balances', UserWalletBalanceController::class);
+
 
     //Campaign
 
