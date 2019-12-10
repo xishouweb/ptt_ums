@@ -221,10 +221,10 @@ class ToolController extends Controller
         return $this->apiResponse($response, '操作成功', 0);
     }
 
-    public static function getCurrencyPrice($requestSymbols, $requestCurrency)
+    public static function getCurrencyPrice($symbol, $currency)
     {
-        if (!$requestSymbols || !$requestCurrency) {
-            return [];
+        if (!$symbol || !$currency) {
+            return 0;
         }
 
         $symbols = ["PTT", "BTC", "ETH", "LTC", "BNB", "NEO", "QTUM", "EOS", "SNT", "BNT", "BCC", "GAS",  "OAX", "DNT", "MCO", "ICN", "WTC", "LRC", "OMG", "ZRX", "STRAT", "SNGLS", "KNC", "FUN", "SNM", "LINK", "XVG", "SALT", "MDA", "MTL", "SUB", "ETC", "MTH", "ENG", "ZEC", "AST", "DASH", "BTG", "EVX", "REQ", "VIB", "TRX", "POWR", "ARK", "XRP", "MOD", "ENJ", "STORJ", "VEN", "KMD", "NULS", "RCN", "RDN", "XMR", "DLT", "AMB", "BAT", "BCPT", "ARN", "GVT", "CDT", "POE", "QSP", "BTS", "XZC", "LSK", "TNT", "FUEL", "MANA", "BCD", "DGD", "ADX", "ADA", "PPT", "CMT", "XLM", "CND", "LEND", "WABI", "TNB", "WAVES", "GTO", "ICX", "OST", "ELF", "AION", "NEBL", "BRD", "EDO", "WINGS", "NAV", "LUN", "TRIG", "APPC", "VIBE", "RLC", "INS", "PIVX", "IOST", "CHAT", "STEEM", "NANO", "VIA", "BLZ", "AE", "NCASH", "POA", "ZIL", "ONT", "STORM", "XEM", "WAN", "WPR", "QLC", "SYS", "GRS", "CLOAK", "GNT", "LOOM", "BCN", "REP", "TUSD", "ZEN", "SKY", "CVC", "THETA", "IOTX", "QKC", "AGI", "NXS", "DATA", "SC", "NPXS", "KEY", "NAS", "MFT", "DENT", "ARDR", "HOT", "VET", "DOCK", "POLY", "PHX", "HC", "GO", "PAX", "RVN", "DCR", "USDC", "MITH", "BCHABC", "REN",
@@ -255,30 +255,26 @@ class ToolController extends Controller
             } catch (\Exception $e) {
                 Log::error('coinmarketcap price get failed');
                 Log::error($e->getMessage());
-                return [];
+                return 0;
             }
         }
 
         try {
-            $currency = DataCache::getCurrency($requestCurrency);
+            $currency = DataCache::getCurrency($currency);
         } catch (\Exception $e) {
             Log::error('coinmarketcap price get failed');
             Log::error($e->getMessage());
-            return [];
+            return 0;
         }
 
-        $symbolsArr = explode(',', $requestSymbols);
-        $data = [];
-        foreach ($priceData as &$d) {
-            foreach ($symbolsArr as $symb) {
-                if ($d['symbol'] == $symb) {
-                    $d['price'] *= $currency;
-                    $data[] = $d;
-                }
+        $price = 0;
+        foreach ($priceData as $d) {
+            if ($d['symbol'] == $symbol) {
+                $price = $d['price'] * $currency;
             }
         }
 
-        return $data;
+        return $price;
     }
 
     public function downloadWallet()
