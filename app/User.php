@@ -247,9 +247,8 @@ class User extends Authenticatable
         }
     }
 
-    public function user_wallet_balances()
+    public function userWalletBalances()
     {
         return $this->hasMany(UserWalletBalance::class);
     }
-
 }

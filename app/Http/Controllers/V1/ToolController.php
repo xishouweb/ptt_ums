@@ -834,25 +834,47 @@ http://tinyurl.com/yy82vqc9',
             $rose = round($this->get24hChangeFor($symbol), 2);
             DataCache::setSymbolInfo('symbol-info-data-' . $symbol, ['price' => $price, 'rose' => $rose]);
         }
-        $cny = DataCache::getCurrency('cny');
-        $tip = $this->__getTip($symbol, $rose);
-        return response()->json([
+
+        try {
+            $cny = DataCache::getCurrency('cny');
+        } catch (\Exception $e) {
+            Log::error('V1\ToolController wechatMessageCallback error');
+            Log::error($e->getMessage());
+            return response()->json([
                 'resultcode' => 0,
                 'resultdesc' => 'success',
                 'data' => [
                     'nMsgType' => 2001,
-                    'vcContent' => '币种: ' . strtoupper($data->vcKeyword) .'
-币价: ¥' . round($price * $cny, 5) .' / $' . $price . '
-涨跌幅:
-24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . ($tip ? '\n' . $tip : '' ) .'
+                    'vcContent' => '币海茫茫，韭妹儿能力有限，寻它不着~
+添加币种请填写申请表
+https://jinshuju.net/f/0x6w55
 [' . date('Y-m-d H:i:s') .  ']
-免费领取: http://tinyurl.com/yy82vqc9',
+自助领养：
+http://tinyurl.com/yy82vqc9',
                     'vcShareTitle' => null,
                     'vcShareDesc' => null,
                     'vcShareUrl' => null,
-
                 ],
-           ], 200);
+            ], 200);
+        }
+        $tip = $this->__getTip($symbol, $rose);
+        return response()->json([
+            'resultcode' => 0,
+            'resultdesc' => 'success',
+            'data' => [
+                'nMsgType' => 2001,
+                'vcContent' => '币种: ' . strtoupper($data->vcKeyword) . '
+币价: ¥' . round($price * $cny, 5) .' / $' . $price . '
+涨跌幅:
+24H: ' . ($rose > 0 ?('+' . $rose . '% ↑') : $rose . '% ↓' ) . ($tip ? '\n' . $tip : '' ) . '
+[' . date('Y-m-d H:i:s') .  ']
+免费领取: http://tinyurl.com/yy82vqc9',
+                'vcShareTitle' => null,
+                'vcShareDesc' => null,
+                'vcShareUrl' => null,
+
+            ],
+        ], 200);
     }
 
     private function __getTip($symbol, $rose)
