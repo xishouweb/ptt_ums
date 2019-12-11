@@ -44,7 +44,7 @@ Route::prefix('app')->group(function () {
     });
     Route::prefix('v1')->group(function (Router $router) {
         $router->get('captcha', 'CaptchaController@send');
-        Route::namespace('App')->group(function (Router $router) {
+        Route::namespace('App')->group(function () {
             Route::prefix('user')->group(function (Router $router) {
                 $router->post('/sign_up', 'UserController@signUp');
                 $router->post('/login', 'UserController@signInPwd');
