@@ -71,6 +71,7 @@ class UserController extends Controller
         $data['nickname'] = $user->nickname ?: '无代号质子';
         $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2019_11_20_18_27_02_1_4893.png';
         $data['token'] = $request->header('Authorization');
+        $data['has_trade_pwd'] = $user->trade_password ? true : false;
         return response()->json($data);
     }
 
@@ -312,31 +313,13 @@ class UserController extends Controller
         try {
             $user = User::where('phone', $phone)->first();
             if ($user) {
-                $user->password = Hash::make($request->input('password'));
+                $user->trade_password = Hash::make($request->input('password'));
                 $user->save();
                 return $this->success();
             }
         } catch (\Exception $e) {
             Log::error('设置（重置）交易密码失败，$phone ' . $phone);
             Log::error($e->getMessage());
-        }
-        return $this->error();
-    }
-
-    // 验证交易密码
-    public function checkTradePwd(Request $request)
-    {
-        $phone = $request->input('phone');
-        $password = $request->input('password');
-        if (!$phone || !$password) {
-            return $this->error();
-        }
-        $user = User::where('phone', $phone)->first();
-        if ($user) {
-            $flag = Hash::check($password, $user->trade_password);
-            if ($flag) {
-                return $this->success();
-            }
         }
         return $this->error();
     }

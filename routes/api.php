@@ -51,7 +51,6 @@ Route::prefix('app')->group(function () {
                 $router->post('/fast_login', 'UserController@signInCaptcha');
                 $router->post('/reset_login_pwd', 'UserController@resetSignInPwd');
                 $router->post('/reset_trade_pwd', 'UserController@resetTradePwd');
-                $router->post('/check_trade_pwd', 'UserController@checkTradePwd');
             });
             Route::group(['middleware' => 'auth:api'], function() {
                 Route::prefix('wallet')->group(function (Router $router) {

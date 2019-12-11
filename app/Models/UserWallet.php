@@ -7,5 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserWallet extends Model
 {
+    use SoftDeletes;
+
     protected $guarded = ['id'];
 }
