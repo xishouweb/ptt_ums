@@ -16,12 +16,12 @@ class CreateUserWalletWithdrawalsTable extends Migration
         Schema::create('user_wallet_withdrawals', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->integer('approver_id');
+            $table->integer('approver_id')->nullable();
             $table->string('symbol');
             $table->integer('status');
             $table->double('amount')->default(0);
             $table->string('to');
-            $table->string('from');
+            $table->string('from')->nullable();
             $table->double('fee');
             $table->string('remark')->nullable();
             $table->text('device_info')->nullable();
