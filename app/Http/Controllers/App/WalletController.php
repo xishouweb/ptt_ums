@@ -169,7 +169,7 @@ class WalletController extends Controller
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
-        $data = $this->paginate($transactions);
+        $data = $this->paging($transactions)->orderBy('id','desc')->get();
         return $this->apiResponse($data);
     }
 
