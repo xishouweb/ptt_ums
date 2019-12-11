@@ -268,12 +268,13 @@ class ToolController extends Controller
         }
 
         $price = 0;
+        Log::info($priceData);
         foreach ($priceData as $d) {
             if ($d['symbol'] == $symbol) {
                 $price = $d['price'] * $currency;
             }
         }
-
+        Log::info($price);
         return $price;
     }
 
