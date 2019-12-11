@@ -183,7 +183,7 @@ class WalletController extends Controller
         }
         $transaction = UserWalletTransaction::where('id', $id)
             ->where('user_id', $user->id)
-            ->select('id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'txhash', 'block_number')
+            ->select('id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'tx_hash', 'block_number')
             ->first();
         if (!$transaction) {
             return $this->error();
