@@ -195,16 +195,6 @@ class WalletController extends Controller
     public function condition()
     {
         $user = Auth::user();
-        $transaction = [
-            'user_id' => $user->id,
-            'address' => $user->cloud_wallet_address,
-            'symbol' => 'ptt',
-            'type' => 1,
-            'amount' => 123.456,
-        ];
-        for ($i = 0; $i < 7; $i++) {
-            UserWalletTransaction::create($transaction);
-        }
         UserWalletBalance::create([
             'user_id' => $user->id,
             'address' => $user->cloud_wallet_address,
