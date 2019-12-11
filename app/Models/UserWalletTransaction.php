@@ -10,4 +10,5 @@ class UserWalletTransaction extends Model
     use SoftDeletes;
 
     protected $guarded = ['id'];
+
 }
