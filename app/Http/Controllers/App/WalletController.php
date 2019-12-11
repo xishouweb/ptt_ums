@@ -192,17 +192,21 @@ class WalletController extends Controller
     }
 
     // 提现条件
-    public function condition()
+    public function condition(Request $request)
     {
+        $symbol = $request->input('symbol');
         $user = Auth::user();
-        UserWalletBalance::create([
-            'user_id' => $user->id,
-            'address' => $user->cloud_wallet_address,
-            'symbol' => 'ptt',
-            'locked_balance' => '100',
-            'total_balance' => '10000',
-        ]);
-        return $this->apiResponse();
+        if (!$user || !$symbol) {
+            return $this->error();
+        }
+        $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
+        $data = [
+            'avbl' => $balance ? $balance->total_balance - $balance->locked_balance : 0,
+            'transfer_limit' => 1000000,
+            'daily_transfer_limit' => 10000000,
+            'fee' => 100,
+        ];
+        return $this->apiResponse($data);
     }
 
     // 申请提币
