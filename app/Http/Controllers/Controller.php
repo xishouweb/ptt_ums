@@ -46,30 +46,6 @@ class Controller extends BaseController
         return $responseData;
     }
 
-    public function paging($builder, $total_size = null, $page = null,$page_size = null)
-    {
-        if (request()->get('page')) {
-            $this->page = (int) request()->get('page');
-        } elseif ($page) {
-            $this->page = $page;
-        }
-
-        if (request()->get('page_size')) {
-            $this->page_size = (int) request()->get('page_size');
-        } elseif ($page_size) {
-            $this->page_size = $page_size;
-        }
-
-        if ($total_size === null) {
-            $this->total_size = $builder->count();
-        } else {
-            $this->total_size = $total_size;
-        }
-
-        $builder = $builder->skip(($this->page - 1) * $this->page_size)->take($this->page_size);
-        return $builder;
-    }
-
     public function format(FormatInterface $format)
     {
         return $format->format();
