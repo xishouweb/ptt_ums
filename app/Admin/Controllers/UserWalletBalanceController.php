@@ -65,8 +65,8 @@ class UserWalletBalanceController extends AdminController
             return date($this->users['created_at']);
         });
 
-        $grid->column('交易记录')->display(function () {
-            return "<a href='/admin/wallet/tx' target='_blank'>查看</a>";
+        $grid->column('交易记录')->display(function ($user_id) {
+            return "<a href='/admin/wallet/user-wallet-transactions/$this->user_id' target='_blank'>查看</a>";
         });
 
         $grid->filter(function($filter){
