@@ -165,7 +165,7 @@ class WalletController extends Controller
             return $this->error();
         }
         $transactions = UserWalletTransaction::where('user_id', $user->id)
-            ->select('id', 'symbol', 'type', 'amount', 'status', 'created_at', 'block_confirm', 'rate');
+            ->select('id', 'user_id', 'symbol', 'type', 'amount', 'status', 'created_at', 'block_confirm', 'rate');
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
@@ -183,7 +183,7 @@ class WalletController extends Controller
         }
         $transaction = UserWalletTransaction::where('id', $id)
             ->where('user_id', $user->id)
-            ->select('id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'tx_hash', 'block_number')
+            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'tx_hash', 'block_number')
             ->first();
         if (!$transaction) {
             return $this->error();
@@ -243,6 +243,16 @@ class WalletController extends Controller
                 'device_info' => $device_info,
             ];
             UserWalletWithdrawal::create($data);
+            $data = [
+                'user_id' => $user->id,
+                'symbol' => $symbol,
+                'type' => UserWalletTransaction::OUT_TYPE,
+                'status' => UserWalletTransaction::OUT_STATUS_PADDING,
+                'amount' => $amount,
+                'to' => $address,
+                'fee' => UserWalletWithdrawal::PTT_FEE
+            ];
+            UserWalletTransaction::create($data);
         } catch (\Exception $e) {
             Log::error('申请提币失败');
             Log::error($e->getMessage());
