@@ -30,7 +30,7 @@ class UserWalletBalanceController extends AdminController
         return $content
             ->header('用户管理')
             ->breadcrumb(
-                ['text' => '用户列表', 'url' => '/admin/wallet/user-wallet-balances']
+                ['text' => '用户列表']
             )
             ->body($this->grid());
     }
@@ -104,7 +104,7 @@ class UserWalletBalanceController extends AdminController
             ->select('user_wallet_balances.*', 'nickname', 'avatar', 'phone', 'channel', 'users.created_at as register_time', 'last_login')
             ->first();
         return $content->breadcrumb(
-            ['text' => '用户列表', 'url' => '/admin/wallet/user-wallet-balances'],
+            ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
             ['text' => '用户详情']
         )
         ->body(Admin::show($user, function (Show $show) {

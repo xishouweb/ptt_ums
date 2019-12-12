@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -13,5 +14,19 @@ class UserWalletWithdrawal extends Model
 
     const PENDING_STATUS = 0;
     const COMPLETE_STATUS = 1;
+    const FAILD_STATUS = 2;
+    
     const PTT_FEE = 100;
+
+    public function users()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function getBalanceOf($symbol)
+    {
+        $balance = UserWalletBalance::whereSymbol($symbol)->whereUserId($this->user_id)->first();
+
+        return $balance ? $balance->total_balance -$balance->lock_balance : 0;
+    }
 }
