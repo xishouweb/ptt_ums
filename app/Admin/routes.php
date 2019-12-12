@@ -29,6 +29,9 @@ Route::group([
 
     $router->resource('/wallet/user-wallet-balances', UserWalletBalanceController::class);
     $router->resource('/wallet/user-wallet-transactions', UserWalletTransactionController::class);
+    $router->resource('/wallet/user-wallet-withdrawals', UserWalletWithdrawalController::class);
+    $router->get('/wallet/user-wallet-withdrawals/{id}/approve', 'UserWalletWithdrawalController@getApprove');
+    $router->get('/wallet/user-wallet-withdrawals/{id}/decline', 'UserWalletWithdrawalController@getDecline');
 
     //Campaign
 

@@ -118,7 +118,7 @@ class UserWalletTransactionController extends AdminController
         return $content
         ->header('交易记录')
         ->breadcrumb(
-            ['text' => '用户列表', 'url' => '/admin/wallet/user-wallet-balances'],
+            ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
             ['text' => '交易记录']
         )
         ->row("<div class='container'>
