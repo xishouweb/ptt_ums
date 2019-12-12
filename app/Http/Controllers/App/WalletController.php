@@ -11,6 +11,7 @@ use App\Models\UserWalletWithdrawal;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -233,6 +234,7 @@ class WalletController extends Controller
             return $this->error('交易密码错误');
         }
         try {
+            DB::beginTransaction();
             $data = [
                 'user_id' => $user->id,
                 'symbol' => $symbol,
@@ -245,6 +247,7 @@ class WalletController extends Controller
             UserWalletWithdrawal::create($data);
             $data = [
                 'user_id' => $user->id,
+                'address' => $user->cloud_wallet_address,
                 'symbol' => $symbol,
                 'type' => UserWalletTransaction::OUT_TYPE,
                 'status' => UserWalletTransaction::OUT_STATUS_PADDING,
@@ -253,7 +256,9 @@ class WalletController extends Controller
                 'fee' => UserWalletWithdrawal::PTT_FEE
             ];
             UserWalletTransaction::create($data);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('申请提币失败');
             Log::error($e->getMessage());
             return $this->error();
