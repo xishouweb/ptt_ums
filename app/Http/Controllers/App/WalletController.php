@@ -235,17 +235,7 @@ class WalletController extends Controller
         }
         try {
             DB::beginTransaction();
-            $data = [
-                'user_id' => $user->id,
-                'symbol' => $symbol,
-                'status' => UserWalletWithdrawal::PENDING_STATUS,
-                'amount' => $amount,
-                'to' => $address,
-                'fee' => UserWalletWithdrawal::PTT_FEE,
-                'device_info' => $device_info,
-            ];
-            UserWalletWithdrawal::create($data);
-            $data = [
+            $t_data = [
                 'user_id' => $user->id,
                 'address' => $user->cloud_wallet_address,
                 'symbol' => $symbol,
@@ -255,7 +245,19 @@ class WalletController extends Controller
                 'to' => $address,
                 'fee' => UserWalletWithdrawal::PTT_FEE
             ];
-            UserWalletTransaction::create($data);
+            $transaction = UserWalletTransaction::create($t_data);
+            $w_data = [
+                'user_id' => $user->id,
+                'symbol' => $symbol,
+                'status' => UserWalletWithdrawal::PENDING_STATUS,
+                'amount' => $amount,
+                'to' => $address,
+                'fee' => UserWalletWithdrawal::PTT_FEE,
+                'device_info' => $device_info,
+                'user_wallet_transaction_id' => $transaction->id
+            ];
+            UserWalletWithdrawal::create($w_data);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
