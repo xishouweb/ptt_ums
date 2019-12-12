@@ -3,7 +3,9 @@
 namespace App\Admin\Controllers;
 
 use App\Models\UserWalletWithdrawal;
+use App\Models\UserWalletTransaction;
 use Encore\Admin\Controllers\AdminController;
+use Illuminate\Support\Facades\DB;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -152,6 +154,16 @@ class UserWalletWithdrawalController extends AdminController
                             </div>"
             );
         }
+
+        if($record->status == UserWalletWithdrawal::_STATUS) {
+            $content->row("<div class='container'>
+                                <div class='row'>
+                                    <div class='col-xs-12 col-md-2 col-md-offset-4'><a class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></div>
+                                    <div class='col-xs-12 col-md-2'><a class='btn btn-primary' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>通过</a></div>
+                                </div>
+                            </div>"
+            );
+        }
         
         return $content;
     }
@@ -230,10 +242,26 @@ class UserWalletWithdrawalController extends AdminController
             return redirect("/admin/wallet/user-wallet-withdrawals/$id");
         }
 
-        $record->status = UserWalletWithdrawal::FAILD_STATUS;
+        try {
 
-        $record->save();
+            DB::beginTransaction();
+            $record->status = UserWalletWithdrawal::FAILD_STATUS;
 
+            $admin = auth()->user();
+
+            dd($admin);
+            $record->save();
+    
+            $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction);
+            $tx->status = UserWalletTransaction::FAILD_STATUS;
+            $tx->save();
+
+            DB::commit();
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+       
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
 
@@ -250,4 +278,7 @@ class UserWalletWithdrawalController extends AdminController
 
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
+
+            //todo 
+        //transaction hash      status 3  from addrss  对列
 }
