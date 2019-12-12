@@ -11,6 +11,7 @@ use App\Models\UserWalletWithdrawal;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -165,11 +166,11 @@ class WalletController extends Controller
             return $this->error();
         }
         $transactions = UserWalletTransaction::where('user_id', $user->id)
-            ->select('id', 'symbol', 'type', 'amount', 'status', 'created_at', 'block_confirm', 'rate');
+            ->select('id', 'user_id', 'symbol', 'type', 'amount', 'status', 'created_at', 'block_confirm', 'rate');
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
-        $data = $this->paginate($transactions);
+        $data = $transactions->orderBy('id', 'desc')->paginate(10);
         return $this->apiResponse($data);
     }
 
@@ -183,7 +184,7 @@ class WalletController extends Controller
         }
         $transaction = UserWalletTransaction::where('id', $id)
             ->where('user_id', $user->id)
-            ->select('id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'txhash', 'block_number')
+            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'tx_hash', 'block_number')
             ->first();
         if (!$transaction) {
             return $this->error();
@@ -192,9 +193,21 @@ class WalletController extends Controller
     }
 
     // 提现条件
-    public function condition()
+    public function condition(Request $request)
     {
+        $symbol = $request->input('symbol');
         $user = Auth::user();
+        if (!$user || !$symbol) {
+            return $this->error();
+        }
+        $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
+        $data = [
+            'avbl' => $balance ? $balance->total_balance - $balance->locked_balance : 0,
+            'transfer_limit' => 1000000,
+            'daily_transfer_limit' => 10000000,
+            'fee' => 100,
+        ];
+        return $this->apiResponse($data);
     }
 
     // 申请提币
@@ -221,7 +234,19 @@ class WalletController extends Controller
             return $this->error('交易密码错误');
         }
         try {
-            $data = [
+            DB::beginTransaction();
+            $t_data = [
+                'user_id' => $user->id,
+                'address' => $user->cloud_wallet_address,
+                'symbol' => $symbol,
+                'type' => UserWalletTransaction::OUT_TYPE,
+                'status' => UserWalletTransaction::OUT_STATUS_PADDING,
+                'amount' => $amount,
+                'to' => $address,
+                'fee' => UserWalletWithdrawal::PTT_FEE
+            ];
+            $transaction = UserWalletTransaction::create($t_data);
+            $w_data = [
                 'user_id' => $user->id,
                 'symbol' => $symbol,
                 'status' => UserWalletWithdrawal::PENDING_STATUS,
@@ -229,9 +254,13 @@ class WalletController extends Controller
                 'to' => $address,
                 'fee' => UserWalletWithdrawal::PTT_FEE,
                 'device_info' => $device_info,
+                'user_wallet_transaction_id' => $transaction->id
             ];
-            UserWalletWithdrawal::create($data);
+            UserWalletWithdrawal::create($w_data);
+
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('申请提币失败');
             Log::error($e->getMessage());
             return $this->error();
