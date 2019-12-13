@@ -36,4 +36,9 @@ class UserWalletTransaction extends BaseModel implements FormatInterface
         $data['rate'] = $this->rate;
         return $data;
     }
+
+    public function userWalletWithdrawal()
+    {
+        return $this->hasOne(UserWalletWithdrawal::class, 'user_wallet_transaction_id', 'id');
+    }
 }
