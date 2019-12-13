@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UserWalletTransaction extends BaseModel implements FormatInterface
 {
     use SoftDeletes;
+    
+    const FAILD_STATUS = 0;
 
     protected $guarded = ['id'];
 
@@ -33,5 +35,10 @@ class UserWalletTransaction extends BaseModel implements FormatInterface
         $data['block_confirm'] = $this->block_confirm;
         $data['rate'] = $this->rate;
         return $data;
+    }
+
+    public function userWalletWithdrawal()
+    {
+        return $this->hasOne(UserWalletWithdrawal::class, 'user_wallet_transaction_id', 'id');
     }
 }

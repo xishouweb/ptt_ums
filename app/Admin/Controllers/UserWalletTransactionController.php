@@ -47,15 +47,15 @@ class UserWalletTransactionController extends AdminController
         });
 
         $grid->column('status', '交易状态')->display(function ($status) {
-            if ($status == 0) {
+            if ($status === 0) {
                 return "<span class='label label-warning'>区块确认中</span>";
-            } elseif ($status == 1) {
+            } elseif ($status === 1) {
                 return "<span class='label label-success'>完成</span>";
-            } elseif ($status == 2) {
+            } elseif ($status === 2) {
                 return "<span class='label label-primary'>申请中</span>";
-            } elseif ($status == 3) {
+            } elseif ($status === 3) {
                 return "<span class='label label-info'>转账中</span>";
-            } elseif ($status == 4) {
+            } elseif ($status === 4) {
                 return "<span class='label label-default'>申请未通过</span>";
             }
            
