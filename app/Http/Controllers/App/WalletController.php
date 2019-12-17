@@ -106,9 +106,11 @@ class WalletController extends Controller
 		    'address' => $user->cloud_wallet_address,
 		    'list' => [
 		        [
-                    'symbol' => 'ptt',
-                    'amount' => 0,
-                    'icon' => 'http://images.proton.global/0x4689a4e169eb39cc9078c0940e21ff1aa8a39b9c.png'
+                    'symbol'  => 'ptt',
+                    'icon'    => 'http://images.proton.global/0x4689a4e169eb39cc9078c0940e21ff1aa8a39b9c.png',
+                    'price'   => 0,
+                    'amount'  => 0,
+                    'balance' => 0,
                 ]
             ]
         ];
