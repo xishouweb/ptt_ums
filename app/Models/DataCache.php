@@ -4,7 +4,7 @@ namespace App\Models;
 
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
-use Redis;
+use Illuminate\Support\Facades\Redis;
 
 class DataCache extends Model
 {
