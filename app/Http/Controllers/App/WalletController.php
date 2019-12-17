@@ -117,7 +117,6 @@ class WalletController extends Controller
                 foreach ($data['list'] as &$datum) {
                     if ($balance->symbol == $datum['symbol']) {
                         $datum['amount'] = $balance->total_balance;
-
                     }
                 }
             }
