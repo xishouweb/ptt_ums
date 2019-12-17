@@ -117,13 +117,16 @@ class WalletController extends Controller
                 foreach ($data['list'] as &$datum) {
                     if ($balance->symbol == $datum['symbol']) {
                         $datum['amount'] = $balance->total_balance;
+
                     }
                 }
             }
             foreach ($data['list'] as $datum) {
                 if ($datum['amount']) {
                     $price = ToolController::getCurrencyPrice($datum['symbol'], $currency);
-                    $data['asset_balance'] += $datum['amount'] * $price;
+                    $datum['price'] = $price;
+                    $datum['balance'] = $datum['amount'] * $price;
+                    $data['asset_balance'] += $datum['balance'];
                 }
             }
         } catch (\Exception $e) {
