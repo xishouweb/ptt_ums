@@ -232,6 +232,11 @@ class WalletController extends Controller
         if (!$user || !$symbol || !$address || !$amount || !$captcha || !$password || !$device_info) {
             return $this->error();
         }
+        $balance_model = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
+        $available_balance = $balance_model->total_balance - $balance_model->locked_balance - UserWalletWithdrawal::PTT_FEE - $amount;
+        if ($amount <= 0 || $available_balance < 0) {
+            return $this->error();
+        }
         // 验证码
         $valid_captcha = Captcha::valid($user->phone, $captcha);
         if (!$valid_captcha) {
@@ -266,7 +271,8 @@ class WalletController extends Controller
                 'user_wallet_transaction_id' => $transaction->id
             ];
             UserWalletWithdrawal::create($w_data);
-
+            $balance_model->locked_balance += $amount + UserWalletWithdrawal::PTT_FEE;
+            $balance_model->save();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
