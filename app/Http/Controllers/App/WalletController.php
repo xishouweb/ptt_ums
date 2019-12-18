@@ -174,7 +174,7 @@ class WalletController extends Controller
             return $this->error();
         }
         $transactions = UserWalletTransaction::where('user_id', $user->id)
-            ->select('id', 'user_id', 'symbol', 'type', 'amount', 'status', 'created_at', 'block_confirm', 'rate');
+            ->select('id', 'user_id', 'symbol', 'type', 'amount', 'status', 'created_at', 'completed_at', 'block_confirm', 'rate');
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
