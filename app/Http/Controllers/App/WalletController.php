@@ -222,6 +222,7 @@ class WalletController extends Controller
     // 申请提币
     public function withdraw(Request $request)
     {
+        // 判断参数
         $user = Auth::user();
         $symbol = $request->input('symbol');
         $address = $request->input('address');
@@ -229,12 +230,13 @@ class WalletController extends Controller
         $captcha = $request->input('captcha');
         $password = $request->input('password');
         $device_info = $request->input('device_info');
-        if (!$user || !$symbol || !$address || !$amount || !$captcha || !$password || !$device_info) {
+        if (!$user || !$symbol || !$address || !$amount || !$captcha || !$password || !$device_info || $amount <= 0) {
             return $this->error();
         }
+        // 判断余额
         $balance_model = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
         $available_balance = $balance_model->total_balance - $balance_model->locked_balance - UserWalletWithdrawal::PTT_FEE - $amount;
-        if ($amount <= 0 || $available_balance < 0) {
+        if ($available_balance < 0) {
             return $this->error();
         }
         // 验证码
@@ -255,7 +257,7 @@ class WalletController extends Controller
                 'symbol' => $symbol,
                 'type' => UserWalletTransaction::OUT_TYPE,
                 'status' => UserWalletTransaction::OUT_STATUS_PADDING,
-                'amount' => $amount,
+                'amount' => -$amount,
                 'to' => $address,
                 'fee' => UserWalletWithdrawal::PTT_FEE
             ];
