@@ -168,7 +168,7 @@ class WalletController extends Controller
     public function transactionList(Request $request)
     {
         $user = Auth::user();
-        $page_size = request('page_size') ? request('page_size') : 10;
+        $page_size = $request->input('page_size', 10);
         $type = $request->input('type', 0);
         $symbol = $request->input('symbol');
         if (!$user || !$symbol) {
