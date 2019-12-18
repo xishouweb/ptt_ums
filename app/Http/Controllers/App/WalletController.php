@@ -168,6 +168,7 @@ class WalletController extends Controller
     public function transactionList(Request $request)
     {
         $user = Auth::user();
+        $page_size = request('page_size') ? request('page_size') : 10;
         $type = $request->input('type', 0);
         $symbol = $request->input('symbol');
         if (!$user || !$symbol) {
@@ -178,7 +179,7 @@ class WalletController extends Controller
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
-        $data = $transactions->orderBy('id', 'desc')->paginate(10);
+        $data = $transactions->orderBy('id', 'desc')->paginate($page_size);
         return $this->apiResponse($data);
     }
 
