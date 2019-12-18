@@ -150,12 +150,16 @@ class WalletController extends Controller
         $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
         $data = [
             'amount' => 0,
-            'asset_balance' => 0
+            'asset_balance' => 0,
+            'icon'    => '',
         ];
         if ($balance) {
             $price = ToolController::getCurrencyPrice($symbol, $currency);
             $data['amount'] += $balance->total_balance;
             $data['asset_balance'] += $balance->total_balance * $price;
+            if ($symbol == 'ptt') {
+                $data['icon'] = 'http://images.proton.global/0x4689a4e169eb39cc9078c0940e21ff1aa8a39b9c.png';
+            }
         }
         return $this->apiResponse($data);
     }
