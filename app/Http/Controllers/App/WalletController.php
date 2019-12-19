@@ -259,7 +259,8 @@ class WalletController extends Controller
                 'status' => UserWalletTransaction::OUT_STATUS_PADDING,
                 'amount' => -$amount,
                 'to' => $address,
-                'fee' => UserWalletWithdrawal::PTT_FEE
+                'fee' => UserWalletWithdrawal::PTT_FEE,
+                'remark' => -$amount - UserWalletWithdrawal::PTT_FEE
             ];
             $transaction = UserWalletTransaction::create($t_data);
             $w_data = [
