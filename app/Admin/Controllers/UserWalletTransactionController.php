@@ -61,8 +61,12 @@ class UserWalletTransactionController extends AdminController
            
         });
         
-        $grid->amount('数量');
-        $grid->fee('手续费');
+        $grid->amount('数量')->display(function ($amount) {
+            return number_format($amount);
+        });
+        $grid->fee('手续费')->display(function ($fee) {
+            return number_format($fee);
+        });
 
         $grid->column('交易时间')->display(function () {
             return "开始时间: $this->created_at </br> 结束时间: $this->completed_at";
@@ -129,7 +133,7 @@ class UserWalletTransactionController extends AdminController
                         </div>
                         <div class='row'>
                             <div class='col-xs-12 col-md-4'>注册手机: $user->phone</div>
-                            <div class='col-xs-12 col-md-4'>钱包余额: $user->total_balance</div>
+                            <div class='col-xs-12 col-md-4'>钱包余额: " . number_format($user->total_balance) . "</div>
                         </div>
                     </div>"
         )

@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\UserWalletWithdrawal;
 use App\Models\UserWalletTransaction;
+use App\Models\UserWalletBalance;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Layout\Row;
@@ -69,10 +70,12 @@ class UserWalletWithdrawalController extends AdminController
         });
 
         $grid->column('云端钱包可用余额(PTT)')->display(function () {
-            return $this->getBalanceOf('ptt');
+            return number_format($this->getBalanceOf('ptt'));
         });
 
-        $grid->column('amount', '提币数量');
+        $grid->column('amount', '提币数量')->display(function ($amount) {
+            return number_format($amount);
+        });
         $grid->column('created_at', '提币时间');
 
         $grid->column('status', '状态')->display(function ($status) {
@@ -145,8 +148,12 @@ class UserWalletWithdrawalController extends AdminController
                 $show->field('id', '提币订单号');
                 $show->field('user_id', '提币用户ID');
                 $show->field('created_at', '申请时间');
-                $show->field('amount', '提币数量');
-                $show->field('fee', '提币手续费');
+                $show->amount('提币数量')->unescape()->as(function ($amount) {
+                    return number_format($amount);
+                });
+                $show->fee('提币手续费')->unescape()->as(function ($fee) {
+                    return number_format($fee);
+                });
                 $show->to('到账地址')->unescape()->as(function ($to) {
                     return "<a href='https://etherscan.io/address/$to' target='_blank'>$to</a>";
                 });
@@ -343,9 +350,20 @@ class UserWalletWithdrawalController extends AdminController
             $tx->from = request()->input('from_address');
             $tx->save();
 
+            $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
+            $spending = $tx->fee + $tx->amount;
+            if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
+                throw new \Exception("余额不足, 请检查账户余额");
+                
+            }
+            $balance->locked_balance -= $spending;
+            $balance->total_balance -= $spending;
+            $balance->save();
+
             DB::commit();
     
         } catch (\Exception $e) {
+            admin_toastr($e->getMessage(),'error');
             DB::rollBack();
         }
 
