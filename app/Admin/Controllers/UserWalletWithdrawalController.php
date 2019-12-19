@@ -3,12 +3,18 @@
 namespace App\Admin\Controllers;
 
 use App\Models\UserWalletWithdrawal;
+use App\Models\UserWalletTransaction;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Controllers\Dashboard;
+use Encore\Admin\Layout\Row;
+use Illuminate\Support\Facades\DB;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Form as MyForm;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\Validator;
 
 class UserWalletWithdrawalController extends AdminController
 {
@@ -57,7 +63,7 @@ class UserWalletWithdrawalController extends AdminController
         $grid->column('提币手机号')->display(function () {
             return $this->users['phone'];
         });
-        
+
         $grid->column('昵称')->display(function () {
             return $this->users['nickname'];
         });
@@ -70,12 +76,12 @@ class UserWalletWithdrawalController extends AdminController
         $grid->column('created_at', '提币时间');
 
         $grid->column('status', '状态')->display(function ($status) {
-            if ($status == UserWalletWithdrawal::PENDING_STATUS) {
+            if ($status === UserWalletWithdrawal::PENDING_STATUS) {
                 return "<span class='label label-warning'>申请中</span>";
             } elseif ($status == UserWalletWithdrawal::COMPLETE_STATUS) {
                 return "<span class='label label-success'>已通过</span>";
             } elseif ($status == UserWalletWithdrawal::FAILD_STATUS) {
-                return "<span class='label label-default'>未通过</span>";
+                return "<span class='label label-default'>已拒绝</span>";
             } 
         });
 
@@ -93,7 +99,7 @@ class UserWalletWithdrawalController extends AdminController
                 ''   => '全部记录',
                 0    => '申请中',
                 1    => '已通过',
-                2    => '未通过',
+                2    => '已拒绝',
             ]);;
         });
 
@@ -118,21 +124,52 @@ class UserWalletWithdrawalController extends AdminController
     public function show($id, Content $content)
     {
         $record = UserWalletWithdrawal::findOrFail($id);
+
         $content->header('提币详情')
             ->breadcrumb(
                 ['text' => '提币申请', 'url' => '/wallet/user-wallet-withdrawals'],
                 ['text' => '提币详情']
             )
-            ->body(Admin::show($record, function (Show $show) {
+            ->body(Admin::show($record, function (Show $show) use($record) {
+
+                $show->status('状态')->unescape()->as(function ($status) {
+                    if ($status === UserWalletWithdrawal::PENDING_STATUS) {
+                        return "<span class='label label-warning'>申请中</span>";
+                    } elseif ($status == UserWalletWithdrawal::COMPLETE_STATUS) {
+                        return "<span class='label label-success'>已通过</span>";
+                    } elseif ($status == UserWalletWithdrawal::FAILD_STATUS) {
+                        return "<span class='label label-default'>已拒绝</span>";
+                    } 
+                });
 
                 $show->field('id', '提币订单号');
                 $show->field('user_id', '提币用户ID');
                 $show->field('created_at', '申请时间');
                 $show->field('amount', '提币数量');
                 $show->field('fee', '提币手续费');
-                $show->field('to', '到账地址');
-                $show->field('from', '钱包地址');
+                $show->to('到账地址')->unescape()->as(function ($to) {
+                    return "<a href='https://etherscan.io/address/$to' target='_blank'>$to</a>";
+                });
                 $show->field('device_info', '设备型号');
+
+                if($record->status === UserWalletWithdrawal::COMPLETE_STATUS) {
+                    $show->userWalletTransaction('Transaction Hash', function ($tx) {
+                        $tx->tx_hash('Transaction Hash')->unescape()->as(function ($tx_hash) {
+                            return "<a href='https://etherscan.io/tx/$tx_hash' target='_blank'>$tx_hash</a>";
+                        });
+                        $tx->from('发送地址')->unescape()->as(function ($from) {
+                            return "<a href='https://etherscan.io/address/$from' target='_blank'>$from</a>";
+                        });
+                        $tx->updated_at('转账时间');
+                        $tx->panel()
+                        ->title('转账详情')
+                        ->tools(function ($tools) {
+                            $tools->disableEdit();
+                            $tools->disableList();
+                            $tools->disableDelete();
+                        });
+                    });
+                }
        
                 $show->panel()
                 ->title('提币详情')
@@ -143,13 +180,24 @@ class UserWalletWithdrawalController extends AdminController
                 });
             }));
         
-        if($record->status == UserWalletWithdrawal::PENDING_STATUS) {
+        if($record->status === UserWalletWithdrawal::PENDING_STATUS) {
             $content->row("<div class='container'>
+                            <form action='/admin/wallet/user-wallet-withdrawals/$id' method='post'>
+                                <input name='_method' type='hidden' value='PUT'>
+                                <div class='form-group'>
+                                    <label>Transaction Hash</label>
+                                    <input type='text' class='form-control' name='tx_hash'>
+                                </div>
+                                <div class='form-group'>
+                                    <label>发送地址</label>
+                                    <input type='text' class='form-control' name='from_address'>
+                                </div>
                                 <div class='row'>
                                     <div class='col-xs-12 col-md-2 col-md-offset-4'><a class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></div>
-                                    <div class='col-xs-12 col-md-2'><a class='btn btn-primary' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>通过</a></div>
+                                    <div class='col-xs-12 col-md-2'><button class='btn btn-primary'>通过</button></div>
                                 </div>
-                            </div>"
+                            </form>             
+                        </div>"
             );
         }
         
@@ -191,16 +239,21 @@ class UserWalletWithdrawalController extends AdminController
             $tools->disableView();
         });
 
-        $form->text('id','提币订单号')->readonly();
-        
-    
-        $form->text('created_at','申请时间')->readonly();
-        $form->text('fee','提币手续费')->readonly();
-        
-        $form->text('amount','提币数量')->readonly();
-        $form->text('to', '到账地址')->readonly();
-        $form->text('from', '钱包地址')->readonly();
-        $form->text('device_info','设备信息')->readonly();
+        $form->display('id', '提币订单号');
+        $form->display('user_id', '提币用户ID');
+        $form->display('created_at', '申请时间');
+        $form->display('amount', '提币数量');
+        $form->display('fee', '提币手续费');
+        $form->display('to', '钱包地址')->with(function ($value) {
+            return "<a href='https://etherscan.io/address/$value' target='_blank'>$value</a>";
+        });
+        $form->display('device_info', '设备型号')->readonly();
+
+        $form->text('userWalletTransaction.tx_hash','Transaction Hash');
+
+        $form->text('userWalletTransaction.from','发送地址');
+
+
 
         $form->footer(function ($footer) {
 
@@ -230,24 +283,75 @@ class UserWalletWithdrawalController extends AdminController
             return redirect("/admin/wallet/user-wallet-withdrawals/$id");
         }
 
-        $record->status = UserWalletWithdrawal::FAILD_STATUS;
+        try {
 
-        $record->save();
+            DB::beginTransaction();
+            $record->status = UserWalletWithdrawal::FAILD_STATUS;
 
+            $record->approver_id = Admin::user()->id;
+
+            $record->save();
+    
+            $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
+            $tx->status = UserWalletTransaction::OUT_STATUS_FAIL;
+            
+            $tx->save();
+
+            DB::commit();
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+       
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
 
-    public function getApprove($id)
+    public function update($id)
     {
+        // dd(request()->all());
+        $validator = Validator::make(request()->all(), [
+            'tx_hash' => 'required|size:66',
+            'from_address' => 'required|size:42',
+        ]);
+
+        if ($validator->fails()) {
+            admin_toastr('错误提示: 你填写的tx hash或者address无效','error');
+
+            return redirect("/admin/wallet/user-wallet-withdrawals/$id")
+                ->withErrors($validator)
+                ->withInput();
+        }
+
         $record = UserWalletWithdrawal::findOrFail($id);
         if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
+            dd(request()->all());
             return redirect("/admin/wallet/user-wallet-withdrawals/$id");
         }
 
-        $record->status = UserWalletWithdrawal::COMPLETE_STATUS;
+        try {
 
-        $record->save();
+            DB::beginTransaction();
+            $record->status = UserWalletWithdrawal::COMPLETE_STATUS;
+
+            $record->approver_id = Admin::user()->id;
+            $record->from = request()->input('from_address');
+            $record->save();
+    
+            $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
+            $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
+            $tx->tx_hash = request()->input('tx_hash');
+            $tx->from = request()->input('from_address');
+            $tx->save();
+
+            DB::commit();
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
 
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
+
+        //todo 
+        //transaction hash      status 3  from addrss  对列
 }

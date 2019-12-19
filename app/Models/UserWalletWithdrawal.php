@@ -20,7 +20,7 @@ class UserWalletWithdrawal extends Model
 
     public function users()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function getBalanceOf($symbol)
@@ -29,4 +29,10 @@ class UserWalletWithdrawal extends Model
 
         return $balance ? $balance->total_balance -$balance->lock_balance : 0;
     }
+
+    public function userWalletTransaction()
+    {
+        return $this->hasOne(UserWalletTransaction::class, 'id', 'user_wallet_transaction_id');
+    }
+
 }
