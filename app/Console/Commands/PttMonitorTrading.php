@@ -100,7 +100,7 @@ class PttMonitorTrading extends Command
                     }
                 }
             }
-
+            Log::info($data->hash);
         }
         Log::info('finish');
     }
