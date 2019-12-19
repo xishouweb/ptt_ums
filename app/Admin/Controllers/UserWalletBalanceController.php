@@ -55,7 +55,9 @@ class UserWalletBalanceController extends AdminController
             return $this->users['phone'];
         });
         
-        $grid->total_balance('云端钱包余额(PTT)');
+        $grid->total_balance('云端钱包余额(PTT)')->display(function ($total_balance) {
+            return number_format($total_balance);
+        });
 
         $grid->column('注册渠道')->display(function () {
             return $this->users['channel'];
@@ -113,8 +115,12 @@ class UserWalletBalanceController extends AdminController
             $show->nickname('用户昵称');
             $show->address('钱包地址');
             $show->symbol('币种');
-            $show->total_balance('钱包余额');
-            $show->lock_balance('冻结额度');
+            $show->total_balance('钱包余额')->unescape()->as(function ($total_balance) {
+                return number_format($total_balance);
+            });
+            $show->lock_balance('冻结额度')->unescape()->as(function ($lock_balance) {
+                return number_format($lock_balance);
+            });
             $show->phone('注册手机号');
             $show->register_time('注册时间');
             $show->channel('注册渠道');
