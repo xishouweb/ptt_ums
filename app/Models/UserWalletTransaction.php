@@ -17,10 +17,15 @@ class UserWalletTransaction extends BaseModel implements FormatInterface
     const OUT_TYPE = 2;
     const AWARD_TYPE = 3;
 
+    const IN_STATUS_PADDING = 0;
+    const IN_STATUS_SUCCESS = 1;
+
     const OUT_STATUS_FAIL = 0;
     const OUT_STATUS_SUCCESS = 1;
     const OUT_STATUS_PADDING = 2;
     const OUT_STATUS_TRANSFER = 3;
+
+    const CONFIRM_COUNT = 15;
 
     const PTT = 'ptt';
 
