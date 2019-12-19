@@ -189,4 +189,16 @@ class DataCache extends Model
 
         Redis::set($key, $data, 'EX', $expire);
     }
+
+    public static function getPttLastConfirmTxHash()
+    {
+        $key = 'ptt_last_confirm_tx_hash';
+        return Redis::get($key);
+    }
+
+    public static function setPttLastConfirmTxHash($data)
+    {
+        $key = 'ptt_last_confirm_tx_hash';
+        Redis::set($key, $data);
+    }
 }
