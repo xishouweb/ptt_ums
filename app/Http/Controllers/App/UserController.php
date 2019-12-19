@@ -72,6 +72,7 @@ class UserController extends Controller
         $data['avatar'] = $user->avatar ?: 'http://btkverifiedfiles.oss-cn-hangzhou.aliyuncs.com/photos/2019_11_20_18_27_02_1_4893.png';
         $data['token'] = $request->header('Authorization');
         $data['has_trade_pwd'] = $user->trade_password ? true : false;
+        $data['country'] = $user->country ?: '86';
         return response()->json($data);
     }
 
