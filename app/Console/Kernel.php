@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\AnchorUploadData::class,
         Commands\AnalysisItem::class,
+        Commands\PttMonitorTrading::class
     ];
 
     /**
@@ -25,8 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('ptt:monitor_trading')->everyMinute();
     }
 
     /**
