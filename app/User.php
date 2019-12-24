@@ -10,11 +10,14 @@ use App\Models\TeamUser;
 use App\Models\UserAddress;
 use App\Models\UserLogin;
 use App\Models\UserToken;
+use App\Models\UserWallet;
 use App\Models\WechatOpenid;
 use App\Models\UserWalletBalance;
 use App\Services\QrCode;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -250,5 +253,40 @@ class User extends Authenticatable
     public function userWalletBalances()
     {
         return $this->hasMany(UserWalletBalance::class);
+    }
+
+    public function findOrCreateEthAccount()
+    {
+        $wallet = UserWallet::whereUserId($this->id)->first();
+
+        if(!$wallet) {
+            $url = config('app.ptt_ums_node_host') . "/eth/create";
+
+            $client = new Client();
+
+            //16位数字字母大小写
+            $password = Str::random();
+            $res = $client->request('POST', $url, [
+               'form_params' => [
+                   'password' => $password
+               ]
+            ]);
+            if($res->getStatusCode() == 200) {
+                $resData  = json_decode((string) $res->getBody());
+                $wallet = UserWallet::create([
+                    'user_id' => $this->id,
+                    'create_channel' => 'savings',
+                    'address' => $resData->address,
+                    'private_key' => encrypt($resData->privateKey),
+                    'key_store' => json_encode($resData->keyStore),
+                    'password' => encrypt($password)
+                ]);
+            } else {
+                throw new \Exception("用户erc20账号创建失败");
+                
+            }; 
+        }
+
+        return $wallet;
     }
 }

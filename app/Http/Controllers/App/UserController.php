@@ -216,6 +216,8 @@ class UserController extends Controller
                 $user = $this->store($phone, $country, $password);
             }
             $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
+
+            $user->findOrCreateEthAccount();
         } catch (\Exception $e) {
             Log::error('注册失败，$phone ' . $phone);
             Log::error($e->getMessage());
@@ -241,6 +243,9 @@ class UserController extends Controller
         if (!$user) {
             return $this->error('用户不存在');
         }
+
+        $user->findOrCreateEthAccount();
+
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         return $this->apiResponse($data);
     }
@@ -260,6 +265,8 @@ class UserController extends Controller
         }
         $user = Auth::user();
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
+        $user->findOrCreateEthAccount();
+        
         return $this->apiResponse($data);
     }
 
