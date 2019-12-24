@@ -18,9 +18,9 @@ class CreateUserWalletsTable extends Migration
             $table->integer('user_id');
             $table->string('create_channel', 30);
             $table->string('address');
-            $table->string('private_key');
+            $table->string('private_key', 500);
             $table->string('key_store', 1000);
-            $table->string('password');
+            $table->string('password', 500);
             $table->timestamps();
 
             $table->softDeletes();
