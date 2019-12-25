@@ -44,13 +44,16 @@ Route::prefix('app')->group(function () {
     });
     Route::prefix('v1')->group(function (Router $router) {
         $router->get('captcha', 'CaptchaController@send');
-        Route::namespace('App')->group(function () {
+        Route::namespace('App')->group(function (Router $router) {
             Route::prefix('user')->group(function (Router $router) {
                 $router->post('/sign_up', 'UserController@signUp');
                 $router->post('/login', 'UserController@signInPwd');
                 $router->post('/fast_login', 'UserController@signInCaptcha');
                 $router->post('/reset_login_pwd', 'UserController@resetSignInPwd');
                 $router->post('/reset_trade_pwd', 'UserController@resetTradePwd');
+            });
+            Route::prefix('savings')->group(function (Router $router) {
+                $router->get('/risk_statement', 'SavingController@riskStatement');
             });
             Route::group(['middleware' => 'auth:api'], function() {
                 Route::prefix('wallet')->group(function (Router $router) {
