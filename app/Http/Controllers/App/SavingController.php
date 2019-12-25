@@ -3,35 +3,28 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use App\Models\Notice;
+use App\Models\Captcha;
+use App\Models\DataCache;
+use App\Models\UserWalletBalance;
+use App\Models\UserWalletTransaction;
+use App\Models\UserWalletWithdrawal;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
-class NoticeController extends Controller
+class SavingController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $lang = $request->input('lang');
-        if ($lang == 'en') {
-            $notices = DB::table('notices')
-                ->where('status', Notice::ENABLED)
-                ->select(['id', 'title_en as title', 'url', 'created_at'])
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        } else {
-            $notices = DB::table('notices')
-                ->where('status', Notice::ENABLED)
-                ->select(['id', 'title', 'url', 'created_at'])
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        }
-
-        return $this->response($notices);
+        //
     }
 
     /**
@@ -58,12 +51,11 @@ class NoticeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+
     }
 
     /**
@@ -84,9 +76,9 @@ class NoticeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
+    public function update(Request $request)
+	{
+
     }
 
     /**
@@ -100,23 +92,47 @@ class NoticeController extends Controller
         //
     }
 
-    public function list(Request $request)
+    // 锁仓总收益（ptt个数）
+    public function yield()
     {
-        $lang = $request->input('lang');
-        if ($lang == 'en') {
-            $notices = DB::table('notices')
-                ->where('status', Notice::ENABLED)
-                ->select(['id', 'title_en as title', 'url', 'created_at'])
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        } else {
-            $notices = DB::table('notices')
-                ->where('status', Notice::ENABLED)
-                ->select(['id', 'title', 'url', 'created_at'])
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        }
-        return $this->apiResponse($notices);
+
     }
 
+    // 锁仓活动列表
+    public function list(Request $request)
+    {
+
+    }
+
+    // 锁仓活动详情
+    public function detail(Request $request)
+    {
+
+    }
+
+    // 锁仓收益历史
+    public function yieldHistory(Request $request)
+    {
+
+    }
+
+    // 参加或退出活动
+    public function participate(Request $request)
+    {
+
+    }
+
+    // 风险告知书
+    public function riskStatement(Request $request)
+    {
+        $lang = $request->input('lang', 'cn');
+        if ($lang == 'en') {
+            $data['title'] = config('riskstatement.en.title');
+            $data['content'] = config('riskstatement.en.content');
+        } else {
+            $data['title'] = config('riskstatement.cn.title');
+            $data['content'] = config('riskstatement.cn.content');
+        }
+        return $this->apiResponse($data);
+    }
 }
