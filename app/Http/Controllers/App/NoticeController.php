@@ -103,18 +103,19 @@ class NoticeController extends Controller
     public function list(Request $request)
     {
         $lang = $request->input('lang');
+        $page_size = $request->input('page_size', 10);
         if ($lang == 'en') {
             $notices = DB::table('notices')
                 ->where('status', Notice::ENABLED)
                 ->select(['id', 'title_en as title', 'url', 'created_at'])
                 ->orderBy('id', 'desc')
-                ->paginate(10);
+                ->paginate($page_size);
         } else {
             $notices = DB::table('notices')
                 ->where('status', Notice::ENABLED)
                 ->select(['id', 'title', 'url', 'created_at'])
                 ->orderBy('id', 'desc')
-                ->paginate(10);
+                ->paginate($page_size);
         }
         return $this->apiResponse($notices);
     }
