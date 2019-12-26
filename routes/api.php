@@ -56,10 +56,12 @@ Route::prefix('app')->group(function () {
             Route::prefix('savings')->group(function (Router $router) {
                 $router->get('/list', 'SavingController@index');
                 $router->get('/detail', 'SavingController@show');
-                $router->get('/yield', 'SavingController@yield');
-                $router->get('/yield_history', 'SavingController@yieldHistory');
-                $router->get('/participate', 'SavingController@participate');
                 $router->get('/risk_statement', 'SavingController@riskStatement');
+                Route::group(['middleware' => 'auth:api'], function(Router $router) {
+                    $router->get('/yield', 'SavingController@yield');
+                    $router->get('/yield_history', 'SavingController@yieldHistory');
+                    $router->get('/participate', 'SavingController@participate');
+                });
             });
             Route::group(['middleware' => 'auth:api'], function() {
                 Route::prefix('wallet')->group(function (Router $router) {

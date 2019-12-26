@@ -99,7 +99,8 @@ class SavingController extends Controller
     // 锁仓总收益（ptt个数）
     public function yield()
     {
-
+        $user = Auth::user();
+        $saving->awarded = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award');
     }
 
     // 锁仓收益历史
