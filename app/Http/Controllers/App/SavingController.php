@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\DataCache;
 use App\Models\Saving;
+use App\Models\SavingAward;
 use App\Models\SavingParticipateRecord;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
@@ -38,18 +39,61 @@ class SavingController extends Controller
             $saving->select('id', 'title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
         }
         $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
-        if ($user) {
-            foreach ($data['data'] as &$datum) {
+
+        foreach ($data['data'] as &$datum) {
+            $datum['already_participate'] = false;
+            if ($user) {
                 $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
             }
         }
+
         return $this->apiResponse($data);
     }
 
     // 锁仓活动详情
     public function show(Request $request)
     {
+        $user = Auth::user();
+        $id = $request->input('id');
+        $lang = $request->input('lang', 'cn');
+        $saving = Saving::where('id', $id);
+        if ($lang == 'en') {
+            $saving->select('id', 'title_en as title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule_en as detail_rule', 'entry_standard', 'status');
+        } else {
+            $saving->select('id', 'title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule', 'entry_standard', 'status');
+        }
+        $saving = $saving->first();
+        if (!$saving) {
+            return $this->error('活动不存在');
+        }
 
+        $saving->sign_agreement_at = date('Y-m-d H:i:s');
+        $saving->yield_effective_at = date('Y-m-d H:i:s', strtotime('+2 day'));
+        $saving->already_participate = false;
+        $saving->available_amount = 0;
+        $saving->awarded = 0;
+        $saving->awarded_time = 0;
+
+        if ($user) {
+            $saving_award = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id);
+            $saving->awarded = $saving_award->sum('award');
+            $saving->awarded_time = $saving_award->count(['id']);
+
+            $record = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->first();
+            if ($record) {
+                $saving->sign_agreement_at = $record->created_at;
+            }
+            if ($saving->awarded_time > 0) {
+                $saving->yield_effective_at = $saving_award->orderBy('id')->first()->created_at;
+            } else {
+                $saving->sign_agreement_at = date('Y-m-d H:i:s', $record->created_at + 86400 * 2);
+            }
+
+            $saving->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
+
+            $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first()
+            $saving->available_amount = $balance ? $balance->total_balance : 0;
+        }
     }
 
     // 锁仓总收益（ptt个数）
