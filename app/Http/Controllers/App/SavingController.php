@@ -5,6 +5,8 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\DataCache;
+use App\Models\Saving;
+use App\Models\SavingParticipateRecord;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
@@ -17,95 +19,44 @@ use Illuminate\Support\Facades\Log;
 
 class SavingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    // 锁仓活动列表
+    public function index(Request $request)
     {
-        //
+        $user = Auth::user();
+        $lang = $request->input('lang', 'cn');
+        $status = $request->input('status', 2);
+        $page_size = $request->input('page_size', 10);
+        $saving = Saving::where('type', Saving::TYPE_SAVING);
+        if ($status === 0) {
+            $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
+        } else if ($status === 1) {
+            $saving = $saving->where('status', Saving::SAVING_ACTIVATED_STATUS);
+        }
+        if ($lang == 'en') {
+            $saving->select('id', 'title_en as title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
+        } else {
+            $saving->select('id', 'title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
+        }
+
+        $data = $saving->orderBy('id', 'desc')->paginate($page_size);
+        Log::info($data);
+        if ($user) {
+            foreach ($data->data as $datum) {
+                $datum->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
+            }
+        }
+        Log::info($user);
+        return $this->apiResponse($data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // 锁仓活动详情
     public function show(Request $request)
     {
 
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-	{
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
     // 锁仓总收益（ptt个数）
     public function yield()
-    {
-
-    }
-
-    // 锁仓活动列表
-    public function list(Request $request)
-    {
-
-    }
-
-    // 锁仓活动详情
-    public function detail(Request $request)
     {
 
     }
