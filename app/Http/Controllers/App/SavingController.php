@@ -39,7 +39,7 @@ class SavingController extends Controller
         }
         $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
         if ($user) {
-            foreach ($data['data'] as $datum) {
+            foreach ($data['data'] as &$datum) {
                 $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
             }
         }
