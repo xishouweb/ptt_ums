@@ -23,7 +23,6 @@ class SavingController extends Controller
     // 锁仓活动列表
     public function index(Request $request)
     {
-        $user = Auth::user();
         $lang = $request->input('lang', 'cn');
         $status = $request->input('status', 2);
         $page_size = $request->input('page_size', 10);
@@ -40,10 +39,14 @@ class SavingController extends Controller
         }
         $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
 
-        foreach ($data['data'] as &$datum) {
-            $datum['already_participate'] = false;
-            if ($user) {
+        if (Auth::check()) {
+            $user = Auth::user();
+            foreach ($data['data'] as &$datum) {
                 $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
+            }
+        } else {
+            foreach ($data['data'] as &$datum) {
+                $datum['already_participate'] = false;
             }
         }
 
@@ -53,7 +56,6 @@ class SavingController extends Controller
     // 锁仓活动详情
     public function show(Request $request)
     {
-        $user = Auth::user();
         $id = $request->input('id');
         $lang = $request->input('lang', 'cn');
         $saving = Saving::where('id', $id);
@@ -74,7 +76,8 @@ class SavingController extends Controller
         $saving->awarded = 0;
         $saving->awarded_time = 0;
 
-        if ($user) {
+        if (Auth::check()) {
+            $user = Auth::user();
             $saving->awarded = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award');
             $saving->awarded_time = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->count(['id']);
 
