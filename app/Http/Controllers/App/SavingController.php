@@ -100,7 +100,15 @@ class SavingController extends Controller
     public function yield()
     {
         $user = Auth::user();
-        $saving->awarded = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award');
+        $saving_award = SavingAward::where('user_id', $user->id)
+            ->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime('-1 day')), date('Y-m-d 23:59:59', strtotime('-1 day'))])
+            ->first();
+        $data['yesterday_yield'] = 0;
+        if ($saving_award) {
+            $data['yesterday_yield'] = $saving_award->award;
+        }
+        $data['total_yield'] = SavingAward::where('user_id', $user->id)->sum('award');
+        return $this->apiResponse($data);
     }
 
     // 锁仓收益历史
