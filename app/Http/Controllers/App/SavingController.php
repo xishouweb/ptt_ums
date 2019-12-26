@@ -114,7 +114,14 @@ class SavingController extends Controller
     // 锁仓收益历史
     public function yieldHistory(Request $request)
     {
-
+        $user = Auth::user();
+        $id = $request->input('id');
+        $page_size = $request->input('page_size', 10);
+        $data = SavingAward::where('user_id', $user->id)
+            ->where('saving_id', $id)
+            ->orderBy('id', 'desc')
+            ->paginate($page_size);
+        return $this->apiResponse($data);
     }
 
     // 参加或退出活动
