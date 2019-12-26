@@ -37,16 +37,13 @@ class SavingController extends Controller
         } else {
             $saving->select('id', 'title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
         }
-
-        $data = $saving->orderBy('id', 'desc')->paginate($page_size);
-        $data = json_decode($data);
+        $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
         if ($user) {
-            foreach ($data->data as $datum) {
+            foreach ($data['data'] as $datum) {
                 $datum->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
             }
         }
-        Log::info($user);
-        return $this->apiResponse(json_encode($data));
+        return $this->apiResponse($data);
     }
 
     // 锁仓活动详情
