@@ -91,7 +91,7 @@ class SavingController extends Controller
 
             $saving->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
 
-            $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first()
+            $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first();
             $saving->available_amount = $balance ? $balance->total_balance : 0;
         }
         return $this->apiResponse($saving);
