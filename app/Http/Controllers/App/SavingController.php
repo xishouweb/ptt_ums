@@ -94,6 +94,7 @@ class SavingController extends Controller
             $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first()
             $saving->available_amount = $balance ? $balance->total_balance : 0;
         }
+        return $this->apiResponse($saving);
     }
 
     // 锁仓总收益（ptt个数）
