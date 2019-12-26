@@ -83,7 +83,7 @@ class SavingController extends Controller
                 $saving->sign_agreement_at = (string)$record->created_at;
             }
             if ($saving->awarded_time > 0) {
-                $saving->yield_effective_at = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->orderBy('id')->first()->created_at;
+                $saving->yield_effective_at = (string)SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->orderBy('id')->first()->created_at;
             } else {
                 $saving->yield_effective_at = date('Y-m-d H:i:s', strtotime($saving->sign_agreement_at) + 86400 * 2);
             }
