@@ -122,6 +122,7 @@ class SavingController extends Controller
         $page_size = $request->input('page_size', 10);
         $data = SavingAward::where('user_id', $user->id)
             ->where('saving_id', $id)
+            ->select('id', 'amount', 'award', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($page_size);
         return $this->apiResponse($data);
