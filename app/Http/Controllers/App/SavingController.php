@@ -85,7 +85,7 @@ class SavingController extends Controller
             if ($saving->awarded_time > 0) {
                 $saving->yield_effective_at = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->orderBy('id')->first()->created_at;
             } else {
-                $saving->sign_agreement_at = date('Y-m-d H:i:s', $record->created_at + 86400 * 2);
+                $saving->yield_effective_at = date('Y-m-d H:i:s', $saving->sign_agreement_at + 86400 * 2);
             }
 
             $saving->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
