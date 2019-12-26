@@ -75,16 +75,15 @@ class SavingController extends Controller
         $saving->awarded_time = 0;
 
         if ($user) {
-            $saving_award = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id);
-            $saving->awarded = $saving_award->sum('award');
-            $saving->awarded_time = $saving_award->count(['id']);
+            $saving->awarded = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award');
+            $saving->awarded_time = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->count(['id']);
 
             $record = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->first();
             if ($record) {
                 $saving->sign_agreement_at = $record->created_at;
             }
             if ($saving->awarded_time > 0) {
-                $saving->yield_effective_at = $saving_award->orderBy('id')->first()->created_at;
+                $saving->yield_effective_at = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->orderBy('id')->first()->created_at;
             } else {
                 $saving->sign_agreement_at = date('Y-m-d H:i:s', $record->created_at + 86400 * 2);
             }
