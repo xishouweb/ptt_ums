@@ -54,6 +54,11 @@ Route::prefix('app')->group(function () {
                 $router->post('/reset_trade_pwd', 'UserController@resetTradePwd');
             });
             Route::prefix('savings')->group(function (Router $router) {
+                $router->get('/list', 'SavingController@index');
+                $router->get('/detail', 'SavingController@show');
+                $router->get('/yield', 'SavingController@yield');
+                $router->get('/yield_history', 'SavingController@yieldHistory');
+                $router->get('/participate', 'SavingController@participate');
                 $router->get('/risk_statement', 'SavingController@riskStatement');
             });
             Route::group(['middleware' => 'auth:api'], function() {
