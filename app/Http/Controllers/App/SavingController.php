@@ -103,6 +103,9 @@ class SavingController extends Controller
     public function yield()
     {
         $user = Auth::user();
+        if (!$user) {
+            return $this->error();
+        }
         $saving_award = SavingAward::where('user_id', $user->id)
             ->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime('-1 day')), date('Y-m-d 23:59:59', strtotime('-1 day'))])
             ->first();
@@ -119,6 +122,9 @@ class SavingController extends Controller
     {
         $user = Auth::user();
         $id = $request->input('id');
+        if (!$id || !$user) {
+            return $this->error();
+        }
         $page_size = $request->input('page_size', 10);
         $data = SavingAward::where('user_id', $user->id)
             ->where('saving_id', $id)
@@ -131,7 +137,36 @@ class SavingController extends Controller
     // 参加或退出活动
     public function participate(Request $request)
     {
-
+        $user = Auth::user();
+        $id = $request->input('id');
+        if (!$id || !$user) {
+            return $this->error();
+        }
+        try {
+            DB::beginTransaction();
+            $record = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $id)->first();
+            if ($record) {
+                if ($record->status == SavingParticipateRecord::STATUS_NOT_JOIN) {
+                    $record->status = 1;
+                } else {
+                    $record->status = 0;
+                }
+                $record->save();
+            } else {
+                $data = [
+                    'user_id' => $user->id,
+                    'saving_id' => $id,
+                    'status' => SavingParticipateRecord::STATUS_JOIN
+                ];
+                SavingParticipateRecord::create($data);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('参加或退出活动error');
+            Log::error($e->getMessage());
+        }
+        return $this->success();
     }
 
     // 风险告知书
