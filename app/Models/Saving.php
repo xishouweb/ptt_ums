@@ -15,4 +15,10 @@ class Saving extends Model
 
     const SAVING_ACTIVATED_STATUS = 1;
     const SAVING_UNACTIVATED_STATUS = 0;
+
+
+    public function users()
+    {
+        return $this->belongsTo('App\Models\AdminUser', 'user_id', 'id');
+    }
 }
