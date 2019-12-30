@@ -65,6 +65,7 @@ class PttMonitorTrading extends Command
                 if ($data->contractAddress == ToolController::PTT_ADDRESS) {
                     $user_wallet = UserWalletBalance::where('address', $data->to)->first();
                     // 判断是否为我方钱包收款地址
+                    Log::info($data->to);
                     if ($user_wallet) {
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
                         // 判断记录是否存在
