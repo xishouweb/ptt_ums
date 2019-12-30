@@ -27,7 +27,7 @@ class SavingParticipateRecordController extends AdminController
     {
         return $content->header('活动管理')
                 ->breadcrumb(
-                    ['text' => '持仓列表']
+                    ['text' => '持仓用户列表']
                 )
                 ->body($this->grid());
     }

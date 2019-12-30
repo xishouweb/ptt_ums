@@ -94,12 +94,9 @@ class SavingController extends AdminController
             ]);
         });
 
-        $grid->tools(function ($tools) {
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
         $grid->disableActions();
+        $grid->disableExport();
+        $grid->disableColumnSelector();
         return $grid;
     }
 

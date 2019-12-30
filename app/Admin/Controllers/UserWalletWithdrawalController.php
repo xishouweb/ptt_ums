@@ -106,12 +106,8 @@ class UserWalletWithdrawalController extends AdminController
             ]);;
         });
 
-        $grid->tools(function ($tools) {
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
-
+        $grid->disableExport();
+        $grid->disableColumnSelector();
         $grid->disableCreateButton();
         $grid->disableActions();
 

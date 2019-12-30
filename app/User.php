@@ -286,6 +286,9 @@ class User extends Authenticatable
                     'key_store' => json_encode($resData->keyStore),
                     'password' => encrypt($password)
                 ]);
+
+                $this->cloud_wallet_address = $resData->address;
+                $this->save();
             } else {
                 throw new \Exception("用户erc20账号创建失败");
                 
