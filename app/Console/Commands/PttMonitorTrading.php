@@ -65,26 +65,28 @@ class PttMonitorTrading extends Command
                 if ($data->contractAddress == ToolController::PTT_ADDRESS) {
                     $user_wallet = UserWalletBalance::where('address', $data->to)->first();
                     // 判断是否为我方钱包收款地址
-                    Log::info($data->to);
                     if ($user_wallet) {
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
                         // 判断记录是否存在
                         if ($transaction) {
+                            Log::info($data->confirmations);
+                            Log::info($transaction);
                             // 判断区块确认是否大于15
                             if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
                                 // 判断记录的状态
                                 if (UserWalletTransaction::IN_TYPE && UserWalletTransaction::IN_STATUS_PADDING) {
-                                    $data->status = UserWalletTransaction::IN_STATUS_SUCCESS;
-                                    $data->block_confirm = $data->confirmations;
-                                    $data->completed_at = date('Y-m-d H:i:s');
-                                    $data->save();
-                                    $user_wallet->total_balance += $data->value / UserWalletTransaction::DIGIT;
+                                    $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
+                                    $transaction->block_confirm = $data->confirmations;
+                                    $transaction->completed_at = date('Y-m-d H:i:s');
+                                    $transaction->save();
+                                    $user_wallet->total_balance += $transaction->amount;
+                                    $user_wallet->save();
                                 } else {
                                     DataCache::setPttLastConfirmTxHash($data->hash);
                                 }
                             } else {
-                                $data->block_confirm = $data->confirmations;
-                                $data->save();
+                                $transaction->block_confirm = $data->confirmations;
+                                $transaction->save();
                             }
                             Log::info($transaction);
                         } else {
@@ -94,7 +96,7 @@ class PttMonitorTrading extends Command
                                 'symbol' => UserWalletTransaction::PTT,
                                 'type' => UserWalletTransaction::IN_TYPE,
                                 'status' => UserWalletTransaction::IN_STATUS_PADDING,
-                                'amount' => $data->value / UserWalletTransaction::DIGIT,
+                                'amount' => round($data->value / UserWalletTransaction::DIGIT,8),
                                 'to' => $data->to,
                                 'from' => $data->from,
                                 'fee' => $data->gasUsed,
