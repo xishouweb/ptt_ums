@@ -255,6 +255,11 @@ class User extends Authenticatable
         return $this->hasMany(UserWalletBalance::class);
     }
 
+    public function savingParticipateRecords()
+    {
+        return $this->hasMany(SavingParticipateRecord::class);
+    }
+    
     public function findOrCreateEthAccount()
     {
         $wallet = UserWallet::whereUserId($this->id)->first();

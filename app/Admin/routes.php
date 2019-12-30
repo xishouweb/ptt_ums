@@ -31,6 +31,7 @@ Route::group([
     $router->resource('/wallet/user-wallet-transactions', UserWalletTransactionController::class);
     $router->resource('/wallet/user-wallet-withdrawals', UserWalletWithdrawalController::class);
     $router->resource('/wallet/savings', SavingController::class);
+    $router->resource('/wallet/saving-participate-records', SavingParticipateRecordController::class);
     $router->get('/wallet/user-wallet-withdrawals/{id}/approve', 'UserWalletWithdrawalController@getApprove');
     $router->get('/wallet/user-wallet-withdrawals/{id}/decline', 'UserWalletWithdrawalController@getDecline');
     $router->get('/wallet/savings/{id}/approve', 'SavingController@getApprove');
