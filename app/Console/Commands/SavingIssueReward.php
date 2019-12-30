@@ -64,37 +64,50 @@ class SavingIssueReward extends Command
                     ->where('saving_id', $saving->id)
                     ->count(['id']);
                 Log::info('user_id = ' . $user_id . ' days = ' . $saving_days);
-                if ($saving_days >= 2) {
+                if ($saving_days >= Saving::SAVING_ISSUE_REWARD_DAYS) {
                     try {
                         $saving_status = SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00', strtotime('-1 day')))
                             ->where('created_at', '<=', date('Y-m-d 23:59:59', strtotime('-1 day')))
                             ->first();
                         DB::beginTransaction();
-                        // 增加余额
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
                         $award = round($saving_status->total_balance * $saving->rate / 365, 8);
-                        $user_wallet->total_balance += $award;
-                        $user_wallet->save();
+                        $is_exist_tran = UserWalletTransaction::where('created_at', '>=', date('Y-m-d 00:00:00'))
+                            ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                            ->where('user_id', $user_id)
+                            ->where('type', UserWalletTransaction::AWARD_TYPE)
+                            ->count(['id']);
+                        $is_exist_award = SavingAward::where('created_at', '>=', date('Y-m-d 00:00:00'))
+                            ->where('created_at', '<=', date('Y-m-d 23:59:59'))
+                            ->where('user_id', $user_id)
+                            ->where('saving_id', $saving->id)
+                            ->count(['id']);
+                        if ($is_exist_tran || $is_exist_award) {
+                            throw new \Exception('发放持仓奖励失败，记录已存在');
+                        }
                         // 钱包奖励记录
                         $tran_data = [
-                            'user_id' => $user_id,
-                            'address' => $user_wallet->address,
-                            'symbol'  => UserWalletTransaction::PTT,
-                            'type'    => UserWalletTransaction::AWARD_TYPE,
-                            'amount'  => $award,
-                            'to'      => $user_wallet->address,
-                            'rate'    => $saving->rate * 100 . '%'
+                            'user_id'   => $user_id,
+                            'address'   => $user_wallet->address,
+                            'symbol'    => UserWalletTransaction::PTT,
+                            'type'      => UserWalletTransaction::AWARD_TYPE,
+                            'amount'    => $award,
+                            'to'        => $user_wallet->address,
+                            'rate'      => $saving->rate * 100 . '%'
                         ];
                         UserWalletTransaction::create($tran_data);
                         // 持仓奖励记录
                         $saving_award_data = [
-                            'user_id' => $user_id,
+                            'user_id'   => $user_id,
                             'saving_id' => $saving->id,
-                            'amount' => $user_wallet->total_balance,
-                            'award' => $award
+                            'amount'    => $user_wallet->total_balance,
+                            'award'     => $award
                         ];
                         SavingAward::create($saving_award_data);
+                        // 增加余额
+                        $user_wallet->total_balance += $award;
+                        $user_wallet->save();
                         DB::commit();
                     } catch (\Exception $e) {
                         Log::error('发放持仓奖励失败，user_id = ' . $user_id);
