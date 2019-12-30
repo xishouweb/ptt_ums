@@ -18,6 +18,7 @@ class CreateSavingStatusesTable extends Migration
             $table->integer('user_id');
             $table->integer('saving_id');
             $table->integer('status');
+            $table->double('total_balance');
             $table->timestamps();
             $table->softDeletes();
             $table->index('user_id');

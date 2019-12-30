@@ -64,7 +64,7 @@ class PttMonitorTrading extends Command
                 }
                 // 判断是否为ptt转帐
                 if ($data->contractAddress == ToolController::PTT_ADDRESS) {
-                    $user_wallet = UserWalletBalance::where('address', $data->to)->first();
+                    $user_wallet = UserWalletBalance::where('address', $data->to)->where('symbol', 'ptt')->first();
                     // 判断是否为我方钱包收款地址
                     if ($user_wallet) {
                         DB::beginTransaction();
