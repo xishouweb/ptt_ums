@@ -62,12 +62,22 @@ class CheckUserSavingStatus extends Command
                     Log::info('1');
                     SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00'))
                         ->where('created_at', '<=', date('Y-m-d 23:59:59'))
-                        ->updateOrCreate(['user_id' => $user_wallet->user_id], ['status' => SavingStatus::STATUS_ENOUGH]);
+                        ->updateOrCreate([
+                            'user_id' => $user_wallet->user_id
+                        ], [
+                            'saving_id' => $saving->id,
+                            'status' => SavingStatus::STATUS_ENOUGH
+                        ]);
                 } else {
                     Log::info('0');
                     SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00'))
                         ->where('created_at', '<=', date('Y-m-d 23:59:59'))
-                        ->updateOrCreate(['user_id' => $user_wallet->user_id], ['status' => SavingStatus::STATUS_NOT_ENOUGH]);
+                        ->updateOrCreate([
+                            'user_id' => $user_wallet->user_id
+                        ], [
+                            'saving_id' => $saving->id,
+                            'status' => SavingStatus::STATUS_NOT_ENOUGH
+                        ]);
                 }
             }
         }
