@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\App\ToolController;
-use App\Models\DataCache;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use GuzzleHttp\Client;
