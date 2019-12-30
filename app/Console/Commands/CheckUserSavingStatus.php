@@ -54,7 +54,7 @@ class CheckUserSavingStatus extends Command
         foreach ($savings as $saving) {
             $user_ids = SavingParticipateRecord::where('saving_id', $saving->id)
                 ->where('status', SavingParticipateRecord::STATUS_JOIN)
-                ->pluck()
+                ->pluck('user_id')
                 ->toArray();
             foreach ($user_ids as $user_id) {
                 $user_wallet = UserWalletBalance::where('user_id', $user_id)->first();
