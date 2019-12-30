@@ -78,6 +78,7 @@ class PttMonitorTrading extends Command
                                     $data->block_confirm = $data->confirmations;
                                     $data->completed_at = date('Y-m-d H:i:s');
                                     $data->save();
+                                    $user_wallet->total_balance += $data->value / UserWalletTransaction::DIGIT;
                                 } else {
                                     DataCache::setPttLastConfirmTxHash($data->hash);
                                 }
@@ -93,7 +94,7 @@ class PttMonitorTrading extends Command
                                 'symbol' => UserWalletTransaction::PTT,
                                 'type' => UserWalletTransaction::IN_TYPE,
                                 'status' => UserWalletTransaction::IN_STATUS_PADDING,
-                                'amount' => $data->value,
+                                'amount' => $data->value / UserWalletTransaction::DIGIT,
                                 'to' => $data->to,
                                 'from' => $data->from,
                                 'fee' => $data->gasUsed,
