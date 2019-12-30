@@ -16,6 +16,16 @@ class Saving extends Model
     const SAVING_ACTIVATED_STATUS = 1;
     const SAVING_UNACTIVATED_STATUS = 0;
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+
+            $model->icon = config('alioss.ossURL') . '/' . $model->icon;
+
+        });
+    }
 
     public function users()
     {

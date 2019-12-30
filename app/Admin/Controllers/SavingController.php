@@ -12,6 +12,7 @@ use Encore\Admin\Layout\Content;
 
 class SavingController extends AdminController
 {
+    
     /**
      * Title for current resource.
      *
@@ -45,7 +46,7 @@ class SavingController extends AdminController
 
         $grid->model()->orderBy('status')->orderBy('id', 'desc');
 
-        $grid->column('icon', '图片')->gravatar(45);
+        $grid->column('icon', '图片')->image('', 60,60);
         $grid->id('活动编号');
         $grid->column('status', '状态')->display(function ($status) {
             if ($status === 0) {
@@ -144,7 +145,7 @@ class SavingController extends AdminController
                         <div class='container panel-body'>
                             <div class='row'>
                                 <div class='col-xs-2'>
-                                    <img src='$saving->icon' class='img-rounded img-thumbnail'>
+                                    <img src='$saving->icon' class='img-rounded img-thumbnail' style='width: 50%'>
                                 </div>
                                 <div class='col-xs-10'>
                                     <div class='row'>
