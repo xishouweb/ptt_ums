@@ -54,6 +54,7 @@ class SavingIssueReward extends Command
         foreach ($savings as $saving) {
             $user_ids = SavingParticipateRecord::where('saving_id', $saving->id)
                 ->where('status', SavingParticipateRecord::STATUS_JOIN)
+                ->orderBy('user_id', 'desc')
                 ->pluck('user_id')
                 ->toArray();
             foreach ($user_ids as $user_id) {
@@ -109,6 +110,7 @@ class SavingIssueReward extends Command
                         $user_wallet->total_balance = round($user_wallet->total_balance + $award, 8);
                         $user_wallet->save();
                         DB::commit();
+                        Log::info('持仓奖励已发放，user_id = ' . $user_id);
                     } catch (\Exception $e) {
                         Log::error('发放持仓奖励失败，user_id = ' . $user_id);
                         Log::error($e->getMessage());
