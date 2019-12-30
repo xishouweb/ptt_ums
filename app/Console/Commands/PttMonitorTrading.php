@@ -76,6 +76,7 @@ class PttMonitorTrading extends Command
                                 if (UserWalletTransaction::IN_TYPE && UserWalletTransaction::IN_STATUS_PADDING) {
                                     $data->status = UserWalletTransaction::IN_STATUS_SUCCESS;
                                     $data->block_confirm = $data->confirmations;
+                                    $data->completed_at = date('Y-m-d H:i:s');
                                     $data->save();
                                 } else {
                                     DataCache::setPttLastConfirmTxHash($data->hash);
