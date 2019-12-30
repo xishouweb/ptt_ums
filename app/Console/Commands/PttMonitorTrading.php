@@ -106,7 +106,7 @@ class PttMonitorTrading extends Command
             } catch (\Exception $e) {
                 Log::error('监听ptt充币失败foreach');
                 Log::error($e->getMessage());
-                Log::info($data);
+                Log::error($data);
             }
         }
     }
