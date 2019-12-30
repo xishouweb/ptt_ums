@@ -106,10 +106,7 @@ class WalletController extends Controller
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
-        $data = $transactions->orderBy('id', 'desc')->paginate($page_size)->toArray();
-        foreach ($data['data'] as &$datum) {
-            $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
-        }
+        $data = $transactions->orderBy('id', 'desc')->paginate($page_size);
         return $this->apiResponse($data);
     }
 
