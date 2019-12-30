@@ -71,7 +71,7 @@ class PttMonitorTradingTxHash extends Command
                             $transaction->block_number = $data->blockNumber;
                             $transaction->completed_at = date('Y-m-d H:i:s');
                             $transaction->save();
-                            $user_wallet = UserWalletBalance::where('address', $transaction->address)->first();
+                            $user_wallet = UserWalletBalance::where('user_id', $transaction->user_id)->first();
                             $amount = round($transaction->amount, 8);
                             $user_wallet->locked_balance -= $amount;
                             $user_wallet->total_balance -= $amount;
