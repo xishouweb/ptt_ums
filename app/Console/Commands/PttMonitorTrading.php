@@ -49,6 +49,7 @@ class PttMonitorTrading extends Command
             $response = $client->get('https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' . ToolController::PTT_ADDRESS . '&page=1&offset=100&sort=desc&apikey=' . ToolController::ETHERSCAN_API_KEY_TOKEN);
             $body = \GuzzleHttp\json_decode($response->getBody());
             $last_confirm_tx_hash = DataCache::getPttLastConfirmTxHash();
+            Log::info('$last_confirm_tx_hash : ' . $last_confirm_tx_hash);
             $result = $body->result;
         } catch (\Exception $e) {
             Log::error('监听ptt充币失败');
