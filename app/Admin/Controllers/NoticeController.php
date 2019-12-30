@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Jobs\PttMonitorTradingTxHash;
 use App\Models\Notice;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -23,6 +24,7 @@ class NoticeController extends Controller
      */
     public function index()
     {
+        $this->dispatch((new PttMonitorTradingTxHash('0x8137f73bc0b88e7451a7d97d855e8b75f42988ba1b5360f6cbfad36131fb22c8'))->onQueue('ptt_monitor_trading_tx_hash'));
         return Admin::content(function (Content $content) {
             $content->header('资讯列表');
             $content->body($this->grid());

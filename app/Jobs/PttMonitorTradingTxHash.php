@@ -38,15 +38,16 @@ class PttMonitorTradingTxHash implements ShouldQueue
     public function handle()
     {
         $completed = false;
+        $i = 1;
         while (!$completed) {
-            Log::info('监听ptt交易');
+            Log::info('监听ptt交易，第' . $i . '次，tx_hash = ' . $this->tx_hash);
             try {
                 $client = new Client();
                 $response = $client->get('https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' . ToolController::PTT_ADDRESS . '&page=1&offset=100&sort=desc&apikey=' . ToolController::ETHERSCAN_API_KEY_TOKEN);
                 $body = \GuzzleHttp\json_decode($response->getBody());
                 $result = $body->result;
             } catch (\Exception $e) {
-                Log::error('监听ptt充币失败');
+                Log::error('监听ptt交易失败');
                 Log::error($e->getMessage());
             }
 
@@ -75,11 +76,14 @@ class PttMonitorTradingTxHash implements ShouldQueue
                         }
                     }
                 } catch (\Exception $e) {
-                    Log::error('监听ptt充币失败foreach');
+                    Log::error('监听ptt交易失败foreach');
                     Log::error($e->getMessage());
                     Log::error($data);
+                    DB::rollBack();
                 }
             }
+            sleep(60);
+            $i++;
         }
 
     }
