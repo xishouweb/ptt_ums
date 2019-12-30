@@ -5,6 +5,8 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\DataCache;
+use App\Models\Saving;
+use App\Models\SavingParticipateRecord;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
@@ -43,16 +45,16 @@ class WalletController extends Controller
             foreach ($balances as $balance) {
                 foreach ($data['list'] as &$datum) {
                     if ($balance->symbol == $datum['symbol']) {
-                        $datum['amount'] = $balance->total_balance;
+                        $datum['amount'] = round($balance->total_balance, 8);
                     }
                 }
             }
             foreach ($data['list'] as $datum) {
                 if ($datum['amount']) {
                     $price = ToolController::getCurrencyPrice($datum['symbol'], $currency);
-                    $datum['price'] = $price;
+                    $datum['price'] = round($price, 8);
                     $datum['balance'] = $datum['amount'] * $price;
-                    $data['asset_balance'] += $datum['balance'];
+                    $data['asset_balance'] += round($datum['balance'], 2);
                 }
             }
         } catch (\Exception $e) {
@@ -80,8 +82,8 @@ class WalletController extends Controller
         ];
         if ($balance) {
             $price = ToolController::getCurrencyPrice($symbol, $currency);
-            $data['amount'] += $balance->total_balance;
-            $data['asset_balance'] += $balance->total_balance * $price;
+            $data['amount'] += round($balance->total_balance, 8);
+            $data['asset_balance'] += round($balance->total_balance * $price, 2);
             if ($symbol == 'ptt') {
                 $data['icon'] = 'http://images.proton.global/0x4689a4e169eb39cc9078c0940e21ff1aa8a39b9c.png';
             }
@@ -100,11 +102,14 @@ class WalletController extends Controller
             return $this->error();
         }
         $transactions = UserWalletTransaction::where('user_id', $user->id)
-            ->select('id', 'user_id', 'symbol', 'type', 'amount', 'status', 'created_at', 'completed_at', 'block_confirm', 'rate');
+            ->select('id', 'user_id', 'symbol', 'type', DB::raw('ROUND(amount, 8) as amount'), 'status', 'created_at', 'completed_at', 'block_confirm', 'rate');
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
-        $data = $transactions->orderBy('id', 'desc')->paginate($page_size);
+        $data = $transactions->orderBy('id', 'desc')->paginate($page_size)->toArray();
+        foreach ($data['data'] as &$datum) {
+            $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
+        }
         return $this->apiResponse($data);
     }
 
@@ -118,7 +123,7 @@ class WalletController extends Controller
         }
         $transaction = UserWalletTransaction::where('id', $id)
             ->where('user_id', $user->id)
-            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', 'amount', 'to', 'from', 'fee', 'tx_hash', 'block_number')
+            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', DB::raw('ROUND(amount, 8) as amount'), 'to', 'from', 'fee', 'tx_hash', 'block_number')
             ->first();
         if (!$transaction) {
             return $this->error();
@@ -140,7 +145,17 @@ class WalletController extends Controller
             'transfer_limit' => 1000000,
             'daily_transfer_limit' => 10000000,
             'fee' => 100,
+            'already_participate' => false,
+            'saving_lower_limit' => 0,
         ];
+        $saving = Saving::where('type', Saving::TYPE_SAVING)->where('status', Saving::SAVING_ACTIVATED_STATUS)->first();
+        if ($saving) {
+            $data['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)
+                ->where('saving_id', $saving->id)
+                ->where('status', SavingParticipateRecord::STATUS_JOIN)
+                ->count(['id']) ? true : false;
+            $data['saving_lower_limit'] = $saving->entry_standard;
+        }
         return $this->apiResponse($data);
     }
 
