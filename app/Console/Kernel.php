@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\PttMonitorTrading::class,
         Commands\PttMonitorTradingTxHash::class,
         Commands\CheckUserSavingStatus::class,
+        Commands\SavingIssueReward::class,
     ];
 
     /**
