@@ -26,7 +26,7 @@ class AddTxHashIndexToUserWalletTransactions extends Migration
     public function down()
     {
         Schema::table('user_wallet_transactions', function (Blueprint $table) {
-            $table->dropIndex('tx_hash');
+            $table->dropIndex('user_wallet_transactions_tx_hash_index');
         });
     }
 }
