@@ -96,7 +96,7 @@ class PttMonitorTrading extends Command
                                 'symbol' => UserWalletTransaction::PTT,
                                 'type' => UserWalletTransaction::IN_TYPE,
                                 'status' => UserWalletTransaction::IN_STATUS_PADDING,
-                                'amount' => round($data->value / UserWalletTransaction::DIGIT,8),
+                                'amount' => round($data->value / UserWalletTransaction::DIGIT, 6),
                                 'to' => $data->to,
                                 'from' => $data->from,
                                 'fee' => $data->gasUsed,

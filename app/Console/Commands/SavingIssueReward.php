@@ -76,7 +76,7 @@ class SavingIssueReward extends Command
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
                         $days = date('L') == 1 ? 366 : 365;
-                        $award = round($saving_status->total_balance * $saving->rate / $days, 8);
+                        $award = round($saving_status->total_balance * $saving->rate / $days, 6);
                         $is_exist_tran = UserWalletTransaction::where('created_at', '>=', date('Y-m-d 00:00:00'))
                             ->where('created_at', '<=', date('Y-m-d 23:59:59'))
                             ->where('user_id', $user_id)
@@ -105,12 +105,12 @@ class SavingIssueReward extends Command
                         $saving_award_data = [
                             'user_id'   => $user_id,
                             'saving_id' => $saving->id,
-                            'amount'    => round($user_wallet->total_balance + $award, 8),
+                            'amount'    => round($user_wallet->total_balance + $award, 6),
                             'award'     => $award
                         ];
                         SavingAward::create($saving_award_data);
                         // 增加余额
-                        $user_wallet->total_balance = round($user_wallet->total_balance + $award, 8);
+                        $user_wallet->total_balance = round($user_wallet->total_balance + $award, 6);
                         $user_wallet->save();
                         DB::commit();
                         Log::info('持仓奖励已发放，user_id = ' . $user_id);
