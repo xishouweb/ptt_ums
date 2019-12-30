@@ -94,7 +94,7 @@ class SavingController extends Controller
             $saving->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
 
             $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first();
-            $saving->available_amount = $balance ? $balance->total_balance : 0;
+            $saving->available_amount = $balance ? round($balance->total_balance, 4) : 0;
         }
         return $this->apiResponse($saving);
     }
@@ -107,13 +107,13 @@ class SavingController extends Controller
             return $this->error();
         }
         $saving_award = SavingAward::where('user_id', $user->id)
-            ->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime('-1 day')), date('Y-m-d 23:59:59', strtotime('-1 day'))])
+            ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
             ->first();
         $data['yesterday_yield'] = 0;
         if ($saving_award) {
-            $data['yesterday_yield'] = $saving_award->award;
+            $data['yesterday_yield'] = round($saving_award->award, 6);
         }
-        $data['total_yield'] = SavingAward::where('user_id', $user->id)->sum('award');
+        $data['total_yield'] = round(SavingAward::where('user_id', $user->id)->sum('award'), 6);
         return $this->apiResponse($data);
     }
 
@@ -128,7 +128,7 @@ class SavingController extends Controller
         $page_size = $request->input('page_size', 10);
         $data = SavingAward::where('user_id', $user->id)
             ->where('saving_id', $id)
-            ->select('id', 'amount', 'award', 'created_at')
+            ->select('id', DB::raw('ROUND(amount, 6) as amount'), 'award', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($page_size);
         return $this->apiResponse($data);
