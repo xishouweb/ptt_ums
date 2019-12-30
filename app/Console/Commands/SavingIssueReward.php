@@ -101,12 +101,12 @@ class SavingIssueReward extends Command
                         $saving_award_data = [
                             'user_id'   => $user_id,
                             'saving_id' => $saving->id,
-                            'amount'    => $user_wallet->total_balance,
+                            'amount'    => round($user_wallet->total_balance + $award, 8),
                             'award'     => $award
                         ];
                         SavingAward::create($saving_award_data);
                         // 增加余额
-                        $user_wallet->total_balance += $award;
+                        $user_wallet->total_balance = round($user_wallet->total_balance + $award, 8);
                         $user_wallet->save();
                         DB::commit();
                     } catch (\Exception $e) {
