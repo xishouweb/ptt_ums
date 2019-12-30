@@ -26,7 +26,7 @@ class SavingAwardController extends AdminController
      */
     public function index(Content $content)
     {
-        return $content->header('活动管理')
+        return $content->header('持仓管理')
                 ->breadcrumb(
                     ['text' => '持仓用户列表', 'url' => '/wallet/saving-participate-records'],
                     ['text' => '持仓记录']
