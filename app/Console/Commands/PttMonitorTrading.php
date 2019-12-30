@@ -69,12 +69,10 @@ class PttMonitorTrading extends Command
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
                         // 判断记录是否存在
                         if ($transaction) {
-                            Log::info($data->confirmations);
-                            Log::info($transaction);
                             // 判断区块确认是否大于15
                             if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
                                 // 判断记录的状态
-                                if (UserWalletTransaction::IN_TYPE && UserWalletTransaction::IN_STATUS_PADDING) {
+                                if ($transaction->type == UserWalletTransaction::IN_TYPE && $transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
                                     $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
                                     $transaction->block_confirm = $data->confirmations;
                                     $transaction->completed_at = date('Y-m-d H:i:s');
