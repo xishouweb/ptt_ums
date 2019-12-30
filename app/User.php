@@ -255,6 +255,11 @@ class User extends Authenticatable
         return $this->hasMany(UserWalletBalance::class);
     }
 
+    public function savingParticipateRecords()
+    {
+        return $this->hasMany(SavingParticipateRecord::class);
+    }
+    
     public function findOrCreateEthAccount()
     {
         $wallet = UserWallet::whereUserId($this->id)->first();
@@ -281,6 +286,9 @@ class User extends Authenticatable
                     'key_store' => json_encode($resData->keyStore),
                     'password' => encrypt($password)
                 ]);
+
+                $this->cloud_wallet_address = $resData->address;
+                $this->save();
             } else {
                 throw new \Exception("用户erc20账号创建失败");
                 

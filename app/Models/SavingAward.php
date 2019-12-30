@@ -10,4 +10,9 @@ class SavingAward extends Model
     use SoftDeletes;
 
     protected $guarded = ['id'];
+
+    public function savings()
+    {
+        return $this->belongsTo(Saving::class, 'saving_id', 'id');
+    }
 }
