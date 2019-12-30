@@ -82,11 +82,8 @@ class UserWalletBalanceController extends AdminController
             $filter->equal('phone', '手机号');
         });
 
-        $grid->tools(function ($tools) {
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
+        $grid->disableExport();
+        $grid->disableColumnSelector();
         $grid->disableCreateButton();
         $grid->disableActions();
 

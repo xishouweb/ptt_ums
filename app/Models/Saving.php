@@ -15,7 +15,23 @@ class Saving extends Model
 
     const SAVING_ACTIVATED_STATUS = 1;
     const SAVING_UNACTIVATED_STATUS = 0;
-
+    const SAVING_APPLY_FAILED_STATUS = 4;
+    const SAVING_APPLY_SUCCESS_STATUS = 2;
+    const SAVING_DEFAULT_AUDIT_STATUS = 3;
     // 持仓天数满足后，发放奖励
     const SAVING_ISSUE_REWARD_DAYS = 2;
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->icon = config('alioss.ossURL') . '/' . $model->icon;
+        });
+    }
+
+    public function users()
+    {
+        return $this->belongsTo('App\Models\AdminUser', 'user_id', 'id');
+    }  
 }

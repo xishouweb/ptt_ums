@@ -30,8 +30,13 @@ Route::group([
     $router->resource('/wallet/user-wallet-balances', UserWalletBalanceController::class);
     $router->resource('/wallet/user-wallet-transactions', UserWalletTransactionController::class);
     $router->resource('/wallet/user-wallet-withdrawals', UserWalletWithdrawalController::class);
+    $router->resource('/wallet/savings', SavingController::class);
+    $router->resource('/wallet/saving-participate-records', SavingParticipateRecordController::class);
+    $router->resource('/wallet/saving-awards', SavingAwardController::class);
     $router->get('/wallet/user-wallet-withdrawals/{id}/approve', 'UserWalletWithdrawalController@getApprove');
     $router->get('/wallet/user-wallet-withdrawals/{id}/decline', 'UserWalletWithdrawalController@getDecline');
+    $router->get('/wallet/savings/{id}/approve', 'SavingController@getApprove');
+    $router->get('/wallet/savings/{id}/decline', 'SavingController@getDecline');
 
     //Campaign
 

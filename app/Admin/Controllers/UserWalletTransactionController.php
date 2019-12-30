@@ -94,14 +94,10 @@ class UserWalletTransactionController extends AdminController
             ]);;
         });
       
-
-        $grid->tools(function ($tools) {
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
         $grid->disableCreateButton();
         $grid->disableActions();
+        $grid->disableExport();
+        $grid->disableColumnSelector();
 
         return $grid;
     }
@@ -125,17 +121,19 @@ class UserWalletTransactionController extends AdminController
             ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
             ['text' => '交易记录']
         )
-        ->row("<div class='container'>
+        ->row("<div class='panel panel-default'>
+                    <div class='panel-body container'>
                         <div class='row'>
-                            <div class='col-xs-12 col-md-4'>用户ID: $user_id</div>
-                            <div class='col-xs-12 col-md-4'>用户昵称: $user->nickname</div>
-                            <div class='col-xs-12 col-md-4'>钱包地址: <a href='https://etherscan.io/address/$user->address' target='_blank'>$user->address</a></div>
+                            <div class='col-xs-12 col-md-3'><h4>用户ID: $user_id</h4></div>
+                            <div class='col-xs-12 col-md-3'><h4>用户昵称: $user->nickname</h4></div>
+                            <div class='col-xs-12 col-md-6'><h4>钱包地址: <a href='https://etherscan.io/address/$user->address' target='_blank'>$user->address</a></h4></div>
                         </div>
                         <div class='row'>
-                            <div class='col-xs-12 col-md-4'>注册手机: $user->phone</div>
-                            <div class='col-xs-12 col-md-4'>钱包余额: " . number_format($user->total_balance) . "</div>
+                            <div class='col-xs-12 col-md-3'><h4>注册手机: $user->phone</h4></div>
+                            <div class='col-xs-12 col-md-3'><h4>钱包余额: " . number_format($user->total_balance) . "</h4></div>
                         </div>
-                    </div>"
+                    </div>
+                </div>"
         )
         ->body($this->grid($user_id));
     }
