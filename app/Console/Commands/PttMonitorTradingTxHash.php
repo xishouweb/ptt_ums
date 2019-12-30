@@ -47,7 +47,8 @@ class PttMonitorTradingTxHash extends Command
         Log::info('监听ptt提币');
         $tx_hashes = UserWalletTransaction::where('type', UserWalletTransaction::OUT_TYPE)
             ->where('status', UserWalletTransaction::OUT_STATUS_TRANSFER)
-            ->pluck('tx_hash');
+            ->pluck('tx_hash')
+            ->toArray();
         Log::info($tx_hashes);
         if ($tx_hashes) {
             try {
