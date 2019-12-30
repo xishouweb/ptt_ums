@@ -27,9 +27,9 @@ class SavingController extends Controller
         $status = $request->input('status', 2);
         $page_size = $request->input('page_size', 10);
         $saving = Saving::where('type', Saving::TYPE_SAVING);
-        if ($status === 0) {
+        if ($status == 0) {
             $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
-        } else if ($status === 1) {
+        } else if ($status == 1) {
             $saving = $saving->where('status', Saving::SAVING_ACTIVATED_STATUS);
         }
         if ($lang == 'en') {
