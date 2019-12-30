@@ -49,8 +49,8 @@ class PttMonitorTradingTxHash extends Command
             ->where('status', UserWalletTransaction::OUT_STATUS_TRANSFER)
             ->pluck('tx_hash')
             ->toArray();
-        Log::info($tx_hashes);
         if ($tx_hashes) {
+            Log::info($tx_hashes);
             try {
                 $client = new Client();
                 $response = $client->get('https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' . ToolController::PTT_ADDRESS . '&page=1&offset=100&sort=desc&apikey=' . ToolController::ETHERSCAN_API_KEY_TOKEN);
