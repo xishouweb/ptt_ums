@@ -9,6 +9,8 @@ class SavingStatus extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'saving_statuses';
+
     protected $guarded = ['id'];
 
     const STATUS_ENOUGH = 1;
