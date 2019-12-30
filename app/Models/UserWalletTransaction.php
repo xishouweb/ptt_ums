@@ -9,7 +9,7 @@ class UserWalletTransaction extends BaseModel implements FormatInterface
 {
     use SoftDeletes;
     
-    const FAILD_STATUS = 0;
+    const FAILED_STATUS = 0;
 
     protected $guarded = ['id'];
 

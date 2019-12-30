@@ -83,7 +83,7 @@ class UserWalletWithdrawalController extends AdminController
                 return "<span class='label label-warning'>申请中</span>";
             } elseif ($status == UserWalletWithdrawal::COMPLETE_STATUS) {
                 return "<span class='label label-success'>已通过</span>";
-            } elseif ($status == UserWalletWithdrawal::FAILD_STATUS) {
+            } elseif ($status == UserWalletWithdrawal::FAILED_STATUS) {
                 return "<span class='label label-default'>已拒绝</span>";
             } 
         });
@@ -136,7 +136,7 @@ class UserWalletWithdrawalController extends AdminController
                         return "<span class='label label-warning'>申请中</span>";
                     } elseif ($status == UserWalletWithdrawal::COMPLETE_STATUS) {
                         return "<span class='label label-success'>已通过</span>";
-                    } elseif ($status == UserWalletWithdrawal::FAILD_STATUS) {
+                    } elseif ($status == UserWalletWithdrawal::FAILED_STATUS) {
                         return "<span class='label label-default'>已拒绝</span>";
                     } 
                 });
@@ -289,7 +289,7 @@ class UserWalletWithdrawalController extends AdminController
         try {
 
             DB::beginTransaction();
-            $record->status = UserWalletWithdrawal::FAILD_STATUS;
+            $record->status = UserWalletWithdrawal::FAILED_STATUS;
 
             $record->approver_id = Admin::user()->id;
 
