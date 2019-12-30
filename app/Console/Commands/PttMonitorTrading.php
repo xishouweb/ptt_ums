@@ -43,7 +43,7 @@ class PttMonitorTrading extends Command
      */
     public function handle()
     {
-        Log::error('监听ptt充币');
+        Log::info('监听ptt充币');
         try {
             $client = new Client();
             $response = $client->get('https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' . ToolController::PTT_ADDRESS . '&page=1&offset=100&sort=desc&apikey=' . ToolController::ETHERSCAN_API_KEY_TOKEN);
