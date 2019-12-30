@@ -58,6 +58,7 @@ class CheckUserSavingStatus extends Command
                 ->toArray();
             foreach ($user_ids as $user_id) {
                 $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
+                Log::info($user_wallet);
                 if ($user_wallet && $user_wallet->total_balance >= $saving->entry_standard) {
                     SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00'))
                         ->where('created_at', '<=', date('Y-m-d 23:59:59'))
