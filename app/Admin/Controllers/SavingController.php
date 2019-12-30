@@ -68,11 +68,7 @@ class SavingController extends AdminController
         $grid->column('type', '类型')->display(function ($type) {
             if ($type == 1) {
                 $text = "PoS 持仓活动";
-            } elseif ($type == 2) {
-                $text = "提币";
-            } elseif ($type == 3) {
-                $text = "收益";
-            }
+            } 
             return $text;
         });
 
@@ -86,9 +82,16 @@ class SavingController extends AdminController
             $filter->disableIdFilter();
 
             // 在这里添加字段过滤器
-            $filter->like('users.nickname', '用户昵称');
-            $filter->equal('user_id', '用户ID');
-            $filter->equal('phone', '手机号');
+            $filter->like('title', '活动名称');
+            $filter->equal('id', '活动编号');
+            $filter->equal('type')->radio([
+                0   => '已下线',
+                1    => '进行中',
+                2    => '已通过',
+                3    => '待审核',
+                4    => '已驳回',
+                5    => '已结束',
+            ]);
         });
 
         $grid->tools(function ($tools) {
@@ -111,15 +114,17 @@ class SavingController extends AdminController
         $saving = Saving::findOrFail($id);
         $status = '';
         if ($saving->status === 0) {
-            $status = "<h3><span class='label label-warning'>待审批</span></h3>";
-        } elseif ($status === 1) {
+            $status = "<h3><span class='label label-info'>已下线</span></h3>";
+        } elseif ($saving->status === 1) {
             $status = "<h3><span class='label label-success'>进行中</span></h3>";
-        } elseif ($status === 2) {
+        } elseif ($saving->status === 2) {
             $status = "<h3><span class='label label-primary'>已通过</span></h3>";
-        } elseif ($status === 3) {
-            $status = "<h3><span class='label label-info'>已结束</span></h3>";
-        } elseif ($status === 4) {
+        } elseif ($saving->status === 3) {
+            $status = "<h3><span class='label label-warning'>待审批</span></h3>";
+        } elseif ($saving->status === 4) {
             $status = "<h3><span class='label label-default'>已驳回</span></h3>";
+        } elseif ($saving->status === 5) {
+            $status = "<h3><span class='label label-default'>已结束</span></h3>";
         }
 
         if ($saving->type === 1) {
@@ -129,7 +134,7 @@ class SavingController extends AdminController
         $creater = $saving->users->name;
         $actionStr = '';
    
-        if(Admin::user()->inRoles(['administrator'])) {
+        if(Admin::user()->inRoles(['administrator']) && $saving->status == Saving::SAVING_DEFAULT_AUDIT_STATUS) {
             $actionStr = "<div class='row'>
                             <div class='col-xs-12 col-md-2 col-md-offset-2'><a class='btn btn-warning' href='/admin/wallet/savings/$id/decline'>驳回</a></div>
                             <div class='col-xs-12 col-md-2 col-md-offset-3'><a class='btn btn-success' href='/admin/wallet/savings/$id/approve'>通过</a></div>
@@ -245,7 +250,7 @@ class SavingController extends AdminController
         $form->image('icon', '图片');
         $form->select('type', '类型')->options([1 => 'PoS 持仓活动', 2 => 'bar']);
         $form->select('yield_time', '奖励发放方式')->options([1 => 'afsdadf', 2 => 'basdfasdfar']);
-        $form->hidden('status')->default(0);
+        $form->hidden('status')->default(Saving::SAVING_DEFAULT_AUDIT_STATUS);
         $form->datetime('started_at','开始日期');
         $form->datetime('ended_at','结束日期');
         $form->number('entry_standard', '单个账号持仓最小值');
@@ -261,5 +266,33 @@ class SavingController extends AdminController
 
 
         return $form;
+    }
+
+    public function getDecline($id)
+    {
+        if(!Admin::user()->inRoles(['administrator'])){
+            return redirect("/admin/wallet/savings/$id");
+        }
+        $saving = Saving::findOrFail($id);
+        
+        $saving->status = Saving::SAVING_APPLY_FAILED_STATUS;
+        $saving->approver_id = Admin::user()->id;
+        $saving->save();
+
+        return redirect("/admin/wallet/savings/$id");
+    }
+
+    public function getApprove($id)
+    {
+        if(!Admin::user()->inRoles(['administrator'])){
+            return redirect("/admin/wallet/savings/$id");
+        }
+        $saving = Saving::findOrFail($id);
+        
+        $saving->status = Saving::SAVING_APPLY_SUCCESS_STATUS;
+        $saving->approver_id = Admin::user()->id;
+        $saving->save();
+
+        return redirect("/admin/wallet/savings/$id");
     }
 }

@@ -33,6 +33,8 @@ Route::group([
     $router->resource('/wallet/savings', SavingController::class);
     $router->get('/wallet/user-wallet-withdrawals/{id}/approve', 'UserWalletWithdrawalController@getApprove');
     $router->get('/wallet/user-wallet-withdrawals/{id}/decline', 'UserWalletWithdrawalController@getDecline');
+    $router->get('/wallet/savings/{id}/approve', 'SavingController@getApprove');
+    $router->get('/wallet/savings/{id}/decline', 'SavingController@getDecline');
 
     //Campaign
 
