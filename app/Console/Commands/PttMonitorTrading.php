@@ -8,6 +8,7 @@ use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PttMonitorTrading extends Command
@@ -43,6 +44,7 @@ class PttMonitorTrading extends Command
      */
     public function handle()
     {
+        Log::info('监听ptt充币');
         try {
             $client = new Client();
             $response = $client->get('https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' . ToolController::PTT_ADDRESS . '&page=1&offset=100&sort=desc&apikey=' . ToolController::ETHERSCAN_API_KEY_TOKEN);
@@ -62,25 +64,29 @@ class PttMonitorTrading extends Command
                 }
                 // 判断是否为ptt转帐
                 if ($data->contractAddress == ToolController::PTT_ADDRESS) {
-                    $user_wallet = UserWalletBalance::where('address', $data->to)->first();
+                    $user_wallet = UserWalletBalance::where('address', $data->to)->where('symbol', 'ptt')->first();
                     // 判断是否为我方钱包收款地址
                     if ($user_wallet) {
+                        DB::beginTransaction();
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
                         // 判断记录是否存在
                         if ($transaction) {
                             // 判断区块确认是否大于15
                             if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
                                 // 判断记录的状态
-                                if (UserWalletTransaction::IN_TYPE && UserWalletTransaction::IN_STATUS_PADDING) {
-                                    $data->status = UserWalletTransaction::IN_STATUS_SUCCESS;
-                                    $data->block_confirm = $data->confirmations;
-                                    $data->save();
+                                if ($transaction->type == UserWalletTransaction::IN_TYPE && $transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
+                                    $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
+                                    $transaction->block_confirm = $data->confirmations;
+                                    $transaction->completed_at = date('Y-m-d H:i:s');
+                                    $transaction->save();
+                                    $user_wallet->total_balance += $transaction->amount;
+                                    $user_wallet->save();
                                 } else {
                                     DataCache::setPttLastConfirmTxHash($data->hash);
                                 }
                             } else {
-                                $data->block_confirm = $data->confirmations;
-                                $data->save();
+                                $transaction->block_confirm = $data->confirmations;
+                                $transaction->save();
                             }
                             Log::info($transaction);
                         } else {
@@ -90,7 +96,7 @@ class PttMonitorTrading extends Command
                                 'symbol' => UserWalletTransaction::PTT,
                                 'type' => UserWalletTransaction::IN_TYPE,
                                 'status' => UserWalletTransaction::IN_STATUS_PADDING,
-                                'amount' => $data->value,
+                                'amount' => round($data->value / UserWalletTransaction::DIGIT,8),
                                 'to' => $data->to,
                                 'from' => $data->from,
                                 'fee' => $data->gasUsed,
@@ -101,12 +107,14 @@ class PttMonitorTrading extends Command
                             $tran = UserWalletTransaction::create($tran_data);
                             Log::info($tran);
                         }
+                        DB::commit();
                     }
                 }
             } catch (\Exception $e) {
                 Log::error('监听ptt充币失败foreach');
                 Log::error($e->getMessage());
-                Log::info($data);
+                Log::error(json_encode($data));
+                DB::rollBack();
             }
         }
     }

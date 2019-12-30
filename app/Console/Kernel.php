@@ -15,7 +15,9 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\AnchorUploadData::class,
         Commands\AnalysisItem::class,
-        Commands\PttMonitorTrading::class
+        Commands\PttMonitorTrading::class,
+        Commands\PttMonitorTradingTxHash::class,
+        Commands\CheckUserSavingStatus::class,
     ];
 
     /**
@@ -26,7 +28,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-//        $schedule->command('ptt:monitor_trading')->everyMinute();
+        $schedule->command('ptt:monitor_trading')->everyMinute();
+        $schedule->command('ptt:monitor_trading_tx_hash')->everyMinute();
+        $schedule->command('ptt:check_user_saving_status')->hourlyAt(55);
     }
 
     /**

@@ -27,6 +27,8 @@ class UserWalletTransaction extends BaseModel implements FormatInterface
 
     const CONFIRM_COUNT = 15;
 
+    const DIGIT = 1000000000000000000;
+
     const PTT = 'ptt';
 
     public function format($source = [])
