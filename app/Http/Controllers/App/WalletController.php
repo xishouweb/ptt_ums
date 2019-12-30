@@ -53,7 +53,7 @@ class WalletController extends Controller
                 if ($datum['amount']) {
                     $price = ToolController::getCurrencyPrice($datum['symbol'], $currency);
                     $datum['price'] = round($price, 6);
-                    $datum['balance'] = $datum['amount'] * $price;
+                    $datum['balance'] = round($datum['amount'] * $price, 2);
                     $data['asset_balance'] += round($datum['balance'], 2);
                 }
             }
