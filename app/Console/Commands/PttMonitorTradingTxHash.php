@@ -83,7 +83,7 @@ class PttMonitorTradingTxHash extends Command
                 } catch (\Exception $e) {
                     Log::error('监听ptt交易失败foreach');
                     Log::error($e->getMessage());
-                    Log::error($data);
+                    Log::error(json_encode($data));
                     DB::rollBack();
                 }
             }

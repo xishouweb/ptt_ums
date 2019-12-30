@@ -8,6 +8,7 @@ use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PttMonitorTrading extends Command
@@ -66,6 +67,7 @@ class PttMonitorTrading extends Command
                     $user_wallet = UserWalletBalance::where('address', $data->to)->first();
                     // 判断是否为我方钱包收款地址
                     if ($user_wallet) {
+                        DB::beginTransaction();
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
                         // 判断记录是否存在
                         if ($transaction) {
@@ -105,12 +107,14 @@ class PttMonitorTrading extends Command
                             $tran = UserWalletTransaction::create($tran_data);
                             Log::info($tran);
                         }
+                        DB::commit();
                     }
                 }
             } catch (\Exception $e) {
                 Log::error('监听ptt充币失败foreach');
                 Log::error($e->getMessage());
-                Log::error($data);
+                Log::error(json_encode($data));
+                DB::rollBack();
             }
         }
     }
