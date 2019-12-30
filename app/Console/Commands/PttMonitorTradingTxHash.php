@@ -66,10 +66,12 @@ class PttMonitorTradingTxHash extends Command
                         // 判断记录是否存在 判断记录的状态
                         if ($transaction && $data->confirmations >= 0 && $transaction->status == UserWalletTransaction::OUT_STATUS_TRANSFER) {
                             DB::beginTransaction();
+                            // 修改transaction
                             $transaction->status = UserWalletTransaction::OUT_STATUS_SUCCESS;
                             $transaction->block_number = $data->blockNumber;
                             $transaction->completed_at = date('Y-m-d H:i:s');
                             $transaction->save();
+                            // 增加钱包余额
                             $user_wallet = UserWalletBalance::where('user_id', $transaction->user_id)->where('symbol', 'ptt')->first();
                             $amount = round($transaction->amount, 8);
                             $user_wallet->locked_balance -= $amount;

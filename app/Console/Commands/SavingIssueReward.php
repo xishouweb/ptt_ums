@@ -28,7 +28,7 @@ class SavingIssueReward extends Command
      *
      * @var string
      */
-    protected $description = '监测用户持仓情况';
+    protected $description = '发放持仓奖励';
 
     /**
      * Create a new command instance.
@@ -50,6 +50,8 @@ class SavingIssueReward extends Command
         Log::info('发放持仓奖励');
         $savings = Saving::where('type', Saving::TYPE_SAVING)
             ->where('status', Saving::SAVING_ACTIVATED_STATUS)
+            ->where('started_at', '<=', date('Y-m-d H:i:s'))
+            ->where('ended_at', '>=', date('Y-m-d H:i:s'))
             ->get();
         foreach ($savings as $saving) {
             $user_ids = SavingParticipateRecord::where('saving_id', $saving->id)
