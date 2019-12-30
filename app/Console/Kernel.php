@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('ptt:monitor_trading')->everyMinute();
         $schedule->command('ptt:monitor_trading_tx_hash')->everyMinute();
         $schedule->command('ptt:check_user_saving_status')->hourlyAt(58);
-        $schedule->command('ptt:saving_issue_reward')->dailyAt('00:05');
+        $schedule->command('ptt:saving_issue_reward')->dailyAt('00:02');
     }
 
     /**
