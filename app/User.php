@@ -281,13 +281,13 @@ class User extends Authenticatable
                 $wallet = UserWallet::create([
                     'user_id' => $this->id,
                     'create_channel' => 'savings',
-                    'address' => $resData->address,
+                    'address' => strtolower($resData->address),
                     'private_key' => encrypt($resData->privateKey),
                     'key_store' => json_encode($resData->keyStore),
                     'password' => encrypt($password)
                 ]);
 
-                $this->cloud_wallet_address = $resData->address;
+                $this->cloud_wallet_address = strtolower($resData->address);
                 $this->save();
             } else {
                 throw new \Exception("用户erc20账号创建失败");

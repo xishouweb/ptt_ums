@@ -123,25 +123,48 @@ class UserWalletWithdrawalController extends AdminController
     public function show($id, Content $content)
     {
         $record = UserWalletWithdrawal::findOrFail($id);
+        $statusStr = '';
+        if ($record->status === 0) {
+            $statusStr = "<h3><span class='label label-warning'>申请中</span></h3>";
+        } elseif ($record->status === 1) {
+            $statusStr = "<h3><span class='label label-success'>已通过</span></h3>";
+        } elseif ($record->status === 2) {
+            $statusStr = "<h3><span class='label label-default'>已拒绝</span></h3>";
+        }
 
+        $actionStr = '';
+        if($record->status === UserWalletWithdrawal::PENDING_STATUS) {
+            $actionStr = "<div class='col-xs-4'>
+                            <div class='row'>
+                                <div class='col-xs-3 col-xs-offset-3'>
+                                    <h3><a class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></h3>
+                                </div>
+                                <div class='col-xs-3'>
+                                    <h3><a class='btn btn-success' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>通过</a></h3>
+                                </div>
+                            </div>
+                        </div>";
+        }
         $content->header('提币详情')
             ->breadcrumb(
                 ['text' => '提币申请', 'url' => '/wallet/user-wallet-withdrawals'],
                 ['text' => '提币详情']
             )
+            ->row("<div class='panel panel-default'>
+                        <div class='container panel-body'>
+                            <div class='row'>
+                                <div class='col-xs-4'>
+                                    <h3>提币订单号 : $record->id</h3>
+                                </div>
+                                <div class='col-xs-4'>
+                                    $statusStr
+                                </div>
+                                $actionStr
+                            </div>
+                        </div>
+                    </div>"
+            )
             ->body(Admin::show($record, function (Show $show) use($record) {
-
-                $show->status('状态')->unescape()->as(function ($status) {
-                    if ($status === UserWalletWithdrawal::PENDING_STATUS) {
-                        return "<span class='label label-warning'>申请中</span>";
-                    } elseif ($status == UserWalletWithdrawal::COMPLETE_STATUS) {
-                        return "<span class='label label-success'>已通过</span>";
-                    } elseif ($status == UserWalletWithdrawal::FAILD_STATUS) {
-                        return "<span class='label label-default'>已拒绝</span>";
-                    } 
-                });
-
-                $show->field('id', '提币订单号');
                 $show->field('user_id', '提币用户ID');
                 $show->field('created_at', '申请时间');
                 $show->amount('提币数量')->unescape()->as(function ($amount) {
@@ -182,27 +205,6 @@ class UserWalletWithdrawalController extends AdminController
                     $tools->disableDelete();
                 });
             }));
-        
-        if($record->status === UserWalletWithdrawal::PENDING_STATUS) {
-            $content->row("<div class='container'>
-                            <form action='/admin/wallet/user-wallet-withdrawals/$id' method='post'>
-                                <input name='_method' type='hidden' value='PUT'>
-                                <div class='form-group'>
-                                    <label>Transaction Hash</label>
-                                    <input type='text' class='form-control' name='tx_hash'>
-                                </div>
-                                <div class='form-group'>
-                                    <label>发送地址</label>
-                                    <input type='text' class='form-control' name='from_address'>
-                                </div>
-                                <div class='row'>
-                                    <div class='col-xs-12 col-md-2 col-md-offset-4'><a class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></div>
-                                    <div class='col-xs-12 col-md-2'><button class='btn btn-primary'>通过</button></div>
-                                </div>
-                            </form>             
-                        </div>"
-            );
-        }
         
         return $content;
     }
@@ -309,7 +311,7 @@ class UserWalletWithdrawalController extends AdminController
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
 
-    public function update($id)
+    public function getApprove($id)
     {
         // dd(request()->all());
         $validator = Validator::make(request()->all(), [
