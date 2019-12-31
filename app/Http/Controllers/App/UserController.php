@@ -8,6 +8,7 @@ use App\Models\Photo;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -214,14 +215,16 @@ class UserController extends Controller
         try {
             $user = User::where('phone', $phone)->first();
             if (!$user) {
+                DB::beginTransaction();
                 $user = $this->store($phone, $country, $password);
+                $user->findOrCreateEthAccount();
+                DB::commit();
             }
             $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
-
-            $user->findOrCreateEthAccount();
         } catch (\Exception $e) {
             Log::error('注册失败，$phone ' . $phone);
             Log::error($e->getMessage());
+            DB::rollBack();
             return $this->error('注册失败');
         }
         return $this->apiResponse($data);
@@ -245,7 +248,18 @@ class UserController extends Controller
             return $this->error('用户不存在');
         }
 
-        $user->findOrCreateEthAccount();
+        if (!$user->cloud_wallet_address) {
+            try {
+                DB::beginTransaction();
+                $user->findOrCreateEthAccount();
+                DB::commit();
+            } catch (\Exception $e) {
+                Log::error('验证码登陆，生成address失败，$phone ' . $phone);
+                Log::error($e->getMessage());
+                DB::rollBack();
+                return $this->error('登录失败');
+            }
+        }
 
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         return $this->apiResponse($data);
@@ -266,7 +280,19 @@ class UserController extends Controller
         }
         $user = Auth::user();
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
-        $user->findOrCreateEthAccount();
+
+        if (!$user->cloud_wallet_address) {
+            try {
+                DB::beginTransaction();
+                $user->findOrCreateEthAccount();
+                DB::commit();
+            } catch (\Exception $e) {
+                Log::error('密码登陆，生成address失败，$phone ' . $phone);
+                Log::error($e->getMessage());
+                DB::rollBack();
+                return $this->error('登录失败');
+            }
+        }
         
         return $this->apiResponse($data);
     }

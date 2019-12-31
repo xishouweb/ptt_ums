@@ -86,6 +86,7 @@ class SavingController extends Controller
 
         if (Auth::check()) {
             $user = Auth::user();
+            Log::info($user);
             $saving->awarded = round(SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award'), 6);
             $saving->awarded_time = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->count(['id']);
 
