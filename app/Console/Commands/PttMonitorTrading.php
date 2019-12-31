@@ -73,23 +73,24 @@ class PttMonitorTrading extends Command
                         DB::beginTransaction();
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)
                             ->where('type', UserWalletTransaction::IN_TYPE)
-                            ->where('status', UserWalletTransaction::IN_STATUS_PADDING)
                             ->first();
                         // 判断记录是否存在
                         if ($transaction) {
                             // 判断区块确认是否大于15 && 判断记录的状态
-                            if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
-                                $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
-                                $transaction->block_confirm = $data->confirmations;
-                                $transaction->completed_at = date('Y-m-d H:i:s');
-                                $transaction->save();
-                                $user_wallet->total_balance += $transaction->amount;
-                                $user_wallet->save();
-                            } else {
-                                $transaction->block_confirm = $data->confirmations;
-                                $transaction->save();
+                            if ($transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
+                                if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
+                                    $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
+                                    $transaction->block_confirm = $data->confirmations;
+                                    $transaction->completed_at = date('Y-m-d H:i:s');
+                                    $transaction->save();
+                                    $user_wallet->total_balance += $transaction->amount;
+                                    $user_wallet->save();
+                                } else {
+                                    $transaction->block_confirm = $data->confirmations;
+                                    $transaction->save();
+                                }
+                                Log::info($transaction);
                             }
-                            Log::info($transaction);
                         } else {
                             $tran_data = [
                                 'user_id' => $user_wallet->user_id,
