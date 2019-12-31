@@ -64,6 +64,7 @@ class SavingController extends Controller
     // 锁仓活动详情
     public function show(Request $request)
     {
+        $user = Auth::user();
         $id = $request->input('id');
         $lang = $request->input('lang', 'cn');
         $saving = Saving::where('id', $id);
@@ -84,8 +85,7 @@ class SavingController extends Controller
         $saving->awarded = 0;
         $saving->awarded_time = 0;
 
-        if (Auth::check()) {
-            $user = Auth::user();
+        if ($user) {
             Log::info($user);
             $saving->awarded = round(SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award'), 6);
             $saving->awarded_time = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->count(['id']);
