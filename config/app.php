@@ -224,4 +224,8 @@ return [
     'captcha_live_time' => env('CAPTCHA_LIVE_TIME', 180),
     'coinmarketcap_api_url' => env('COINMARKETCAP_API_URL', 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'),
     'coinmarketcap_api_key' => env('COINMARKETCAP_API_KEY', '595a1fe9-e466-4e9d-bb83-06abb08cb30a'),
+
+    'ptt_master_address' => env('PTT_MASTER_ADDRESS', ''),
+    'ptt_master_address_keystore' => env('PTT_MASTER_ADDRESS_keystore', ''),
+    'ptt_master_address_password' => env('PTT_MASTER_ADDRESS_password', '')
 ];
