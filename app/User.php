@@ -12,6 +12,7 @@ use App\Models\UserAddress;
 use App\Models\UserLogin;
 use App\Models\UserToken;
 use App\Models\UserWallet;
+use App\Models\UserWalletTransaction;
 use App\Models\WechatOpenid;
 use App\Models\UserWalletBalance;
 use App\Services\QrCode;
@@ -290,6 +291,15 @@ class User extends Authenticatable
 
                 $this->cloud_wallet_address = strtolower($resData->address);
                 $this->save();
+
+                $user_wallet_balance = [
+                    'user_id' => $this->id,
+                    'address' => strtolower($resData->address),
+                    'symbol'  => UserWalletTransaction::PTT,
+                    'locked_balance' => 0,
+                    'total_balance'  => 0
+                ];
+                UserWalletBalance::create($user_wallet_balance);
             } else {
                 throw new \Exception("用户erc20账号创建失败");
             }; 
