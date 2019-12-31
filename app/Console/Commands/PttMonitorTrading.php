@@ -44,13 +44,19 @@ class PttMonitorTrading extends Command
      */
     public function handle()
     {
-        Log::info('监听ptt充币');
+        Log::info('监听ptt充提币');
         try {
+            // 获取ptt交易list
             $client = new Client();
             $response = $client->get('https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' . ToolController::PTT_ADDRESS . '&page=1&offset=100&sort=desc&apikey=' . ToolController::ETHERSCAN_API_KEY_TOKEN);
             $body = \GuzzleHttp\json_decode($response->getBody());
-            $last_confirm_tx_hash = DataCache::getPttLastConfirmTxHash();
             $result = $body->result;
+
+            // 获取提币tx_hash
+            $tx_hashes = UserWalletTransaction::where('type', UserWalletTransaction::OUT_TYPE)
+                ->where('status', UserWalletTransaction::OUT_STATUS_TRANSFER)
+                ->pluck('tx_hash')
+                ->toArray();
         } catch (\Exception $e) {
             Log::error('监听ptt充币失败');
             Log::error($e->getMessage());
@@ -58,12 +64,9 @@ class PttMonitorTrading extends Command
 
         foreach ($result as $data) {
             try {
-                // 判断上次最后确认的tx_hash，减少foreach次数
-                if ($last_confirm_tx_hash == $data->hash) {
-                    break;
-                }
                 // 判断是否为ptt转帐
                 if ($data->contractAddress == ToolController::PTT_ADDRESS) {
+                    // 充币
                     $user_wallet = UserWalletBalance::where('address', $data->to)->where('symbol', 'ptt')->first();
                     // 判断是否为我方钱包收款地址
                     if ($user_wallet) {
@@ -71,19 +74,14 @@ class PttMonitorTrading extends Command
                         $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
                         // 判断记录是否存在
                         if ($transaction) {
-                            // 判断区块确认是否大于15
-                            if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
-                                // 判断记录的状态
-                                if ($transaction->type == UserWalletTransaction::IN_TYPE && $transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
-                                    $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
-                                    $transaction->block_confirm = $data->confirmations;
-                                    $transaction->completed_at = date('Y-m-d H:i:s');
-                                    $transaction->save();
-                                    $user_wallet->total_balance += $transaction->amount;
-                                    $user_wallet->save();
-                                } else {
-                                    DataCache::setPttLastConfirmTxHash($data->hash);
-                                }
+                            // 判断区块确认是否大于15 && 判断记录的状态
+                            if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT && $transaction->type == UserWalletTransaction::IN_TYPE && $transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
+                                $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
+                                $transaction->block_confirm = $data->confirmations;
+                                $transaction->completed_at = date('Y-m-d H:i:s');
+                                $transaction->save();
+                                $user_wallet->total_balance += $transaction->amount;
+                                $user_wallet->save();
                             } else {
                                 $transaction->block_confirm = $data->confirmations;
                                 $transaction->save();
@@ -109,6 +107,28 @@ class PttMonitorTrading extends Command
                         }
                         DB::commit();
                     }
+
+                    // 提币
+                    if ($tx_hashes && in_array(strtolower($data->hash), $tx_hashes)) {
+                        $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
+                        // 判断记录是否存在 判断记录的状态
+                        if ($transaction && $data->confirmations > 0 && $transaction->status == UserWalletTransaction::OUT_STATUS_TRANSFER) {
+                            DB::beginTransaction();
+                            // 修改transaction
+                            $transaction->status = UserWalletTransaction::OUT_STATUS_SUCCESS;
+                            $transaction->block_number = $data->blockNumber;
+                            $transaction->completed_at = date('Y-m-d H:i:s');
+                            $transaction->save();
+                            // 增加钱包余额
+                            $user_wallet = UserWalletBalance::where('user_id', $transaction->user_id)->where('symbol', 'ptt')->first();
+                            $amount = round($transaction->amount, 6);
+                            $user_wallet->locked_balance -= $amount;
+                            $user_wallet->total_balance -= $amount;
+                            $user_wallet->save();
+                            DB::commit();
+                            Log::info($transaction);
+                        }
+                    }
                 }
             } catch (\Exception $e) {
                 Log::error('监听ptt充币失败foreach');
@@ -117,5 +137,6 @@ class PttMonitorTrading extends Command
                 DB::rollBack();
             }
         }
+        Log::info('监听ptt充提币完毕');
     }
 }
