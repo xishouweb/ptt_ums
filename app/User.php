@@ -5,6 +5,7 @@ namespace App;
 use App\Models\ActionHistory;
 use App\Models\DataCache;
 use App\Models\RentRecord;
+use App\Models\SavingParticipateRecord;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\UserAddress;
@@ -291,7 +292,6 @@ class User extends Authenticatable
                 $this->save();
             } else {
                 throw new \Exception("用户erc20账号创建失败");
-                
             }; 
         }
 
