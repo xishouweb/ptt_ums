@@ -73,6 +73,7 @@ class UserController extends Controller
         $data['token'] = $request->header('Authorization');
         $data['has_trade_pwd'] = $user->trade_password ? true : false;
         $data['country'] = $user->country ?: '86';
+        $data['cloud_wallet_address'] = $user->cloud_wallet_address;
         return response()->json($data);
     }
 
