@@ -129,8 +129,8 @@ class PttMonitorTrading extends Command
                             // 增加钱包余额
                             $user_wallet = UserWalletBalance::where('user_id', $transaction->user_id)->where('symbol', 'ptt')->first();
                             $amount = round($transaction->amount, 6);
-                            $user_wallet->locked_balance -= $amount;
-                            $user_wallet->total_balance -= $amount;
+                            $user_wallet->locked_balance += $amount;
+                            $user_wallet->total_balance += $amount;
                             $user_wallet->save();
                             DB::commit();
                             Log::info($transaction);
