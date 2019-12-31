@@ -85,7 +85,7 @@ class UserWalletWithdrawalController extends AdminController
                 return "<span class='label label-success'>已通过</span>";
             } elseif ($status == UserWalletWithdrawal::FAILED_STATUS) {
                 return "<span class='label label-default'>已拒绝</span>";
-            } 
+            }
         });
 
         $grid->filter(function($filter){
@@ -165,21 +165,6 @@ class UserWalletWithdrawalController extends AdminController
                     </div>"
             )
             ->body(Admin::show($record, function (Show $show) use($record) {
-<<<<<<< HEAD
-=======
-
-                $show->status('状态')->unescape()->as(function ($status) {
-                    if ($status === UserWalletWithdrawal::PENDING_STATUS) {
-                        return "<span class='label label-warning'>申请中</span>";
-                    } elseif ($status == UserWalletWithdrawal::COMPLETE_STATUS) {
-                        return "<span class='label label-success'>已通过</span>";
-                    } elseif ($status == UserWalletWithdrawal::FAILED_STATUS) {
-                        return "<span class='label label-default'>已拒绝</span>";
-                    } 
-                });
-
-                $show->field('id', '提币订单号');
->>>>>>> master
                 $show->field('user_id', '提币用户ID');
                 $show->field('created_at', '申请时间');
                 $show->amount('提币数量')->unescape()->as(function ($amount) {
@@ -211,7 +196,7 @@ class UserWalletWithdrawalController extends AdminController
                         });
                     });
                 }
-       
+
                 $show->panel()
                 ->title('提币详情')
                 ->tools(function ($tools) {
@@ -220,7 +205,7 @@ class UserWalletWithdrawalController extends AdminController
                     $tools->disableDelete();
                 });
             }));
-        
+
         return $content;
     }
 
@@ -251,10 +236,10 @@ class UserWalletWithdrawalController extends AdminController
 
             // 去掉`列表`按钮
             $tools->disableList();
-        
+
             // 去掉`删除`按钮
             $tools->disableDelete();
-        
+
             // 去掉`查看`按钮
             $tools->disableView();
         });
@@ -279,16 +264,16 @@ class UserWalletWithdrawalController extends AdminController
 
             // 去掉`重置`按钮
             // $footer->disableReset();
-        
+
             // 去掉`提交`按钮
             // $footer->disableSubmit();
-        
+
             // 去掉`查看`checkbox
             $footer->disableViewCheck();
-        
+
             // 去掉`继续编辑`checkbox
             $footer->disableEditingCheck();
-        
+
             // 去掉`继续创建`checkbox
             $footer->disableCreatingCheck();
         });
@@ -311,18 +296,18 @@ class UserWalletWithdrawalController extends AdminController
             $record->approver_id = Admin::user()->id;
 
             $record->save();
-    
+
             $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
             $tx->status = UserWalletTransaction::OUT_STATUS_FAIL;
-            
+
             $tx->save();
 
             DB::commit();
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
         }
-       
+
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
 
@@ -356,7 +341,7 @@ class UserWalletWithdrawalController extends AdminController
             $record->approver_id = Admin::user()->id;
             $record->from = request()->input('from_address');
             $record->save();
-    
+
             $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
             $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
             $tx->tx_hash = request()->input('tx_hash');
@@ -367,14 +352,14 @@ class UserWalletWithdrawalController extends AdminController
             $spending = $tx->fee + $tx->amount;
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
                 throw new \Exception("余额不足, 请检查账户余额");
-                
+
             }
             $balance->locked_balance -= $spending;
             $balance->total_balance -= $spending;
             $balance->save();
 
             DB::commit();
-    
+
         } catch (\Exception $e) {
             admin_toastr($e->getMessage(),'error');
             DB::rollBack();
@@ -383,6 +368,6 @@ class UserWalletWithdrawalController extends AdminController
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
 
-        //todo 
+        //todo
         //transaction hash      status 3  from addrss  对列
 }
