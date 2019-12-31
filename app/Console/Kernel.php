@@ -16,8 +16,9 @@ class Kernel extends ConsoleKernel
         Commands\AnchorUploadData::class,
         Commands\AnalysisItem::class,
         Commands\PttMonitorTrading::class,
-        Commands\PttMonitorTradingTxHash::class,
+//        Commands\PttMonitorTradingTxHash::class,
         Commands\CheckUserSavingStatus::class,
+        Commands\SavingIssueReward::class,
     ];
 
     /**
@@ -29,8 +30,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('ptt:monitor_trading')->everyMinute();
-        $schedule->command('ptt:monitor_trading_tx_hash')->everyMinute();
-        $schedule->command('ptt:check_user_saving_status')->hourlyAt(55);
+//        $schedule->command('ptt:monitor_trading_tx_hash')->everyMinute();
+        $schedule->command('ptt:check_user_saving_status')->hourlyAt(58);
+        $schedule->command('ptt:saving_issue_reward')->dailyAt('00:02');
     }
 
     /**

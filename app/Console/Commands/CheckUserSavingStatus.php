@@ -49,6 +49,8 @@ class CheckUserSavingStatus extends Command
         Log::info('监测用户持仓情况');
         $savings = Saving::where('type', Saving::TYPE_SAVING)
             ->where('status', Saving::SAVING_ACTIVATED_STATUS)
+            ->where('started_at', '<=', date('Y-m-d H:i:s'))
+            ->where('ended_at', '>=', date('Y-m-d H:i:s'))
             ->select('id', 'entry_standard')
             ->get();
         foreach ($savings as $saving) {
