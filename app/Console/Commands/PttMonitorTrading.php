@@ -71,11 +71,14 @@ class PttMonitorTrading extends Command
                     // 判断是否为我方钱包收款地址
                     if ($user_wallet) {
                         DB::beginTransaction();
-                        $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
+                        $transaction = UserWalletTransaction::where('tx_hash', $data->hash)
+                            ->where('type', UserWalletTransaction::IN_TYPE)
+                            ->where('status', UserWalletTransaction::IN_STATUS_PADDING)
+                            ->first();
                         // 判断记录是否存在
                         if ($transaction) {
                             // 判断区块确认是否大于15 && 判断记录的状态
-                            if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT && $transaction->type == UserWalletTransaction::IN_TYPE && $transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
+                            if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
                                 $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
                                 $transaction->block_confirm = $data->confirmations;
                                 $transaction->completed_at = date('Y-m-d H:i:s');
@@ -110,9 +113,12 @@ class PttMonitorTrading extends Command
 
                     // 提币
                     if ($tx_hashes && in_array(strtolower($data->hash), $tx_hashes)) {
-                        $transaction = UserWalletTransaction::where('tx_hash', $data->hash)->first();
+                        $transaction = UserWalletTransaction::where('tx_hash', $data->hash)
+                            ->where('type', UserWalletTransaction::OUT_TYPE)
+                            ->where('status', UserWalletTransaction::OUT_STATUS_TRANSFER)
+                            ->first();
                         // 判断记录是否存在 判断记录的状态
-                        if ($transaction && $data->confirmations > 0 && $transaction->status == UserWalletTransaction::OUT_STATUS_TRANSFER) {
+                        if ($transaction && $data->confirmations > 0) {
                             DB::beginTransaction();
                             // 修改transaction
                             $transaction->status = UserWalletTransaction::OUT_STATUS_SUCCESS;
