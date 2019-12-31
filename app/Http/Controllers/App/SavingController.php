@@ -38,8 +38,6 @@ class SavingController extends Controller
                 ->where('status', SavingParticipateRecord::STATUS_JOIN)
                 ->pluck('saving_id')
                 ->toArray();
-            Log::info($user->id);
-            Log::info($join_saving_ids);
             $saving = $saving->whereIn('id', $join_saving_ids);
         }
 
