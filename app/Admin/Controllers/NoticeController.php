@@ -153,10 +153,10 @@ class NoticeController extends Controller
                 return "<a href='$url' target='_blank'>点击跳转</a>";
             });
             $grid->column('created_at', '创建时间');
-            $grid->actions(function ($actions) {
-                // prepend一个操作
-                $actions->prepend('<a href="">切换状态</a>');
-            });
+//            $grid->actions(function ($actions) {
+//                // prepend一个操作
+//                $actions->prepend('<a href="">切换状态</a>');
+//            });
         });
     }
 
