@@ -86,6 +86,9 @@ class UserWalletBalanceController extends AdminController
         $grid->disableColumnSelector();
         $grid->disableCreateButton();
         $grid->disableActions();
+        $grid->batchActions(function ($batch) {
+            $batch->disableDelete();
+        });
 
         return $grid;
     }

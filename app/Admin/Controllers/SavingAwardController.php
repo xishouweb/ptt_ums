@@ -70,6 +70,9 @@ class SavingAwardController extends AdminController
         $grid->disableActions();
         $grid->disableExport();
         $grid->disableColumnSelector();
+        $grid->batchActions(function ($batch) {
+            $batch->disableDelete();
+        });
         return $grid;
     }
 
