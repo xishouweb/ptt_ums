@@ -274,11 +274,12 @@ class UserController extends Controller
             return $this->error('登录失败');
         }
 
-        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
-        if (!$result) {
+        $user = User::where('phone', $phone)->first();
+        $pwd_result = Hash::check($password, $user->password);
+        if (!$pwd_result) {
             return $this->error('账号或密码错误');
         }
-        $user = Auth::user();
+
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
 
         if (!$user->cloud_wallet_address) {
