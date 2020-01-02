@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/test111', function () {
-    return \App\Services\PttMasterAcount::sendTransaction('0xD7794113eb72EA5C0E63CB5294f2FC1bbCcD2984', 100000000000000000, '刘哼哼是最美的');
-});
+
 Route::get('/api/v1/track', 'Vendor\TrackController@upload');
 Route::get('/api/v1/trackr', 'Vendor\TrackController@uploadData');
 Route::post('/api/v1/track_node_call', 'Vendor\TrackController@record');
