@@ -139,12 +139,12 @@ class UserController extends Controller
             return response()->json(['message' => '手机号，密码和国家区号均不能为空'], 403);
         }
 
-        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
-        if (!$result) {
+        $user = User::where('phone', $request->input('phone'))->first();
+        $pwd_result = Hash::check($request->input('password'), $user->password);
+        if (!$pwd_result) {
             return response()->json(['message' => '账户不存在或密码错误'], 403);
         }
 
-        $user = Auth::user();
         $content['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         $content['message'] = '登录成功';
         return response()->json($content);

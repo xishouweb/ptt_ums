@@ -134,12 +134,10 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
-        if ($result) {
-            $user = Auth::user();
-
+        $user = User::where('phone', $request->input('phone'))->first();
+        $pwd_result = Hash::check($request->input('password'), $user->password);
+        if ($pwd_result) {
             $data = $user->baseInfo();
-
             try {
                 DB::beginTransaction();
                 $user->increaseVotes('ptt', User::LOGIN_VOTES, 'login');
