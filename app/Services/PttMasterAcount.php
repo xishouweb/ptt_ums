@@ -31,7 +31,7 @@ class PttMasterAcount {
                     'from' => $data['from'],
                     'to' => $to,
                     'value' => $value,
-                    'gasPrice' => 1000000000,
+                    'gasPrice' => static::getGasPrice(),
                     'gas' => 40000,
                     'keystoreJson' => $data['keystore'],
                     'password' => $data['password'],
