@@ -5,22 +5,41 @@ use GuzzleHttp\Client;
 
 class PttMasterAcount {
 
-    public static function sendTransaction($to, $value, $data = ''){
-        $url = config('app.ptt_ums_node_host') . "/eth/send_tx";
+    public static function sendTransaction($to, $value, $symbolName = "eth", $data = ''){
+        $url = config('app.ptt_ums_node_host');
        
         $client = new Client();
-        $res = $client->request('post', $url, [
-            'form_params' => [
-                'from' => config('app.ptt_master_address'),
-                'to' => $to,
-                'value' => $value,
-                'data' => $data,
-                'gasPrice' => static::getGasPrice(),
-                'gas' => 23000,
-                'keystoreJson' => config('app.ptt_master_address_keystore'),
-                'password' => config('app.ptt_master_address_password'),
-            ]
-        ]);
+
+        if ($symbolName == 'eth') {
+            $url .=  "/eth/send_eth";
+            $res = $client->request('post', $url, [
+                'form_params' => [
+                    'from' => config('app.ptt_master_address'),
+                    'to' => $to,
+                    'value' => $value,
+                    'data' => $data,
+                    'gasPrice' => static::getGasPrice(),
+                    'gas' => 23000,
+                    'keystoreJson' => config('app.ptt_master_address_keystore'),
+                    'password' => config('app.ptt_master_address_password'),
+                ]
+            ]);
+        } elseif ($symbolName == 'ptt') {
+            $url .=  "/eth/send_ptt";
+            $res = $client->request('post', $url, [
+                'form_params' => [
+                    'from' => $data['from'],
+                    'to' => $to,
+                    'value' => $value,
+                    'gasPrice' => 1000000000,
+                    'gas' => 40000,
+                    'keystoreJson' => $data['keystore'],
+                    'password' => $data['password'],
+                ]
+            ]);
+        }
+
+        
 
         $resData  = json_decode((string) $res->getBody(), true);
 
