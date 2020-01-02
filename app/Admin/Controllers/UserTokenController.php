@@ -92,6 +92,9 @@ class UserTokenController extends Controller
                 $filter->equal('token_type', 'token_type');
 
             });
+            $grid->batchActions(function ($batch) {
+                $batch->disableDelete();
+            });
         });
     }
 
