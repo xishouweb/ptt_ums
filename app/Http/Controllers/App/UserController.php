@@ -8,6 +8,7 @@ use App\Models\Photo;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -73,6 +74,7 @@ class UserController extends Controller
         $data['token'] = $request->header('Authorization');
         $data['has_trade_pwd'] = $user->trade_password ? true : false;
         $data['country'] = $user->country ?: '86';
+        $data['cloud_wallet_address'] = $user->cloud_wallet_address;
         return response()->json($data);
     }
 
@@ -137,12 +139,12 @@ class UserController extends Controller
             return response()->json(['message' => '手机号，密码和国家区号均不能为空'], 403);
         }
 
-        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
-        if (!$result) {
+        $user = User::where('phone', $request->input('phone'))->first();
+        $pwd_result = Hash::check($request->input('password'), $user->password);
+        if (!$pwd_result) {
             return response()->json(['message' => '账户不存在或密码错误'], 403);
         }
 
-        $user = Auth::user();
         $content['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         $content['message'] = '登录成功';
         return response()->json($content);
@@ -213,14 +215,16 @@ class UserController extends Controller
         try {
             $user = User::where('phone', $phone)->first();
             if (!$user) {
+                DB::beginTransaction();
                 $user = $this->store($phone, $country, $password);
+                $user->findOrCreateEthAccount();
+                DB::commit();
             }
             $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
-
-            $user->findOrCreateEthAccount();
         } catch (\Exception $e) {
             Log::error('注册失败，$phone ' . $phone);
             Log::error($e->getMessage());
+            DB::rollBack();
             return $this->error('注册失败');
         }
         return $this->apiResponse($data);
@@ -244,7 +248,18 @@ class UserController extends Controller
             return $this->error('用户不存在');
         }
 
-        $user->findOrCreateEthAccount();
+        if (!$user->cloud_wallet_address) {
+            try {
+                DB::beginTransaction();
+                $user->findOrCreateEthAccount();
+                DB::commit();
+            } catch (\Exception $e) {
+                Log::error('验证码登陆，生成address失败，$phone ' . $phone);
+                Log::error($e->getMessage());
+                DB::rollBack();
+                return $this->error('登录失败');
+            }
+        }
 
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         return $this->apiResponse($data);
@@ -259,13 +274,26 @@ class UserController extends Controller
             return $this->error('登录失败');
         }
 
-        $result = Auth::attempt(['phone' => $request->input('phone'), 'password' => $request->input('password')]);
-        if (!$result) {
+        $user = User::where('phone', $phone)->first();
+        $pwd_result = Hash::check($password, $user->password);
+        if (!$pwd_result) {
             return $this->error('账号或密码错误');
         }
-        $user = Auth::user();
+
         $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
-        $user->findOrCreateEthAccount();
+
+        if (!$user->cloud_wallet_address) {
+            try {
+                DB::beginTransaction();
+                $user->findOrCreateEthAccount();
+                DB::commit();
+            } catch (\Exception $e) {
+                Log::error('密码登陆，生成address失败，$phone ' . $phone);
+                Log::error($e->getMessage());
+                DB::rollBack();
+                return $this->error('登录失败');
+            }
+        }
         
         return $this->apiResponse($data);
     }

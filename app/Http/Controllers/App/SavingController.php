@@ -23,15 +23,24 @@ class SavingController extends Controller
     // 锁仓活动列表
     public function index(Request $request)
     {
+        $user = Auth::user();
         $lang = $request->input('lang', 'cn');
         $status = $request->input('status', 2);
         $page_size = $request->input('page_size', 10);
         $saving = Saving::where('type', Saving::TYPE_SAVING);
+
         if ($status == 0) {
             $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
         } else if ($status == 1) {
             $saving = $saving->where('status', Saving::SAVING_ACTIVATED_STATUS);
+        } else if ($status == 3 && $user) {
+            $join_saving_ids = SavingParticipateRecord::where('user_id', $user->id)
+                ->where('status', SavingParticipateRecord::STATUS_JOIN)
+                ->pluck('saving_id')
+                ->toArray();
+            $saving = $saving->whereIn('id', $join_saving_ids);
         }
+
         if ($lang == 'en') {
             $saving->select('id', 'title_en as title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
         } else {
@@ -39,8 +48,7 @@ class SavingController extends Controller
         }
         $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
 
-        if (Auth::check()) {
-            $user = Auth::user();
+        if ($user) {
             foreach ($data['data'] as &$datum) {
                 $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
             }
@@ -56,6 +64,7 @@ class SavingController extends Controller
     // 锁仓活动详情
     public function show(Request $request)
     {
+        $user = Auth::user();
         $id = $request->input('id');
         $lang = $request->input('lang', 'cn');
         $saving = Saving::where('id', $id);
@@ -76,8 +85,8 @@ class SavingController extends Controller
         $saving->awarded = 0;
         $saving->awarded_time = 0;
 
-        if (Auth::check()) {
-            $user = Auth::user();
+        if ($user) {
+            Log::info($user);
             $saving->awarded = round(SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->sum('award'), 6);
             $saving->awarded_time = SavingAward::where('user_id', $user->id)->where('saving_id', $saving->id)->count(['id']);
 
