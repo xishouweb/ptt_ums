@@ -50,17 +50,17 @@ class SavingController extends AdminController
         $grid->id('活动编号');
         $grid->column('status', '状态')->display(function ($status) {
             if ($status === 0) {
-                return "<h3><span class='label label-info'>已下线</span></h3>";
+                return "<h4><span class='label label-info'>已下线</span></h4>";
             } elseif ($status === 1) {
-                return "<h3><span class='label label-success'>进行中</span></h3>";
+                return "<h4><span class='label label-success'>进行中</span></h4>";
             } elseif ($status === 2) {
-                return "<h3><span class='label label-primary'>已通过</span></h3>";
+                return "<h4><span class='label label-primary'>已通过</span></h4>";
             } elseif ($status === 3) {
-                return "<h3><span class='label label-warning'>待审批</span></h3>";
+                return "<h4><span class='label label-warning'>待审批</span></h4>";
             } elseif ($status === 4) {
-                return "<h3><span class='label label-default'>已驳回</span></h3>";
+                return "<h4><span class='label label-default'>已驳回</span></h4>";
             } elseif ($status === 5) {
-                return "<h3><span class='label label-default'>已结束</span></h3>";
+                return "<h4><span class='label label-default'>已结束</span></h4>";
             }
            
         });
