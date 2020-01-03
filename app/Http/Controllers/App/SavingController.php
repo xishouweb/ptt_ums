@@ -182,12 +182,23 @@ class SavingController extends Controller
     public function riskStatement(Request $request)
     {
         $lang = $request->input('lang', 'cn');
+        $type = $request->input('type');
         if ($lang == 'en') {
-            $data['title'] = config('riskstatement.en.title');
-            $data['content'] = config('riskstatement.en.content');
+            if ($type == 1) {
+                $data['title'] = config('ServiceAgreement.en.title');
+                $data['content'] = config('ServiceAgreement.en.content');
+            } else {
+                $data['title'] = config('riskstatement.en.title');
+                $data['content'] = config('riskstatement.en.content');
+            }
         } else {
-            $data['title'] = config('riskstatement.cn.title');
-            $data['content'] = config('riskstatement.cn.content');
+            if ($type == 1) {
+                $data['title'] = config('ServiceAgreement.cn.title');
+                $data['content'] = config('ServiceAgreement.cn.content');
+            } else {
+                $data['title'] = config('riskstatement.cn.title');
+                $data['content'] = config('riskstatement.cn.content');
+            }
         }
         return $this->apiResponse($data);
     }
