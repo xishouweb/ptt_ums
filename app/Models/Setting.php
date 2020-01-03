@@ -8,17 +8,18 @@ class Setting extends Model
 {
     protected $fillable = ['key', 'value'];
 
-    public static function retrieve($key, $default = null, $createIfNotExist = false)
+    public static function retrieve($key, $value = null, $name = '', $createIfNotExist = false)
     {
         $model = self::where('key', $key)->first();
         if (!$model) {
             if ($createIfNotExist) {
                 self::create([
+                    'name'  => $name,
                     'key'   => $key,
-                    'value' => $default,
+                    'value' => $value,
                 ]);
             }
-            return $default;
+            return $value;
         }
         return $model->value;
     }
