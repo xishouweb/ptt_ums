@@ -10,9 +10,12 @@ use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class PttMonitorTrading extends Command
 {
+    use DispatchesJobs;
+
     /**
      * The name and signature of the console command.
      *
@@ -85,6 +88,7 @@ class PttMonitorTrading extends Command
                                     $transaction->save();
                                     $user_wallet->total_balance += $transaction->amount;
                                     $user_wallet->save();
+                                    $this->dispatch((new SendEth($transaction))->onQueue('send_eth'));
                                 } else {
                                     $transaction->block_confirm = $data->confirmations;
                                     $transaction->save();
