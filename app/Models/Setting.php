@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    protected $fillable = ['key', 'value'];
+    protected $fillable = ['name', 'key', 'value'];
 
     public static function retrieve($key, $value = null, $name = '', $createIfNotExist = false)
     {
