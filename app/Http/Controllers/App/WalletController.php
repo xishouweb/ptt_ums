@@ -7,6 +7,7 @@ use App\Models\Captcha;
 use App\Models\DataCache;
 use App\Models\Saving;
 use App\Models\SavingParticipateRecord;
+use App\Models\Setting;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
@@ -139,9 +140,9 @@ class WalletController extends Controller
         $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
         $data = [
             'avbl' => $balance ? $balance->total_balance - $balance->locked_balance : 0,
-            'transfer_limit' => 1000000,
-            'daily_transfer_limit' => 10000000,
-            'fee' => 100,
+            'transfer_limit' => Setting::retrieve('transfer_limit', 1000000, true),
+            'daily_transfer_limit' => Setting::retrieve('daily_transfer_limit', 10000000, true),
+            'fee' => Setting::retrieve('fee', 1000, true),
             'already_participate' => false,
             'saving_lower_limit' => 0,
         ];

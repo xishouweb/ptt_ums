@@ -6,5 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    //
+    public static function retrieve($key, $default = null, $createIfNotExist = false)
+    {
+        $model = self::where('key', $key)->first();
+        if (!$model) {
+            if ($createIfNotExist) {
+                self::create([
+                    'key'   => $key,
+                    'value' => $default,
+                ]);
+            }
+            return $default;
+        }
+        return $model->value;
+    }
 }
