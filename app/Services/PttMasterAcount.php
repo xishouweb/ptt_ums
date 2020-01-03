@@ -57,8 +57,12 @@ class PttMasterAcount {
         return $resData;
     }
 
-    public static function getBalance($address){
+    public static function getBalance($address, $symbolName = ''){
         $url = config('app.ptt_ums_node_host') . "/eth/balance?account=$address";
+        
+        if($symbolName) {
+            $url = $url .'&symbol=' . strtolower($symbolName); 
+        }
         
         $client = new Client();
         $res = $client->request('get', $url);
