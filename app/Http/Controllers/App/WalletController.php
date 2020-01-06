@@ -177,6 +177,20 @@ class WalletController extends Controller
         if ($available_balance < 0) {
             return $this->error();
         }
+        // 判断单次提款金额
+        $transfer_limit = Setting::retrieve('ptt_transfer_limit', 1000000, 'PTT单笔转账上限', true);
+        if ($transfer_limit < $amount) {
+            return $this->error('超过单次提款金额上限');
+        }
+        // 判断今日提款金额
+        $daily_transfer_limit = Setting::retrieve('ptt_daily_transfer_limit', 10000000, 'PTT每日转账上限', true);
+        $today_transfer_amount = UserWalletWithdrawal::where('user_id', $user->id)
+            ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
+            ->sum('amount') + $amount;
+        if ($daily_transfer_limit < $today_transfer_amount) {
+            return $this->error('超过今日提款金额上限');
+        }
+
         // 验证码
         $valid_captcha = Captcha::valid($user->phone, $captcha);
         if (!$valid_captcha) {
