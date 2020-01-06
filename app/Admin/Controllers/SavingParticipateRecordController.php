@@ -51,9 +51,9 @@ class SavingParticipateRecordController extends AdminController
             return $this->user['nickname'];
         });
         $grid->column('云端钱包可余额(PTT)')->display(function () {
-            $balance = $this->user->userWalletBalances->where('symbol', 'PTT');
+            $balance = $this->user->userWalletBalances->where('symbol', 'ptt');
             // dd($balance);
-            return $balance[0]['total_balance'] - $balance[0]['locked_balance'];
+            return number_format($balance[0]['total_balance'] - $balance[0]['locked_balance'], 4);
         });
 
         $grid->column('累计持仓天数')->display(function () {
@@ -61,7 +61,7 @@ class SavingParticipateRecordController extends AdminController
         });
 
         $grid->column('累计累计获得收益')->display(function () {
-            return $this->savingAwards()->sum('award');
+            return  number_format($this->savingAwards()->sum('award'), 4);
         });
 
         $grid->column('saving_id', '活动编号');

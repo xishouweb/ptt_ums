@@ -3,7 +3,7 @@ namespace App\Services;
  
 use GuzzleHttp\Client;
 
-class PttMasterAcount {
+class PttCloudAcount {
 
     public static function sendTransaction($to, $value, $symbolName = "eth", $data = ''){
         $url = config('app.ptt_ums_node_host');
@@ -57,8 +57,12 @@ class PttMasterAcount {
         return $resData;
     }
 
-    public static function getBalance($address){
+    public static function getBalance($address, $symbolName = ''){
         $url = config('app.ptt_ums_node_host') . "/eth/balance?account=$address";
+        
+        if($symbolName) {
+            $url = $url .'&symbol=' . strtolower($symbolName); 
+        }
         
         $client = new Client();
         $res = $client->request('get', $url);
