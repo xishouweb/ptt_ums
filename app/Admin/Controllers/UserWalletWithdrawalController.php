@@ -70,11 +70,11 @@ class UserWalletWithdrawalController extends AdminController
         });
 
         $grid->column('云端钱包可用余额(PTT)')->display(function () {
-            return number_format($this->getBalanceOf('ptt'));
+            return number_format($this->getBalanceOf('ptt'), 4);
         });
 
         $grid->column('amount', '提币数量')->display(function ($amount) {
-            return number_format($amount);
+            return number_format($amount, 4);
         });
         $grid->column('created_at', '提币时间');
 
@@ -171,10 +171,10 @@ class UserWalletWithdrawalController extends AdminController
                 $show->field('user_id', '提币用户ID');
                 $show->field('created_at', '申请时间');
                 $show->amount('提币数量')->unescape()->as(function ($amount) {
-                    return number_format($amount);
+                    return number_format($amount, 4);
                 });
                 $show->fee('提币手续费')->unescape()->as(function ($fee) {
-                    return number_format($fee);
+                    return number_format($fee, 4);
                 });
                 $show->to('到账地址')->unescape()->as(function ($to) {
                     return "<a href='https://etherscan.io/address/$to' target='_blank'>$to</a>";

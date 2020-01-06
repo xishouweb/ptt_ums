@@ -49,7 +49,7 @@ class SavingAwardController extends AdminController
             return date('Y-m-d', strtotime($created_at));
         });
         $grid->column('amount', '持仓数量')->display(function($amount){
-            return number_format($amount);
+            return number_format($amount, 4);
         });
 
         $grid->column('年化收益率')->display(function () {
@@ -57,7 +57,7 @@ class SavingAwardController extends AdminController
         });
 
         $grid->column('award', '当日获得收益')->display(function($award){
-            return number_format($award);
+            return number_format($award, 4);
         });
         $grid->column('saving_id', '持仓活动编号');
         

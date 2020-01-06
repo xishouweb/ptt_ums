@@ -62,10 +62,10 @@ class UserWalletTransactionController extends AdminController
         });
         
         $grid->amount('数量')->display(function ($amount) {
-            return number_format($amount);
+            return number_format($amount, 4);
         });
         $grid->fee('手续费')->display(function ($fee) {
-            return number_format($fee);
+            return number_format($fee, 4);
         });
 
         $grid->column('交易时间')->display(function () {
