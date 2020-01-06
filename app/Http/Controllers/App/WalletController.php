@@ -236,4 +236,15 @@ class WalletController extends Controller
         }
         return $this->success();
     }
+
+    public function checkTradePwd(Request $request)
+    {
+        $user = Auth::user();
+        $trade_password = $request->input('password');
+        $result = Hash::check($trade_password, $user->trade_password);
+        if (!$result) {
+            return $this->error('交易密码错误');
+        }
+        return $this->success();
+    }
 }
