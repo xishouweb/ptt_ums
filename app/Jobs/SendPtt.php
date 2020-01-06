@@ -59,32 +59,35 @@ class SendPtt implements ShouldQueue
            
                 $this->release(3 * 60);
             }
-        } else {
-            $ptt_balance = PttCloudAcount::getBalance(config('app.ptt_master_address'), 'ptt');
-            if ($ptt_balance < $tx->amount) {
-                \Log::error('汇总账户ptt不足, tx_id =' . $tx->id);
-                return;
-            }
+        } 
+        
+        // else {
+        //     $ptt_balance = PttCloudAcount::getBalance(config('app.ptt_master_address'), 'ptt');
+        //     if ($ptt_balance < $tx->amount) {
+        //         \Log::error('汇总账户ptt不足, tx_id =' . $tx->id);
+        //         return;
+        //     }
             
-            $eth_balance = PttCloudAcount::getBalance(config('app.ptt_master_address'));
-            if ($eth_balance < self::GAS_limit) {
-                \Log::error('汇总账户gas不足, 提币失败, tx_id =' . $tx->id);
-                return;
-            }
+        //     $eth_balance = PttCloudAcount::getBalance(config('app.ptt_master_address'));
+        //     if ($eth_balance < self::GAS_limit) {
+        //         \Log::error('汇总账户gas不足, 提币失败, tx_id =' . $tx->id);
+        //         return;
+        //     }
 
-            $record = PttCloudAcount::sendTransaction($tx->to, $tx->amount * self::DECIMALS, 'ptt', [
-                'from' => config('app.ptt_master_address'),
-                'keystore' => config('app.ptt_master_address_keystore'),
-                'password' => config('app.ptt_master_address_password'),
-            ]);
+        //     $record = PttCloudAcount::sendTransaction($tx->to, $tx->amount * self::DECIMALS, 'ptt', [
+        //         'from' => config('app.ptt_master_address'),
+        //         'keystore' => config('app.ptt_master_address_keystore'),
+        //         'password' => config('app.ptt_master_address_password'),
+        //     ]);
 
        
-        }
+        // }
 
         TransactionActionHistory::create([
             'user_id' => $user_id,
             'symbol' => $symbol,
             'amount' => $amount,
+            'type' => $this->type,
             'to' => $record['to'],
             'from' => $record['from'],
             'fee' => $record['gasUsed'] / self::DECIMALS,
