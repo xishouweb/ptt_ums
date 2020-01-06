@@ -16,15 +16,14 @@ class CreateTransactionActionHistoriesTable extends Migration
         Schema::create('transaction_action_histories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->nullable();
-            $table->string('address')->nullable();
-            $table->string('symbol')->nullable();
-            $table->integer('type')->nullable();
-            $table->integer('status')->nullable();
+            $table->string('symbol', 10)->nullable();
+            $table->string('type', 10)->nullable();
+            $table->integer('status')->default(0);
             $table->double('amount')->default(0);
-            $table->string('to')->nullable();
-            $table->string('from')->nullable();
+            $table->string('to', 100)->nullable();
+            $table->string('from', 100)->nullable();
             $table->double('fee')->nullable();
-            $table->string('tx_hash')->nullable();
+            $table->string('tx_hash', 100)->nullable();
             $table->integer('block_number')->nullable();
 
             $table->string('payload', 2000)->nullable();
@@ -32,7 +31,8 @@ class CreateTransactionActionHistoriesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->index('user_id');
-            $table->index('address');
+            $table->index('to');
+            $table->index('from');
             $table->index('symbol');
             $table->index('type');
         });
