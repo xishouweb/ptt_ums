@@ -46,7 +46,7 @@ class WalletController extends Controller
             foreach ($balances as $balance) {
                 foreach ($data['list'] as &$datum) {
                     if ($balance->symbol == $datum['symbol']) {
-                        $datum['amount'] = round($balance->total_balance, 6);
+                        $datum['amount'] = round($balance->total_balance, 4);
                     }
                 }
             }
@@ -83,7 +83,7 @@ class WalletController extends Controller
         ];
         if ($balance) {
             $price = ToolController::getCurrencyPrice($symbol, $currency);
-            $data['amount'] += round($balance->total_balance, 6);
+            $data['amount'] += round($balance->total_balance, 4);
             $data['asset_balance'] += round($balance->total_balance * $price, 2);
             if ($symbol == 'ptt') {
                 $data['icon'] = 'http://images.proton.global/0x4689a4e169eb39cc9078c0940e21ff1aa8a39b9c.png';
@@ -103,7 +103,7 @@ class WalletController extends Controller
             return $this->error();
         }
         $transactions = UserWalletTransaction::where('user_id', $user->id)
-            ->select('id', 'user_id', 'symbol', 'type', DB::raw('ROUND(amount, 6) as amount'), 'status', 'created_at', 'completed_at', 'block_confirm', 'rate');
+            ->select('id', 'user_id', 'symbol', 'type', DB::raw('ROUND(amount, 4) as amount'), 'status', 'created_at', 'completed_at', 'block_confirm', 'rate');
         if ($type) {
             $transactions = $transactions->where('type', $type);
         }
@@ -121,7 +121,7 @@ class WalletController extends Controller
         }
         $transaction = UserWalletTransaction::where('id', $id)
             ->where('user_id', $user->id)
-            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', DB::raw('ROUND(amount, 6) as amount'), 'to', 'from', 'fee', 'tx_hash', 'block_number')
+            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', DB::raw('ROUND(amount, 4) as amount'), 'to', 'from', 'fee', 'tx_hash', 'block_number')
             ->first();
         if (!$transaction) {
             return $this->error();
