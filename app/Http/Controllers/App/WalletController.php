@@ -190,7 +190,6 @@ class WalletController extends Controller
         if ($daily_transfer_limit < $today_transfer_amount) {
             return $this->error('超过今日提款金额上限');
         }
-
         // 验证码
         $valid_captcha = Captcha::valid($user->phone, $captcha);
         if (!$valid_captcha) {
