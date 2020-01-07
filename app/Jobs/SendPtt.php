@@ -20,8 +20,10 @@ class SendPtt implements ShouldQueue
     protected $type;
     
     const TRANSFOR_LIMIT = 1;
-    const GAS_limit = 40000;
+    const GAS_limit = 65000;
     const DECIMALS = 1000000000000000000;
+
+    public $timeout = 180;
 
     public function __construct($tx, $type)
 	{
@@ -31,72 +33,73 @@ class SendPtt implements ShouldQueue
     
     public function handle() 
 	{
-        $tx = $this->tx;
-        $symbol = $tx->symbol;
-        $user_id = $tx->user_id;
-        $amount = $tx->amount;
+        try {
+            $tx = $this->tx;
 
-        if ($this->type = 'receive') {
-            $ptt_balance = PttCloudAcount::getBalance($tx->address, 'ptt');
-            \Log::info('ptt 余额 ====> ' . $ptt_balance);
-            if ($ptt_balance < self::TRANSFOR_LIMIT * self::DECIMALS) return;
-
-            $eth_balance = PttCloudAcount::getBalance($tx->address);
-            \Log::info('eth 余额 ====> ' . $eth_balance);
-
-            if ($eth_balance >= self::GAS_limit) {
-                $wallet = UserWallet::whereUserId($tx->user_id)->whereAddress($tx->address)->first();
-                $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), $tx->amount * self::DECIMALS, 'ptt', [
-                    'from' => $tx->address,
-                    'keystore' => $wallet->key_store,
-                    'password' => decrypt($wallet->password),
-                ]);
-                \Log::info('转账详情 ======> ', [$record]);
-            } else {
-                $record = PttCloudAcount::sendTransaction($tx->address, self::GAS_limit, 'gas');
-                \Log::info('gsa转账详情 ======> ', [$record]);
-                TransactionActionHistory::create([
-                    'user_id' => null,
-                    'symbol' => 'eth',
-                    'amount' => $amount,
-                    'type' => 'gas',
-                    'to' => $record['to'],
-                    'from' => $record['from'],
-                    'fee' => $record['gasUsed'] / self::DECIMALS,
-                    'tx_hash' => $record['transactionHash'],
-                    'block_number' => $record['blockNumber'],
-                    'payload' => json_encode($record)
-                ]);
-
-                $this->release(3 * 60);
+            $wallet = UserWallet::whereUserId($tx->user_id)->whereAddress($tx->address)->first();
+            if (!$wallet) {
+                \Log::error('未找到该用户钱包信息 ===> ', [$tx]);
+                return;
             }
-        } 
-        
-        // else {
-        //     $ptt_balance = PttCloudAcount::getBalance(config('app.ptt_master_address'), 'ptt');
-        //     if ($ptt_balance < $tx->amount) {
-        //         \Log::error('汇总账户ptt不足, tx_id =' . $tx->id);
-        //         return;
-        //     }
-            
-        //     $eth_balance = PttCloudAcount::getBalance(config('app.ptt_master_address'));
-        //     if ($eth_balance < self::GAS_limit) {
-        //         \Log::error('汇总账户gas不足, 提币失败, tx_id =' . $tx->id);
-        //         return;
-        //     }
 
-        //     $record = PttCloudAcount::sendTransaction($tx->to, $tx->amount * self::DECIMALS, 'ptt', [
-        //         'from' => config('app.ptt_master_address'),
-        //         'keystore' => config('app.ptt_master_address_keystore'),
-        //         'password' => config('app.ptt_master_address_password'),
-        //     ]);
+            if ($this->type = 'receive') {
+                $ptt_balance = PttCloudAcount::getBalance($tx->address, 'ptt');
+                \Log::info('ptt 余额 ====> ' . $ptt_balance);
+                if ($ptt_balance < self::TRANSFOR_LIMIT * self::DECIMALS) return;
 
-       
-        // }
+                $eth_balance = PttCloudAcount::getBalance($tx->address);
+                \Log::info('eth 余额 ====> ' . $eth_balance);
 
-        
-        
+                if ($eth_balance >= self::GAS_limit) {
+                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), $tx->amount * self::DECIMALS, 'ptt', [
+                        'from' => $tx->address,
+                        'keystore' => $wallet->key_store,
+                        'password' => decrypt($wallet->password),
+                    ]);
+                    TransactionActionHistory::create([
+                        'user_id' => $x->user_id,
+                        'symbol' => 'ptt',
+                        'amount' => $tx->amount,
+                        'status' => TransactionActionHistory::STATUS_SUSSESS,
+                        'type' => 'receive',
+                        'to' => $record['to'],
+                        'from' => $record['from'],
+                        'fee' => $record['gasUsed'] / self::DECIMALS,
+                        'tx_hash' => $record['transactionHash'],
+                        'block_number' => $record['blockNumber'],
+                        'payload' => json_encode($record)
+                    ]);
+                    \Log::info('转账详情 ======> ', [$record]);
+                } else {
+                    $record = PttCloudAcount::sendTransaction($tx->address, self::GAS_limit, 'gas');
+                    \Log::info('gsa转账详情 ======> ', [$record]);
+                    TransactionActionHistory::create([
+                        'user_id' => $tx->user_id,
+                        'symbol' => 'eth',
+                        'amount' => self::GAS_limit,
+                        'status' => TransactionActionHistory::STATUS_SUSSESS,
+                        'type' => 'gas',
+                        'to' => $record['to'],
+                        'from' => $record['from'],
+                        'fee' => $record['gasUsed'] / self::DECIMALS,
+                        'tx_hash' => $record['transactionHash'],
+                        'block_number' => $record['blockNumber'],
+                        'payload' => json_encode($record)
+                    ]);
 
-
+                    $this->release(3 * 60);
+                }
+            } 
+        } catch (\Exception $e) {
+            \Log::error('队列转账失败 ===> ', [$e->getMessage()]);
+            TransactionActionHistory::create([
+                'user_id' => $tx->user_id,
+                'symbol' => 'ptt',
+                'amount' => $tx->amount,
+                'status' => TransactionActionHistory::STATUS_FAILED,
+                'type' => 'receive',
+                'from' => $tx->from,
+            ]);
+        }
     }
 }
