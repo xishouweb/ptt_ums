@@ -20,7 +20,7 @@ class SendPtt implements ShouldQueue
     protected $type;
     
     const TRANSFOR_LIMIT = 1;
-    const GAS_limit = 65000;
+    const GAS_limit = 100000;
     const DECIMALS = 1000000000000000000;
 
     public $timeout = 180;
@@ -51,7 +51,7 @@ class SendPtt implements ShouldQueue
                 \Log::info('eth 余额 ====> ' . $eth_balance);
 
                 if ($eth_balance >= self::GAS_limit) {
-                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), $tx->amount * self::DECIMALS, 'ptt', [
+                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), number_format($tx->amount * self::DECIMALS, 0, '', ''), 'ptt', [
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
                         'password' => decrypt($wallet->password),
@@ -71,7 +71,7 @@ class SendPtt implements ShouldQueue
                     ]);
                     \Log::info('转账详情 ======> ', [$record]);
                 } else {
-                    $record = PttCloudAcount::sendTransaction($tx->address, self::GAS_limit, 'gas');
+                    $record = PttCloudAcount::sendTransaction($tx->address, self::GAS_limit);
                     \Log::info('gsa转账详情 ======> ', [$record]);
                     TransactionActionHistory::create([
                         'user_id' => $tx->user_id,
