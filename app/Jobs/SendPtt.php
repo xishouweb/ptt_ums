@@ -20,7 +20,7 @@ class SendPtt implements ShouldQueue
     protected $type;
     
     const TRANSFOR_LIMIT = 1;
-    const GAS_limit = 100000;
+    const GAS_limit = 65000;
     const DECIMALS = 1000000000000000000;
 
     public $timeout = 180;
@@ -41,7 +41,7 @@ class SendPtt implements ShouldQueue
                 \Log::error('未找到该用户钱包信息 ===> ', [$tx]);
                 return;
             }
-
+            $gasPrice = PttCloudAcount::getGasPrice();
             if ($this->type = 'receive') {
                 $ptt_balance = PttCloudAcount::getBalance($tx->address, 'ptt');
                 \Log::info('ptt 余额 ====> ' . $ptt_balance);
@@ -50,7 +50,7 @@ class SendPtt implements ShouldQueue
                 $eth_balance = PttCloudAcount::getBalance($tx->address);
                 \Log::info('eth 余额 ====> ' . $eth_balance);
 
-                if ($eth_balance >= self::GAS_limit) {
+                if ($eth_balance >= self::GAS_limit * $gasPrice) {
                     $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), number_format($tx->amount * self::DECIMALS, 0, '', ''), 'ptt', [
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
@@ -71,7 +71,7 @@ class SendPtt implements ShouldQueue
                     ]);
                     \Log::info('转账详情 ======> ', [$record]);
                 } else {
-                    $record = PttCloudAcount::sendTransaction($tx->address, self::GAS_limit);
+                    $record = PttCloudAcount::sendTransaction($tx->address, number_format(self::GAS_limit * $gasPrice, 0, '', ''));
                     \Log::info('gsa转账详情 ======> ', [$record]);
                     TransactionActionHistory::create([
                         'user_id' => $tx->user_id,
