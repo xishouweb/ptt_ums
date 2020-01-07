@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 
 class PttCloudAcount {
 
-    public static function sendTransaction($to, $value, $symbolName = "eth", $data = ''){
+    public static function sendTransaction($to, $value, $gasPrice, $symbolName = "eth", $data = ''){
         $url = config('app.ptt_ums_node_host');
        
         $client = new Client();
@@ -18,7 +18,7 @@ class PttCloudAcount {
                     'to' => $to,
                     'value' => $value,
                     'data' => $data,
-                    'gasPrice' => static::getGasPrice(),
+                    'gasPrice' => $gasPrice,
                     'gas' => 23000,
                     'keystoreJson' => config('app.ptt_master_address_keystore'),
                     'password' => config('app.ptt_master_address_password'),
@@ -31,7 +31,7 @@ class PttCloudAcount {
                     'from' => $data['from'],
                     'to' => $to,
                     'value' => $value,
-                    'gasPrice' => static::getGasPrice(),
+                    'gasPrice' => $gasPrice,
                     'gas' => 65000,
                     'keystoreJson' => $data['keystore'],
                     'password' => $data['password'],
