@@ -5,6 +5,8 @@ namespace App\Admin\Controllers;
 use App\Models\UserWalletWithdrawal;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletBalance;
+use App\Services\PttCloudAcount;
+use App\Models\TransactionActionHistory;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Layout\Row;
@@ -315,56 +317,72 @@ class UserWalletWithdrawalController extends AdminController
     }
 
     public function getApprove($id)
-    {
-        // dd(request()->all());
-        $validator = Validator::make(request()->all(), [
-            'tx_hash' => 'required|size:66',
-            'from_address' => 'required|size:42',
-        ]);
-
-        if ($validator->fails()) {
-            admin_toastr('错误提示: 你填写的tx hash或者address无效','error');
-
-            return redirect("/admin/wallet/user-wallet-withdrawals/$id")
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $record = UserWalletWithdrawal::findOrFail($id);
-        if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
-            dd(request()->all());
-            return redirect("/admin/wallet/user-wallet-withdrawals/$id");
-        }
-
+    { 
         try {
+            
 
-            DB::beginTransaction();
-            $record->status = UserWalletWithdrawal::COMPLETE_STATUS;
-
-            $record->approver_id = Admin::user()->id;
-            $record->from = request()->input('from_address');
-            $record->save();
-
+            $record = UserWalletWithdrawal::findOrFail($id);
+            if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
+                return redirect("/admin/wallet/user-wallet-withdrawals/$id");
+            }
+    
             $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
-            $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
-            $tx->tx_hash = request()->input('tx_hash');
-            $tx->from = request()->input('from_address');
-            $tx->save();
-
+            if(!$tx){
+                return redirect("/admin/wallet/user-wallet-withdrawals/$id");
+            }
+    
             $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
             $spending = $tx->fee + $tx->amount;
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
                 throw new \Exception("余额不足, 请检查账户余额");
-
             }
+
+            $block = PttCloudAcount::sendTransaction($tx->to, $spending * 1000000000000000000, 'ptt', [
+                'from' => config('app.ptt_master_address'),
+                'keystore' => config('app.ptt_master_address_keystore'),
+                'password' => config('app.ptt_master_address_password'),
+            ]);
+
+            TransactionActionHistory::create([
+                'user_id' => $tx->user_id,
+                'symbol' => 'ptt',
+                'amount' => $spending,
+                'type' => 'send',
+                'to' => $block['to'],
+                'from' => $block['from'],
+                'fee' => $block['gasUsed'] / 1000000000000000000,
+                'tx_hash' => $block['transactionHash'],
+                'block_number' => $block['blockNumber'],
+                'payload' => json_encode($block)
+            ]);
+
+            DB::beginTransaction();
+            
             $balance->locked_balance -= $spending;
             $balance->total_balance -= $spending;
             $balance->save();
+            
+            if(!$block['status']) throw new Exception("转账失败,请检查gas");
+            
+
+            $record->status = UserWalletWithdrawal::COMPLETE_STATUS;
+
+            $record->approver_id = Admin::user()->id;
+            $record->from = $block['from'];
+            $record->save();
+
+            $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
+            $tx->tx_hash = $block['transactionHash'];
+            $tx->from = $block['from'];
+            $tx->save();
+
+            
 
             DB::commit();
 
         } catch (\Exception $e) {
-            admin_toastr($e->getMessage(),'error');
+            admin_toastr('操作失败, 请检查提币账户余额或与管理员联系','error');
+            \Log::error($e->getMessage());
             DB::rollBack();
         }
 

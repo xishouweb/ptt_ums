@@ -32,7 +32,7 @@ class PttCloudAcount {
                     'to' => $to,
                     'value' => $value,
                     'gasPrice' => static::getGasPrice(),
-                    'gas' => 40000,
+                    'gas' => 65000,
                     'keystoreJson' => $data['keystore'],
                     'password' => $data['password'],
                 ]
