@@ -7,6 +7,7 @@ use App\Models\DataCache;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use GuzzleHttp\Client;
+use App\Jobs\SendPtt;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -88,7 +89,7 @@ class PttMonitorTrading extends Command
                                     $transaction->save();
                                     $user_wallet->total_balance += $transaction->amount;
                                     $user_wallet->save();
-                                    
+
                                     $this->dispatch((new SendPtt($transaction, 'receive'))->onQueue('send_ptt'));
                                 } else {
                                     $transaction->block_confirm = $data->confirmations;
