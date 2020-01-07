@@ -319,7 +319,7 @@ class UserWalletWithdrawalController extends AdminController
     public function getApprove($id)
     { 
         try {
-            DB::beginTransaction();
+            
 
             $record = UserWalletWithdrawal::findOrFail($id);
             if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
@@ -337,18 +337,31 @@ class UserWalletWithdrawalController extends AdminController
                 throw new \Exception("余额不足, 请检查账户余额");
             }
 
-
-            
-            $balance->locked_balance -= $spending;
-            $balance->total_balance -= $spending;
-            $balance->save();
-
             $block = PttCloudAcount::sendTransaction($tx->to, $spending * 1000000000000000000, 'ptt', [
                 'from' => config('app.ptt_master_address'),
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
             ]);
 
+            TransactionActionHistory::create([
+                'user_id' => $tx->user_id,
+                'symbol' => 'ptt',
+                'amount' => $spending,
+                'type' => 'send',
+                'to' => $block['to'],
+                'from' => $block['from'],
+                'fee' => $block['gasUsed'] / 1000000000000000000,
+                'tx_hash' => $block['transactionHash'],
+                'block_number' => $block['blockNumber'],
+                'payload' => json_encode($block)
+            ]);
+
+            DB::beginTransaction();
+            
+            $balance->locked_balance -= $spending;
+            $balance->total_balance -= $spending;
+            $balance->save();
+            
             if(!$block['status']) throw new Exception("转账失败,请检查gas");
             
 
@@ -363,18 +376,6 @@ class UserWalletWithdrawalController extends AdminController
             $tx->from = $block['from'];
             $tx->save();
 
-            TransactionActionHistory::create([
-                'user_id' => $tx->user_id,
-                'symbol' => 'ptt',
-                'amount' => $spending,
-                'type' => 'send',
-                'to' => $block['to'],
-                'from' => $block['from'],
-                'fee' => $block['gasUsed'] / 1000000000000000000,
-                'tx_hash' => $block['transactionHash'],
-                'block_number' => $block['blockNumber'],
-                'payload' => json_encode($block)
-            ]);
             
 
             DB::commit();

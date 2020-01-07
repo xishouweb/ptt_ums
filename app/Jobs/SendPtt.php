@@ -19,7 +19,7 @@ class SendPtt implements ShouldQueue
     protected $tx;
     protected $type;
     
-    const TRANSFOR_LIMIT = 10000;
+    const TRANSFOR_LIMIT = 1;
     const GAS_limit = 40000;
     const DECIMALS = 1000000000000000000;
 
@@ -38,10 +38,11 @@ class SendPtt implements ShouldQueue
 
         if ($this->type = 'receive') {
             $ptt_balance = PttCloudAcount::getBalance($tx->address, 'ptt');
-
+            \Log::info('ptt 余额 ====> ' . $ptt_balance);
             if ($ptt_balance < self::TRANSFOR_LIMIT * self::DECIMALS) return;
 
             $eth_balance = PttCloudAcount::getBalance($tx->address);
+            \Log::info('eth 余额 ====> ' . $eth_balance);
 
             if ($eth_balance >= self::GAS_limit) {
                 $wallet = UserWallet::whereUserId($tx->user_id)->whereAddress($tx->address)->first();
@@ -50,13 +51,23 @@ class SendPtt implements ShouldQueue
                     'keystore' => $wallet->key_store,
                     'password' => decrypt($wallet->password),
                 ]);
-
+                \Log::info('转账详情 ======> ', [$record]);
             } else {
-                $user_id = null;
                 $record = PttCloudAcount::sendTransaction($tx->address, self::GAS_limit, 'gas');
-                $symbol = 'eth';
-                $amount = self::GAS_limit / self::DECIMALS;
-           
+                \Log::info('gsa转账详情 ======> ', [$record]);
+                TransactionActionHistory::create([
+                    'user_id' => null,
+                    'symbol' => 'eth',
+                    'amount' => $amount,
+                    'type' => 'gas',
+                    'to' => $record['to'],
+                    'from' => $record['from'],
+                    'fee' => $record['gasUsed'] / self::DECIMALS,
+                    'tx_hash' => $record['transactionHash'],
+                    'block_number' => $record['blockNumber'],
+                    'payload' => json_encode($record)
+                ]);
+
                 $this->release(3 * 60);
             }
         } 
@@ -83,18 +94,7 @@ class SendPtt implements ShouldQueue
        
         // }
 
-        TransactionActionHistory::create([
-            'user_id' => $user_id,
-            'symbol' => $symbol,
-            'amount' => $amount,
-            'type' => $this->type,
-            'to' => $record['to'],
-            'from' => $record['from'],
-            'fee' => $record['gasUsed'] / self::DECIMALS,
-            'tx_hash' => $record['transactionHash'],
-            'block_number' => $record['blockNumber'],
-            'payload' => json_encode($record)
-        ]);
+        
         
 
 
