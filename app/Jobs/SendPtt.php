@@ -20,7 +20,7 @@ class SendPtt implements ShouldQueue
     protected $type;
     
     const TRANSFOR_LIMIT = 1;
-    const GAS_limit = 65000;
+    const GAS_limit = 60000;
     const DECIMALS = 1000000000000000000;
 
     public $timeout = 180;
@@ -51,7 +51,7 @@ class SendPtt implements ShouldQueue
                 \Log::info('eth 余额 ====> ' . $eth_balance);
 
                 if ($eth_balance >= self::GAS_limit * $gasPrice) {
-                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), number_format($tx->amount * self::DECIMALS, 0, '', ''), 'ptt', [
+                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), number_format($tx->amount * self::DECIMALS, 0, '', ''), $gasPrice, 'ptt', [
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
                         'password' => decrypt($wallet->password),
@@ -64,24 +64,24 @@ class SendPtt implements ShouldQueue
                         'type' => 'receive',
                         'to' => $record['to'],
                         'from' => $record['from'],
-                        'fee' => $record['gasUsed'] / self::DECIMALS,
+                        'fee' => $record['gasUsed'] * $gasPrice,
                         'tx_hash' => $record['transactionHash'],
                         'block_number' => $record['blockNumber'],
                         'payload' => json_encode($record)
                     ]);
                     \Log::info('转账详情 ======> ', [$record]);
                 } else {
-                    $record = PttCloudAcount::sendTransaction($tx->address, number_format(self::GAS_limit * $gasPrice, 0, '', ''));
+                    $record = PttCloudAcount::sendTransaction($tx->address, number_format(self::GAS_limit * $gasPrice, 0, '', ''), $gasPrice);
                     \Log::info('gsa转账详情 ======> ', [$record]);
                     TransactionActionHistory::create([
                         'user_id' => $tx->user_id,
                         'symbol' => 'eth',
-                        'amount' => self::GAS_limit,
+                        'amount' => self::GAS_limit * $gasPrice,
                         'status' => TransactionActionHistory::STATUS_SUSSESS,
                         'type' => 'gas',
                         'to' => $record['to'],
                         'from' => $record['from'],
-                        'fee' => $record['gasUsed'] / self::DECIMALS,
+                        'fee' => $record['gasUsed'] * $gasPrice,
                         'tx_hash' => $record['transactionHash'],
                         'block_number' => $record['blockNumber'],
                         'payload' => json_encode($record)
