@@ -60,33 +60,27 @@ class SavingIssueReward extends Command
                 ->pluck('user_id')
                 ->toArray();
             foreach ($user_ids as $user_id) {
-                $saving_days = SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00', strtotime('-2 day')))
-                    ->where('created_at', '<=', date('Y-m-d 23:59:59', strtotime('-1 day')))
-                    ->where('status', SavingStatus::STATUS_ENOUGH)
+                $saving_days = SavingStatus::where('status', SavingStatus::STATUS_ENOUGH)
+                    ->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime('-2 day')), date('Y-m-d 23:59:59', strtotime('-1 day'))])
                     ->where('user_id', $user_id)
                     ->where('saving_id', $saving->id)
                     ->count(['id']);
                 Log::info('user_id = ' . $user_id . ' days = ' . $saving_days);
                 if ($saving_days >= Saving::SAVING_ISSUE_REWARD_DAYS) {
                     try {
-                        $saving_status = SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00', strtotime('-1 day')))
-                            ->where('created_at', '<=', date('Y-m-d 23:59:59', strtotime('-1 day')))
+                        $saving_status = SavingStatus::where('user_id', $user_id)
+                            ->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime('-1 day')), date('Y-m-d 23:59:59', strtotime('-1 day'))])
                             ->first();
                         DB::beginTransaction();
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
-                        Log::info($saving_status->total_balance . ' ' . $saving->rate);
-                        Log::info($saving_status->total_balance * $saving->rate / 365);
-                        $award = round($saving_status->total_balance * $saving->rate / 365, 6);
-                        Log::info($award);
-                        $is_exist_tran = UserWalletTransaction::where('created_at', '>=', date('Y-m-d 00:00:00'))
-                            ->where('created_at', '<=', date('Y-m-d 23:59:59'))
-                            ->where('user_id', $user_id)
+                        $award = round($saving_status->total_balance * $saving->rate / 365, 8);
+                        $is_exist_tran = UserWalletTransaction::where('user_id', $user_id)
+                            ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
                             ->where('type', UserWalletTransaction::AWARD_TYPE)
                             ->count(['id']);
-                        $is_exist_award = SavingAward::where('created_at', '>=', date('Y-m-d 00:00:00'))
-                            ->where('created_at', '<=', date('Y-m-d 23:59:59'))
-                            ->where('user_id', $user_id)
+                        $is_exist_award = SavingAward::where('user_id', $user_id)
+                            ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
                             ->where('saving_id', $saving->id)
                             ->count(['id']);
                         if ($is_exist_tran || $is_exist_award) {
@@ -107,12 +101,12 @@ class SavingIssueReward extends Command
                         $saving_award_data = [
                             'user_id'   => $user_id,
                             'saving_id' => $saving->id,
-                            'amount'    => round($user_wallet->total_balance + $award, 6),
+                            'amount'    => $user_wallet->total_balance + round($award, 8),
                             'award'     => $award
                         ];
                         SavingAward::create($saving_award_data);
                         // 增加余额
-                        $user_wallet->total_balance = round($user_wallet->total_balance + $award, 6);
+                        $user_wallet->total_balance += round($award, 8);
                         $user_wallet->save();
                         DB::commit();
                         Log::info('持仓奖励已发放，user_id = ' . $user_id);
