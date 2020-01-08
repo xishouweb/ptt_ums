@@ -9,8 +9,7 @@
 return [
     'cn' => [
         'title' => 'Proton 质子服务协议',
-        'content' => "Proton 质子服务协议
-最近更新于：2018年9月26日
+        'content' => "最近更新于：2018年9月26日
 
 尊敬的用户：
 感谢您选择 Proton 质子服务。《Proton 质子服务协议》（以下简称“本协议”）由 PROTON GLOBAL FOUNDATION LTD（以下简称“我们”）和用户（以下简称“您”或“用户”）签订，本协议在您与我们之间具有合同上的法律效力。
@@ -273,8 +272,7 @@ Proton Global Foundation Ltd.
     ],
     'en' => [
         'title' => 'Proton Terms of Service',
-        'content' => "Proton Terms of Service
-Last Updated: September 26, 2018.
+        'content' => "Last Updated: September 26, 2018.
 
 Dear User,
 Thank you for choosing Proton. This Proton Terms of Service (“Agreement”) is made between you (“you” or “User”) and Proton Global Foundation Ltd. (“Proton Global Foundation” or “we”) and is legally binding between you and Proton Global Foundation.
