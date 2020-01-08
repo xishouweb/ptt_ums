@@ -74,7 +74,8 @@ class SavingIssueReward extends Command
                         DB::beginTransaction();
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
-                        $award = round($saving_status->total_balance * $saving->rate / 365, 8);
+                        $days = date('L') == 1 ? 366 : 365;
+                        $award = round($saving_status->total_balance * $saving->rate / $days, 8);
                         $is_exist_tran = UserWalletTransaction::where('user_id', $user_id)
                             ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
                             ->where('type', UserWalletTransaction::AWARD_TYPE)
