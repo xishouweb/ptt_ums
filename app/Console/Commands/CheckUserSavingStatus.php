@@ -60,7 +60,9 @@ class CheckUserSavingStatus extends Command
                 ->toArray();
             foreach ($user_ids as $user_id) {
                 $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
-                $last_record = SavingStatus::whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])->first();
+                $last_record = SavingStatus::where('user_id', $user_id)
+                    ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
+                    ->first();
                 if (!$last_record) {
                     $data = [
                         'user_id' => $user_wallet->user_id,
