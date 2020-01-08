@@ -58,7 +58,7 @@ class SendPtt implements ShouldQueue
                         'password' => decrypt($wallet->password),
                     ]);
                     TransactionActionHistory::create([
-                        'user_id' => $x->user_id,
+                        'user_id' => $tx->user_id,
                         'symbol' => 'ptt',
                         'amount' => $tx->amount,
                         'status' => TransactionActionHistory::STATUS_SUSSESS,
