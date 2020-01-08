@@ -336,8 +336,8 @@ class UserWalletWithdrawalController extends AdminController
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
                 throw new \Exception("余额不足, 请检查账户余额");
             }
-
-            $block = PttCloudAcount::sendTransaction($tx->to, $spending * 1000000000000000000, 'ptt', [
+            $gasPrice = PttCloudAcount::getGasPrice();
+            $block = PttCloudAcount::sendTransaction($tx->to,  number_format($spending * 1000000000000000000, 0, '', ''), $gasPrice,'ptt', [
                 'from' => config('app.ptt_master_address'),
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
@@ -347,10 +347,11 @@ class UserWalletWithdrawalController extends AdminController
                 'user_id' => $tx->user_id,
                 'symbol' => 'ptt',
                 'amount' => $spending,
+                'status' => TransactionActionHistory::STATUS_SUSSESS,
                 'type' => 'send',
                 'to' => $block['to'],
                 'from' => $block['from'],
-                'fee' => $block['gasUsed'] / 1000000000000000000,
+                'fee' => $block['gasUsed']  * $gasPrice,
                 'tx_hash' => $block['transactionHash'],
                 'block_number' => $block['blockNumber'],
                 'payload' => json_encode($block)
@@ -361,7 +362,7 @@ class UserWalletWithdrawalController extends AdminController
             $balance->locked_balance -= $spending;
             $balance->total_balance -= $spending;
             $balance->save();
-            
+
             if(!$block['status']) throw new Exception("转账失败,请检查gas");
             
 
