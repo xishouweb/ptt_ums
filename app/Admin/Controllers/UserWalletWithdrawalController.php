@@ -135,6 +135,8 @@ class UserWalletWithdrawalController extends AdminController
             $statusStr = "<h3><span class='label label-success'>已通过</span></h3>";
         } elseif ($record->status === 2) {
             $statusStr = "<h3><span class='label label-default'>已拒绝</span></h3>";
+        } elseif ($record->status === 3) {
+            $statusStr = "<h3><span class='label label-info'>转账处理中</span></h3>";
         }
 
         $actionStr = '';
@@ -332,7 +334,7 @@ class UserWalletWithdrawalController extends AdminController
             }
     
             $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
-            $spending = $tx->fee + $tx->amount;
+            $spending = $tx->fee + abs($tx->amount);
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
                 throw new \Exception("余额不足, 请检查账户余额");
             }
