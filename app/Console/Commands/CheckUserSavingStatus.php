@@ -60,26 +60,26 @@ class CheckUserSavingStatus extends Command
                 ->toArray();
             foreach ($user_ids as $user_id) {
                 $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
-                if ($user_wallet && $user_wallet->total_balance >= $saving->entry_standard) {
-                    SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00'))
-                        ->where('created_at', '<=', date('Y-m-d 23:59:59'))
-                        ->updateOrCreate([
-                            'user_id' => $user_wallet->user_id
-                        ], [
-                            'saving_id' => $saving->id,
-                            'status' => SavingStatus::STATUS_ENOUGH,
-                            'total_balance' => $user_wallet->total_balance
-                        ]);
+                $last_record = SavingStatus::whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])->first();
+                if (!$last_record) {
+                    $data = [
+                        'user_id' => $user_wallet->user_id,
+                        'saving_id' => $saving->id,
+                        'status' => SavingStatus::STATUS_NOT_ENOUGH,
+                        'total_balance' => $user_wallet->total_balance
+                    ];
+                    if ($user_wallet && $user_wallet->total_balance >= $saving->entry_standard) {
+                        $data['status'] = SavingStatus::STATUS_ENOUGH;
+                    }
+                    SavingStatus::create($data);
                 } else {
-                    SavingStatus::where('created_at', '>=', date('Y-m-d 00:00:00'))
-                        ->where('created_at', '<=', date('Y-m-d 23:59:59'))
-                        ->updateOrCreate([
-                            'user_id' => $user_wallet->user_id
-                        ], [
-                            'saving_id' => $saving->id,
-                            'status' => SavingStatus::STATUS_NOT_ENOUGH,
-                            'total_balance' => $user_wallet->total_balance
-                        ]);
+                    if ($user_wallet->total_balance < $last_record->total_balance) {
+                        $last_record->total_balance = $user_wallet->total_balance;
+                        if ($user_wallet->total_balance < $saving->entry_standard) {
+                            $last_record->status = SavingStatus::STATUS_NOT_ENOUGH;
+                        }
+                        $last_record->save();
+                    }
                 }
             }
         }
