@@ -337,16 +337,16 @@ class UserWalletWithdrawalController extends AdminController
                 throw new \Exception("余额不足, 请检查账户余额");
             }
             $gasPrice = PttCloudAcount::getGasPrice();
-            $block = PttCloudAcount::sendTransaction($tx->to,  number_format($spending * 1000000000000000000, 0, '', ''), $gasPrice,'ptt', [
+            $block = PttCloudAcount::sendTransaction($record->to,  number_format($record->amount * 1000000000000000000, 0, '', ''), $gasPrice,'ptt', [
                 'from' => config('app.ptt_master_address'),
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
             ]);
 
             TransactionActionHistory::create([
-                'user_id' => $tx->user_id,
+                'user_id' => $record->user_id,
                 'symbol' => 'ptt',
-                'amount' => $spending,
+                'amount' => $record->amount,
                 'status' => TransactionActionHistory::STATUS_SUSSESS,
                 'type' => 'send',
                 'to' => $block['to'],
