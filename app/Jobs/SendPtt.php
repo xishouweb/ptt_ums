@@ -44,14 +44,15 @@ class SendPtt implements ShouldQueue
             $gasPrice = PttCloudAcount::getGasPrice();
             if ($this->type = 'receive') {
                 $ptt_balance = PttCloudAcount::getBalance($tx->address, 'ptt');
+                $ptt_balance = floor($ptt_balance / self::DECIMALS);
                 \Log::info('ptt 余额 ====> ' . $ptt_balance);
-                if ($ptt_balance < self::TRANSFOR_LIMIT * self::DECIMALS) return;
+                if ($ptt_balance < self::TRANSFOR_LIMIT ) return;
 
                 $eth_balance = PttCloudAcount::getBalance($tx->address);
                 \Log::info('eth 余额 ====> ' . $eth_balance);
 
                 if ($eth_balance >= self::GAS_limit * $gasPrice) {
-                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), number_format($tx->amount * self::DECIMALS, 0, '', ''), $gasPrice, 'ptt', [
+                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), $ptt_balance, $gasPrice, 'ptt', [
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
                         'password' => decrypt($wallet->password),
