@@ -186,17 +186,23 @@ class SavingController extends Controller
             if ($type == 1) {
                 $data['title'] = config('ServiceAgreement.en.title');
                 $data['content'] = config('ServiceAgreement.en.content');
+            } else if ($type == 2) {
+                $data['title'] = config('RiskStatement.reward_interrupt_instruction.en.title');
+                $data['content'] = config('RiskStatement.reward_interrupt_instruction.en.content');
             } else {
-                $data['title'] = config('riskstatement.en.title');
-                $data['content'] = config('riskstatement.en.content');
+                $data['title'] = config('RiskStatement.risk_statement.en.title');
+                $data['content'] = config('RiskStatement.risk_statement.en.content');
             }
         } else {
             if ($type == 1) {
                 $data['title'] = config('ServiceAgreement.cn.title');
                 $data['content'] = config('ServiceAgreement.cn.content');
+            } else if ($type == 2) {
+                $data['title'] = config('RiskStatement.reward_interrupt_instruction.cn.title');
+                $data['content'] = config('RiskStatement.reward_interrupt_instruction.cn.content');
             } else {
-                $data['title'] = config('riskstatement.cn.title');
-                $data['content'] = config('riskstatement.cn.content');
+                $data['title'] = config('RiskStatement.risk_statement.cn.title');
+                $data['content'] = config('RiskStatement.risk_statement.cn.content');
             }
         }
         return $this->apiResponse($data);
