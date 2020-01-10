@@ -121,7 +121,7 @@ class WalletController extends Controller
         }
         $transaction = UserWalletTransaction::where('id', $id)
             ->where('user_id', $user->id)
-            ->select('id', 'user_id', 'symbol', 'type', 'status', 'block_confirm', 'created_at', 'completed_at', DB::raw('ROUND(amount, 4) as amount'), 'to', 'from', 'fee', 'tx_hash', 'block_number')
+            ->select('id', 'user_id', DB::raw('upper(symbol) as symbol'), 'type', 'status', 'block_confirm', 'created_at', 'completed_at', DB::raw('ROUND(amount, 4) as amount'), 'to', 'from', 'fee', 'tx_hash', 'block_number')
             ->first();
         if (!$transaction) {
             return $this->error();
