@@ -306,7 +306,7 @@ class UserWalletWithdrawalController extends AdminController
 
             $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
             $tx->status = UserWalletTransaction::OUT_STATUS_FAIL;
-
+            $tx->completed_at = date('Y-m-d H:i:s');
             $tx->save();
 
             DB::commit();
@@ -339,7 +339,7 @@ class UserWalletWithdrawalController extends AdminController
                 throw new \Exception("余额不足, 请检查账户余额");
             }
             $gasPrice = PttCloudAcount::getGasPrice();
-            $block = PttCloudAcount::sendTransaction($record->to,  number_format($record->amount * 1000000000000000000, 0, '', ''), $gasPrice,'ptt', [
+            $block = PttCloudAcount::sendTransaction($record->to, bcmul((string)$record->amount, (string)1000000000000000000), $gasPrice,'ptt', [
                 'from' => config('app.ptt_master_address'),
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
