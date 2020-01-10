@@ -213,7 +213,7 @@ class UserController extends Controller
         }
         $user = User::where('phone', $phone)->first();
         if ($user) {
-            return $this->error('已注册');
+            return $this->error('手机号码已被注册');
         }
         // 判断用户是否存在
         try {
