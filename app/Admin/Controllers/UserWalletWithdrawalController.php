@@ -148,6 +148,11 @@ class UserWalletWithdrawalController extends AdminController
                                 </div>
                                 <div class='col-xs-3'>
                                     <h3><a class='btn btn-success' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>通过</a></h3>
+                                    <script>
+                                        $('a').click(function(){
+                                            $(this).addClass('disabled');
+                                        });
+                                    </script>
                                 </div>
                             </div>
                         </div>";
