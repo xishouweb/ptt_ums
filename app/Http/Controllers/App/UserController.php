@@ -211,15 +211,16 @@ class UserController extends Controller
         if (!$valid_captcha) {
             return $this->error('验证码错误');
         }
-        //判断用户是否存在
+        $user = User::where('phone', $phone)->first();
+        if ($user) {
+            return $this->error('已注册');
+        }
+        // 判断用户是否存在
         try {
-            $user = User::where('phone', $phone)->first();
-            if (!$user) {
-                DB::beginTransaction();
-                $user = $this->store($phone, $country, $password);
-                $user->findOrCreateEthAccount();
-                DB::commit();
-            }
+            DB::beginTransaction();
+            $user = $this->store($phone, $country, $password);
+            $user->findOrCreateEthAccount();
+            DB::commit();
             $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
         } catch (\Exception $e) {
             Log::error('注册失败，$phone ' . $phone);
