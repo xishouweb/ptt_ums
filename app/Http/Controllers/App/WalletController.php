@@ -173,7 +173,8 @@ class WalletController extends Controller
         }
         // 判断余额
         $balance_model = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
-        $available_balance = $balance_model->total_balance - $balance_model->locked_balance - UserWalletWithdrawal::PTT_FEE - $amount;
+        $fee = Setting::retrieve('ptt_fee', 1000, 'PTT转账手续费', true);
+        $available_balance = $balance_model->total_balance - $balance_model->locked_balance - $fee - $amount;
         if ($available_balance < 0) {
             return $this->error();
         }
@@ -210,8 +211,8 @@ class WalletController extends Controller
                 'status' => UserWalletTransaction::OUT_STATUS_PADDING,
                 'amount' => -$amount,
                 'to' => $address,
-                'fee' => UserWalletWithdrawal::PTT_FEE,
-                'remark' => -$amount - UserWalletWithdrawal::PTT_FEE
+                'fee' => $fee,
+                'remark' => -$amount - $fee
             ];
             $transaction = UserWalletTransaction::create($t_data);
             $w_data = [
@@ -220,12 +221,12 @@ class WalletController extends Controller
                 'status' => UserWalletWithdrawal::PENDING_STATUS,
                 'amount' => $amount,
                 'to' => $address,
-                'fee' => UserWalletWithdrawal::PTT_FEE,
+                'fee' => $fee,
                 'device_info' => $device_info,
                 'user_wallet_transaction_id' => $transaction->id
             ];
             UserWalletWithdrawal::create($w_data);
-            $balance_model->locked_balance += $amount + UserWalletWithdrawal::PTT_FEE;
+            $balance_model->locked_balance += $amount + $fee;
             $balance_model->save();
             DB::commit();
         } catch (\Exception $e) {
