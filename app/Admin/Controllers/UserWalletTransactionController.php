@@ -31,9 +31,7 @@ class UserWalletTransactionController extends AdminController
 
         $grid->model()->whereUserId($user_id)->orderBy('id', 'desc');
 
-        $grid->id('交易单号')->display(function ($id) {
-            return "<a href='/admin/wallet/user-wallet-balances/$id' target='_blank'>$id</a>";
-        });
+        $grid->id('交易单号');
 
         $grid->column('type', '类型')->display(function ($type) {
             if ($type == 1) {
