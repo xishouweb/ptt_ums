@@ -26,7 +26,7 @@ class ToolController extends Controller
     const GET_PRICE_URL = 'https://api.coinmarketcap.com/v2/ticker/';
     const SEARCH_TOKEN = 'https://etherscan.io/searchHandler?term=';
     const CONTRACT_DETAIL = 'https://etherscan.io/token/';
-    const OTHER_SEARCH_TOKEN = 'https://api.trustwalletapp.com/tokens/list?query=';
+    const OTHER_SEARCH_TOKEN = 'https://api.trustwallet.com/tokens/list?query=';
     const PTT_ADDRESS = '0x4689a4e169eb39cc9078c0940e21ff1aa8a39b9c';
     const ETHERSCAN_API_KEY_TOKEN = 'K2DX943EAXVEVFYFYHFF69HFP8X5HE1HNK';
 
