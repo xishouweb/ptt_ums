@@ -144,10 +144,22 @@ class UserWalletWithdrawalController extends AdminController
             $actionStr = "<div class='col-xs-4'>
                             <div class='row'>
                                 <div class='col-xs-3 col-xs-offset-3'>
-                                    <h3><a class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></h3>
+                                    <h3><a id='decline' class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></h3>
+                                    <script>
+                                        $('a').click(function(){
+                                            $('#approve').addClass('disabled');
+                                            $('#decline').addClass('disabled');
+                                        });
+                                    </script>
                                 </div>
                                 <div class='col-xs-3'>
-                                    <h3><a class='btn btn-success' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>通过</a></h3>
+                                    <h3><a id='approve' class='btn btn-success' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>通过</a></h3>
+                                    <script>
+                                        $('a').click(function(){
+                                            $('#approve').addClass('disabled');
+                                            $('#decline').addClass('disabled');
+                                        });
+                                    </script>
                                 </div>
                             </div>
                         </div>";

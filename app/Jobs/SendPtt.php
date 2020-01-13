@@ -44,9 +44,8 @@ class SendPtt implements ShouldQueue
             $gasPrice = PttCloudAcount::getGasPrice();
             if ($this->type = 'receive') {
                 $ptt_balance = PttCloudAcount::getBalance($tx->address, 'ptt');
-                $ptt_balance = bcmul((string)$ptt_balance, '1');
                 \Log::info('ptt 余额 ====> ' . $ptt_balance);
-                if ($ptt_balance < self::TRANSFOR_LIMIT ) return;
+                if ($ptt_balance < self::TRANSFOR_LIMIT * self::DECIMALS) return;
 
                 $eth_balance = PttCloudAcount::getBalance($tx->address);
                 \Log::info('eth 余额 ====> ' . $eth_balance);
