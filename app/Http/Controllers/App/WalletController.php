@@ -8,6 +8,7 @@ use App\Models\DataCache;
 use App\Models\Saving;
 use App\Models\SavingParticipateRecord;
 use App\Models\Setting;
+use App\Models\UserActionHistory;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
@@ -203,6 +204,8 @@ class WalletController extends Controller
         }
         try {
             DB::beginTransaction();
+
+            // 创建transaction记录
             $t_data = [
                 'user_id' => $user->id,
                 'address' => $user->cloud_wallet_address,
@@ -215,6 +218,8 @@ class WalletController extends Controller
                 'remark' => -$amount - $fee
             ];
             $transaction = UserWalletTransaction::create($t_data);
+
+            // 创建提币记录
             $w_data = [
                 'user_id' => $user->id,
                 'symbol' => $symbol,
@@ -225,9 +230,15 @@ class WalletController extends Controller
                 'device_info' => $device_info,
                 'user_wallet_transaction_id' => $transaction->id
             ];
-            UserWalletWithdrawal::create($w_data);
+            $withdrawal = UserWalletWithdrawal::create($w_data);
+
+            // 增加锁定金额
             $balance_model->locked_balance += $amount + $fee;
             $balance_model->save();
+
+            // 记录行为
+            UserActionHistory::record($user->id, UserActionHistory::TYPE_OUT, $transaction->id, $withdrawal->id);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

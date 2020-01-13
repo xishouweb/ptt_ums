@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\App\ToolController;
 use App\Models\DataCache;
+use App\Models\UserActionHistory;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use GuzzleHttp\Client;
@@ -83,13 +84,21 @@ class PttMonitorTrading extends Command
                             // 判断区块确认是否大于15 && 判断记录的状态
                             if ($transaction->status == UserWalletTransaction::IN_STATUS_PADDING) {
                                 if ($data->confirmations >= UserWalletTransaction::CONFIRM_COUNT) {
+
+                                    // 修改transaction记录
                                     $transaction->status = UserWalletTransaction::IN_STATUS_SUCCESS;
                                     $transaction->block_confirm = $data->confirmations;
                                     $transaction->completed_at = date('Y-m-d H:i:s');
                                     $transaction->save();
+
+                                    // 增加用户余额
                                     $user_wallet->total_balance += $transaction->amount;
                                     $user_wallet->save();
 
+                                    // 记录行为
+                                    UserActionHistory::record($user_wallet->user_id, UserActionHistory::TYPE_IN, $transaction->id);
+
+                                    // 转币队列
                                     $this->dispatch((new SendPtt($transaction, 'receive'))->onQueue('send_ptt'));
                                 } else {
                                     $transaction->block_confirm = $data->confirmations;
@@ -132,12 +141,6 @@ class PttMonitorTrading extends Command
                             $transaction->block_number = $data->blockNumber;
                             $transaction->completed_at = date('Y-m-d H:i:s');
                             $transaction->save();
-                            // 增加钱包余额
-                            $user_wallet = UserWalletBalance::where('user_id', $transaction->user_id)->where('symbol', 'ptt')->first();
-                            $amount = round($transaction->amount, 6);
-                            $user_wallet->locked_balance += $amount;
-                            $user_wallet->total_balance += $amount;
-                            $user_wallet->save();
                             DB::commit();
                             Log::info($transaction);
                         }

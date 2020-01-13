@@ -8,6 +8,7 @@ use App\Models\DataCache;
 use App\Models\Saving;
 use App\Models\SavingAward;
 use App\Models\SavingParticipateRecord;
+use App\Models\UserActionHistory;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
@@ -166,7 +167,12 @@ class SavingController extends Controller
                     'saving_id' => $id,
                     'status' => SavingParticipateRecord::STATUS_JOIN
                 ];
-                SavingParticipateRecord::create($data);
+                $record = SavingParticipateRecord::create($data);
+            }
+            if ($record->status == SavingParticipateRecord::STATUS_JOIN) {
+                UserActionHistory::record($user->id, UserActionHistory::TYPE_JOIN);
+            } else {
+                UserActionHistory::record($user->id, UserActionHistory::TYPE_EXIT);
             }
             DB::commit();
         } catch (\Exception $e) {
