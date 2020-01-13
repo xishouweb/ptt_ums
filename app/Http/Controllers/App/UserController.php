@@ -140,6 +140,9 @@ class UserController extends Controller
         }
 
         $user = User::where('phone', $request->input('phone'))->first();
+        if (!$user) {
+            return response()->json(['message' => '账户不存在或密码错误'], 403);
+        }
         $pwd_result = Hash::check($request->input('password'), $user->password);
         if (!$pwd_result) {
             return response()->json(['message' => '账户不存在或密码错误'], 403);
@@ -276,6 +279,9 @@ class UserController extends Controller
         }
 
         $user = User::where('phone', $phone)->first();
+        if (!$user) {
+            return $this->error('账号或密码错误');
+        }
         $pwd_result = Hash::check($password, $user->password);
         if (!$pwd_result) {
             return $this->error('账号或密码错误');
