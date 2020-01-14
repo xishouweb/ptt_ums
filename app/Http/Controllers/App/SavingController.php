@@ -33,7 +33,7 @@ class SavingController extends Controller
 
         $is_show_savings = Setting::retrieve('is_show_savings', 1, '是否显示持仓活动', true);
 
-        $whitelist = json_decode(Setting::retrieve('whitelist', json_encode([]), '显示持仓活动用户ID', true));
+        $whitelist = array_filter(explode(",", Setting::retrieve('whitelist', '1,', '显示持仓活动用户ID', true)));
 
         if ($is_show_savings || in_array($user->id, $whitelist)) {
             if ($status == 0) {
