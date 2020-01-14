@@ -252,7 +252,7 @@ class SavingController extends AdminController
         $form->text('title_en', 'Activity name');
         $form->image('icon', '图片');
         $form->select('type', '类型')->options([1 => 'PoS 持仓活动', 2 => 'bar']);
-        $form->select('yield_time', '奖励发放方式')->options([1 => 'afsdadf', 2 => 'basdfasdfar']);
+        $form->select('yield_time', '奖励发放方式')->options([1 => '每日发放']);
         $form->hidden('status')->default(Saving::SAVING_DEFAULT_AUDIT_STATUS);
         $form->datetime('started_at','开始日期');
         $form->datetime('ended_at','结束日期');
