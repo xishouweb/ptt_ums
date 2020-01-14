@@ -33,37 +33,41 @@ class SavingController extends Controller
 
         $is_show_savings = Setting::retrieve('is_show_savings', 1, '是否显示持仓活动', true);
 
-        $is_show_savings = Setting::retrieve('whitelist', 1, '是否显示持仓活动', true);
+        $whitelist = json_decode(Setting::retrieve('whitelist', json_encode([]), '显示持仓活动用户ID', true));
 
-        if ($status == 0) {
-            $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
-        } else if ($status == 1) {
-            $saving = $saving->where('status', Saving::SAVING_ACTIVATED_STATUS);
-        } else if ($status == 3 && $user) {
-            $join_saving_ids = SavingParticipateRecord::where('user_id', $user->id)
-                ->where('status', SavingParticipateRecord::STATUS_JOIN)
-                ->pluck('saving_id')
-                ->toArray();
-            $saving = $saving->whereIn('id', $join_saving_ids);
-        } else {
-            $saving = $saving->whereIn('status', [Saving::SAVING_UNACTIVATED_STATUS, Saving::SAVING_ACTIVATED_STATUS]);
-        }
+        if ($is_show_savings || in_array($user->id, $whitelist)) {
+            if ($status == 0) {
+                $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
+            } else if ($status == 1) {
+                $saving = $saving->where('status', Saving::SAVING_ACTIVATED_STATUS);
+            } else if ($status == 3 && $user) {
+                $join_saving_ids = SavingParticipateRecord::where('user_id', $user->id)
+                    ->where('status', SavingParticipateRecord::STATUS_JOIN)
+                    ->pluck('saving_id')
+                    ->toArray();
+                $saving = $saving->whereIn('id', $join_saving_ids);
+            } else {
+                $saving = $saving->whereIn('status', [Saving::SAVING_UNACTIVATED_STATUS, Saving::SAVING_ACTIVATED_STATUS]);
+            }
 
-        if ($lang == 'en') {
-            $saving->select('id', 'title_en as title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
-        } else {
-            $saving->select('id', 'title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
-        }
-        $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
+            if ($lang == 'en') {
+                $saving->select('id', 'title_en as title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
+            } else {
+                $saving->select('id', 'title', 'icon', 'yield_time', 'started_at', 'ended_at', 'rate', 'status');
+            }
+            $data = $saving->orderBy('id', 'desc')->paginate($page_size)->toArray();
 
-        if ($user) {
-            foreach ($data['data'] as &$datum) {
-                $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
+            if ($user) {
+                foreach ($data['data'] as &$datum) {
+                    $datum['already_participate'] = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $datum['id'])->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
+                }
+            } else {
+                foreach ($data['data'] as &$datum) {
+                    $datum['already_participate'] = false;
+                }
             }
         } else {
-            foreach ($data['data'] as &$datum) {
-                $datum['already_participate'] = false;
-            }
+            $data = $saving->where('id', '<', 0)->paginate($page_size)->toArray();
         }
 
         return $this->apiResponse($data);
