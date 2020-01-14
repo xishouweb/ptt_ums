@@ -8,6 +8,7 @@ use App\Models\DataCache;
 use App\Models\Saving;
 use App\Models\SavingAward;
 use App\Models\SavingParticipateRecord;
+use App\Models\Setting;
 use App\Models\UserActionHistory;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 
 class SavingController extends Controller
 {
-    // 锁仓活动列表
+    // 持仓活动列表
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -29,6 +30,10 @@ class SavingController extends Controller
         $status = $request->input('status', 2);
         $page_size = $request->input('page_size', 10);
         $saving = Saving::where('type', Saving::TYPE_SAVING);
+
+        $is_show_savings = Setting::retrieve('is_show_savings', 1, '是否显示持仓活动', true);
+
+        $is_show_savings = Setting::retrieve('whitelist', 1, '是否显示持仓活动', true);
 
         if ($status == 0) {
             $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
