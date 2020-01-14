@@ -394,6 +394,7 @@ class UserWalletWithdrawalController extends AdminController
             $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
             $tx->tx_hash = $block['transactionHash'];
             $tx->from = $block['from'];
+            $tx->completed_at = date('Y-m-d H:i:s');
             $tx->save();
 
             
