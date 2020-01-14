@@ -40,6 +40,8 @@ class SavingController extends Controller
                 ->pluck('saving_id')
                 ->toArray();
             $saving = $saving->whereIn('id', $join_saving_ids);
+        } else {
+            $saving = $saving->whereIn('status', [Saving::SAVING_UNACTIVATED_STATUS, Saving::SAVING_ACTIVATED_STATUS]);
         }
 
         if ($lang == 'en') {
