@@ -51,7 +51,7 @@ class SendPtt implements ShouldQueue
                 \Log::info('eth 余额 ====> ' . $eth_balance);
 
                 if ($eth_balance >= self::GAS_limit * $gasPrice) {
-                    $record = PttCloudAcount::sendTransaction(config('app.ptt_master_address'), bcmul((string)$tx->amount, (string)self::DECIMALS), $gasPrice, 'ptt', [
+                    $record = PttCloudAcount::sendTransaction(config('app.ptt_offline_address'), bcmul((string)$tx->amount, (string)self::DECIMALS), $gasPrice, 'ptt', [
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
                         'password' => decrypt($wallet->password),
