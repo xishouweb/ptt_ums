@@ -81,12 +81,13 @@ class SavingParticipateRecordController extends AdminController
             $filter->equal('saving_id', '活动编号');
          
         });
-        $grid->tools(function ($tools) {
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
+        $grid->disableCreateButton();
         $grid->disableActions();
+        $grid->disableExport();
+        $grid->disableColumnSelector();
+        $grid->batchActions(function ($batch) {
+            $batch->disableDelete();
+        });
         return $grid;
     }
 

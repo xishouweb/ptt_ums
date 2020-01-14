@@ -321,6 +321,11 @@ class UserWalletWithdrawalController extends AdminController
             $tx->completed_at = date('Y-m-d H:i:s');
             $tx->save();
 
+            $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
+            $spending = $tx->fee + abs($tx->amount);
+            $balance->locked_balance -= $spending;
+            $balance->save();
+
             DB::commit();
 
         } catch (\Exception $e) {
@@ -389,6 +394,7 @@ class UserWalletWithdrawalController extends AdminController
             $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
             $tx->tx_hash = $block['transactionHash'];
             $tx->from = $block['from'];
+            $tx->completed_at = date('Y-m-d H:i:s');
             $tx->save();
 
             
