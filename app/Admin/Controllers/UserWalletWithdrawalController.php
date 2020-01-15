@@ -360,7 +360,8 @@ class UserWalletWithdrawalController extends AdminController
             $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
             $spending = $tx->fee + abs($tx->amount);
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
-                return admin_toastr('余额不足, 请检查账户余额','error');
+                admin_toastr('余额不足, 请检查账户余额','error');
+                return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
             
             $record->status = UserWalletWithdrawal::TRANSFERING_STATUS;
