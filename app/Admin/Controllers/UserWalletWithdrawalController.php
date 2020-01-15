@@ -90,6 +90,8 @@ class UserWalletWithdrawalController extends AdminController
                 return "<span class='label label-success'>已通过</span>";
             } elseif ($status == UserWalletWithdrawal::FAILED_STATUS) {
                 return "<span class='label label-default'>已拒绝</span>";
+            } elseif ($status == UserWalletWithdrawal::TRANSFERING_STATUS) {
+                return "<span class='label label-info'>转账处理中</span>";
             }
         });
 
