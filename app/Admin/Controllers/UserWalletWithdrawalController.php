@@ -19,7 +19,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Jobs\AggregatingPtt;
+use App\Jobs\SendPtt;
 
 class UserWalletWithdrawalController extends AdminController
 {   
