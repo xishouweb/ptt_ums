@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Services\PttCloudAcount;
 use App\Models\UserWallet;
 use App\Models\TransactionActionHistory;
+use App\Models\UserWalletTransaction;
+use App\Models\UserWalletWithdrawal;
 
 class SendPtt implements ShouldQueue
 {
@@ -36,6 +38,7 @@ class SendPtt implements ShouldQueue
             $tx = $this->tx;
             $withdrawal = $this->withdrawal;
             $balance = $this->balance;
+            \Log::info('队列提币中 ***********> tx_id = ' . $tx_id . '   amount = ' . $withdrawal->amount);
 
             $gasPrice = PttCloudAcount::getGasPrice();
             $block = PttCloudAcount::sendTransaction($withdrawal->to, bcmul((string)$withdrawal->amount, (string)1000000000000000000), $gasPrice,'ptt', [
@@ -43,7 +46,7 @@ class SendPtt implements ShouldQueue
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
             ]);
-
+            \Log::info('提币详情 **********> ', [$block]);
             TransactionActionHistory::create([
                 'user_id' => $withdrawal->user_id,
                 'symbol' => 'ptt',
