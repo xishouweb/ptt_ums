@@ -23,7 +23,7 @@ class AggregatingPtt implements ShouldQueue
     const GAS_limit = 60000;
     const DECIMALS = 1000000000000000000;
 
-    public $timeout = 180;
+    public $timeout = 600;
 
     public function __construct($tx, $type)
 	{
