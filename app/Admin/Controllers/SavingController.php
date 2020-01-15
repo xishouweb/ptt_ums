@@ -50,7 +50,7 @@ class SavingController extends AdminController
         $grid->id('活动编号');
         $grid->column('status', '状态')->display(function ($status) {
             if ($status === 0) {
-                return "<h4><span class='label label-info'>已下线</span></h4>";
+                return "<h4><span class='label label-info'>已结束</span></h4>";
             } elseif ($status === 1) {
                 return "<h4><span class='label label-success'>进行中</span></h4>";
             } elseif ($status === 2) {
@@ -59,8 +59,6 @@ class SavingController extends AdminController
                 return "<h4><span class='label label-warning'>待审批</span></h4>";
             } elseif ($status === 4) {
                 return "<h4><span class='label label-default'>已驳回</span></h4>";
-            } elseif ($status === 5) {
-                return "<h4><span class='label label-default'>已结束</span></h4>";
             }
            
         });
@@ -72,6 +70,18 @@ class SavingController extends AdminController
                 $text = "PoS 持仓活动";
             } 
             return $text;
+        });
+        
+        $grid->column('操作')->display(function () {
+            
+            if ($this->status === 2) {
+                return "<a class='btn btn-success' href='/admin/wallet/savings/$this->id/online'>上线</a>";
+            }elseif ($this->status === 1) {
+                return "<a class='btn btn-info' href='/admin/wallet/savings/$this->id/offline'>结束</a>";
+            }else{
+                return '';
+            }
+
         });
 
         $grid->column('')->display(function () {
@@ -87,12 +97,11 @@ class SavingController extends AdminController
             $filter->like('title', '活动名称');
             $filter->equal('id', '活动编号');
             $filter->equal('type')->radio([
-                0   => '已下线',
+                0   => '已结束',
                 1    => '进行中',
                 2    => '已通过',
                 3    => '待审核',
                 4    => '已驳回',
-                5    => '已结束',
             ]);
         });
 
@@ -117,7 +126,7 @@ class SavingController extends AdminController
         $saving = Saving::findOrFail($id);
         $status = '';
         if ($saving->status === 0) {
-            $status = "<h3><span class='label label-info'>已下线</span></h3>";
+            $status = "<h3><span class='label label-info'>已结束</span></h3>";
         } elseif ($saving->status === 1) {
             $status = "<h3><span class='label label-success'>进行中</span></h3>";
         } elseif ($saving->status === 2) {
@@ -126,8 +135,6 @@ class SavingController extends AdminController
             $status = "<h3><span class='label label-warning'>待审批</span></h3>";
         } elseif ($saving->status === 4) {
             $status = "<h3><span class='label label-default'>已驳回</span></h3>";
-        } elseif ($saving->status === 5) {
-            $status = "<h3><span class='label label-default'>已结束</span></h3>";
         }
 
         if ($saving->type === 1) {
@@ -251,7 +258,7 @@ class SavingController extends AdminController
         $form->text('title','活动名称');
         $form->text('title_en', 'Activity name');
         $form->image('icon', '图片');
-        $form->select('type', '类型')->options([1 => 'PoS 持仓活动', 2 => 'bar']);
+        $form->select('type', '类型')->options([1 => 'PoS 持仓活动']);
         $form->select('yield_time', '奖励发放方式')->options([1 => '每日发放']);
         $form->hidden('status')->default(Saving::SAVING_DEFAULT_AUDIT_STATUS);
         $form->datetime('started_at','开始日期');
@@ -297,5 +304,23 @@ class SavingController extends AdminController
         $saving->save();
 
         return redirect("/admin/wallet/savings/$id");
+    }
+
+    public function getOnline($id)
+    {
+        $saving = Saving::find($id);
+        $saving->status = Saving::SAVING_ACTIVATED_STATUS;
+        $saving->save();
+
+        return  redirect()->back();
+    }
+
+    public function getOffline($id)
+    {
+        $saving = Saving::find($id);
+        $saving->status = Saving::SAVING_UNACTIVATED_STATUS;
+        $saving->save();
+
+        return  redirect()->back();
     }
 }
