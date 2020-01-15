@@ -38,7 +38,7 @@ class SendPtt implements ShouldQueue
             $tx = $this->tx;
             $withdrawal = $this->withdrawal;
             $balance = $this->balance;
-            \Log::info('队列提币中 ***********> tx_id = ' . $tx_id . '   amount = ' . $withdrawal->amount);
+            \Log::info('队列提币中 ***********> tx_id = ' . $tx->id . '   amount = ' . $withdrawal->amount);
 
             $gasPrice = PttCloudAcount::getGasPrice();
             $block = PttCloudAcount::sendTransaction($withdrawal->to, bcmul((string)$withdrawal->amount, (string)1000000000000000000), $gasPrice,'ptt', [
