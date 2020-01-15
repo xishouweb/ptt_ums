@@ -15,6 +15,7 @@ class UserWalletWithdrawal extends Model
     const PENDING_STATUS = 0;
     const COMPLETE_STATUS = 1;
     const FAILED_STATUS = 2;
+    const TRANSFERING_STATUS = 3;
 
     const PTT_FEE = 100;
 

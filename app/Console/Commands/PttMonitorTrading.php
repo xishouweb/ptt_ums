@@ -8,7 +8,7 @@ use App\Models\UserActionHistory;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use GuzzleHttp\Client;
-use App\Jobs\SendPtt;
+use App\Jobs\AggregatingPtt;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -99,7 +99,7 @@ class PttMonitorTrading extends Command
                                     UserActionHistory::record($user_wallet->user_id, UserActionHistory::TYPE_IN, $transaction->id);
 
                                     // 转币队列
-                                    $this->dispatch((new SendPtt($transaction, 'receive'))->onQueue('send_ptt'));
+                                    $this->dispatch((new AggregatingPtt($transaction, 'receive'))->onQueue('aggregating_ptt'));
                                 } else {
                                     $transaction->block_confirm = $data->confirmations;
                                     $transaction->save();
