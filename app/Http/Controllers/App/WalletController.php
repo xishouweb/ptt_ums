@@ -178,7 +178,7 @@ class WalletController extends Controller
         }
         // 判断24小时内是否修改过密码
         if (DataCache::getAlterPwdLock($user->id)) {
-            return $this->error('24小时内修改过密码');
+            return $this->error('改密后24小时内不允许转账');
         }
         // 判断余额
         $balance_model = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();

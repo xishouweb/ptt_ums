@@ -358,9 +358,6 @@ class UserController extends Controller
         try {
             $user = User::where('phone', $phone)->first();
             if ($user) {
-                if ($user->trade_password) {
-                    DataCache::setAlterPwdLock($user->id);
-                }
                 $user->trade_password = Hash::make($request->input('password'));
                 $user->save();
                 return $this->success();
