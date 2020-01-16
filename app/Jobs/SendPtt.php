@@ -84,7 +84,9 @@ class SendPtt implements ShouldQueue
             DB::commit();            
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('队列提币失败 ***********> ', [$e->getMessage()]);
+            $withdrawal->status = UserWalletWithdrawal::PENDING_STATUS;
+            $withdrawal->save();
+            \Log::error('队列提币失败 tx_id = '. $tx->id .' ***********> ', [$e->getMessage()]);
             TransactionActionHistory::create([
                 'user_id' => $tx->user_id,
                 'symbol' => 'ptt',
