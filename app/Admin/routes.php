@@ -38,6 +38,8 @@ Route::group([
     $router->get('/wallet/user-wallet-withdrawals/{id}/decline', 'UserWalletWithdrawalController@getDecline');
     $router->get('/wallet/savings/{id}/approve', 'SavingController@getApprove');
     $router->get('/wallet/savings/{id}/decline', 'SavingController@getDecline');
+    $router->get('/wallet/savings/{id}/online', 'SavingController@getOnline');
+    $router->get('/wallet/savings/{id}/offline', 'SavingController@getOffline');
 
     //Campaign
 

@@ -18,9 +18,12 @@ use Encore\Admin\Widgets\Form as MyForm;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Jobs\SendPtt;
 
 class UserWalletWithdrawalController extends AdminController
-{
+{   
+    use DispatchesJobs;
     /**
      * Title for current resource.
      *
@@ -87,6 +90,8 @@ class UserWalletWithdrawalController extends AdminController
                 return "<span class='label label-success'>已通过</span>";
             } elseif ($status == UserWalletWithdrawal::FAILED_STATUS) {
                 return "<span class='label label-default'>已拒绝</span>";
+            } elseif ($status == UserWalletWithdrawal::TRANSFERING_STATUS) {
+                return "<span class='label label-info'>转账处理中</span>";
             }
         });
 
@@ -136,7 +141,14 @@ class UserWalletWithdrawalController extends AdminController
         } elseif ($record->status === 2) {
             $statusStr = "<h3><span class='label label-default'>已拒绝</span></h3>";
         } elseif ($record->status === 3) {
-            $statusStr = "<h3><span class='label label-info'>转账处理中</span></h3>";
+            $statusStr = "<h3><span class='label label-info'>转账处理中</span></h3>
+            <script>
+                function myrefresh() 
+                { 
+                window.location.reload(); 
+                } 
+                setTimeout('myrefresh()',60000);
+            </script>";
         }
 
         $actionStr = '';
@@ -337,9 +349,6 @@ class UserWalletWithdrawalController extends AdminController
 
     public function getApprove($id)
     { 
-        try {
-            
-
             $record = UserWalletWithdrawal::findOrFail($id);
             if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
@@ -353,59 +362,16 @@ class UserWalletWithdrawalController extends AdminController
             $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
             $spending = $tx->fee + abs($tx->amount);
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
-                throw new \Exception("余额不足, 请检查账户余额");
+                admin_toastr('余额不足, 请检查账户余额','error');
+                return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
-            $gasPrice = PttCloudAcount::getGasPrice();
-            $block = PttCloudAcount::sendTransaction($record->to, bcmul((string)$record->amount, (string)1000000000000000000), $gasPrice,'ptt', [
-                'from' => config('app.ptt_master_address'),
-                'keystore' => config('app.ptt_master_address_keystore'),
-                'password' => config('app.ptt_master_address_password'),
-            ]);
-
-            TransactionActionHistory::create([
-                'user_id' => $record->user_id,
-                'symbol' => 'ptt',
-                'amount' => $record->amount,
-                'status' => TransactionActionHistory::STATUS_SUSSESS,
-                'type' => 'send',
-                'to' => $block['to'],
-                'from' => $block['from'],
-                'fee' => $block['gasUsed']  * $gasPrice,
-                'tx_hash' => $block['transactionHash'],
-                'block_number' => $block['blockNumber'],
-                'payload' => json_encode($block)
-            ]);
-
-            DB::beginTransaction();
             
-            $balance->locked_balance -= $spending;
-            $balance->total_balance -= $spending;
-            $balance->save();
-
-            if(!$block['status']) throw new Exception("转账失败,请检查gas");
-            
-
-            $record->status = UserWalletWithdrawal::COMPLETE_STATUS;
+            $record->status = UserWalletWithdrawal::TRANSFERING_STATUS;
 
             $record->approver_id = Admin::user()->id;
-            $record->from = $block['from'];
             $record->save();
 
-            $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
-            $tx->tx_hash = $block['transactionHash'];
-            $tx->from = $block['from'];
-            $tx->completed_at = date('Y-m-d H:i:s');
-            $tx->save();
-
-            
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            admin_toastr('操作失败, 请检查提币账户余额或与管理员联系','error');
-            \Log::error($e->getMessage());
-            DB::rollBack();
-        }
+            $this->dispatch((new SendPtt($record, $tx, $balance))->onQueue('send_ptt'));
 
         return redirect("/admin/wallet/user-wallet-withdrawals/$id");
     }
