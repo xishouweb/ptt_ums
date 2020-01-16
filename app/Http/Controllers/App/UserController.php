@@ -4,6 +4,7 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\Captcha;
+use App\Models\DataCache;
 use App\Models\Photo;
 use App\User;
 use Illuminate\Http\Request;
@@ -327,6 +328,7 @@ class UserController extends Controller
             if ($user) {
                 $user->password = Hash::make($request->input('password'));
                 $user->save();
+                DataCache::setAlterPwdLock($user->id);
                 return $this->success();
             }
         } catch (\Exception $e) {
@@ -356,6 +358,9 @@ class UserController extends Controller
         try {
             $user = User::where('phone', $phone)->first();
             if ($user) {
+                if ($user->trade_password) {
+                    DataCache::setAlterPwdLock($user->id);
+                }
                 $user->trade_password = Hash::make($request->input('password'));
                 $user->save();
                 return $this->success();

@@ -189,4 +189,17 @@ class DataCache extends Model
 
         Redis::set($key, $data, 'EX', $expire);
     }
+
+    public static function getAlterPwdLock($user_id)
+    {
+        $key = 'alter_trade_pwd_lock_user_id_' . $user_id;
+        return Redis::get($key);
+    }
+
+    public static function setAlterPwdLock($user_id)
+    {
+        $key = 'alter_trade_pwd_lock_user_id_' . $user_id;
+        Redis::set($key, 1, 'EX', 86400);
+        return true;
+    }
 }

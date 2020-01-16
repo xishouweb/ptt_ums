@@ -172,12 +172,20 @@ class WalletController extends Controller
         if (!$user || !$symbol || !$address || !$amount || !$captcha || !$password || !$device_info || $amount <= 0) {
             return $this->error();
         }
+        // 判断提币地址是否为自身
+        if ($address == $user->cloud_wallet_address) {
+            return $this->error('钱包地址不能相同');
+        }
+        // 判断24小时内是否修改过密码
+        if (DataCache::getAlterPwdLock($user->id)) {
+            return $this->error('24小时内修改过密码');
+        }
         // 判断余额
         $balance_model = UserWalletBalance::where('user_id', $user->id)->where('symbol', $symbol)->first();
         $fee = Setting::retrieve('ptt_fee', 1000, 'PTT转账手续费', true);
         $available_balance = $balance_model->total_balance - $balance_model->locked_balance - $fee - $amount;
         if ($available_balance < 0) {
-            return $this->error();
+            return $this->error('余额不足');
         }
         // 判断单次提款金额
         $transfer_limit = Setting::retrieve('ptt_transfer_limit', 1000000, 'PTT单笔转账上限', true);

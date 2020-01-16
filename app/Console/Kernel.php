@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('ptt:monitor_trading')->everyMinute();
-        $schedule->command('ptt:check_user_saving_status')->hourlyAt(58);
+        $schedule->command('ptt:check_user_saving_status')->everyFifteenMinutes();
         $schedule->command('ptt:saving_issue_reward')->dailyAt('00:02');
     }
 
