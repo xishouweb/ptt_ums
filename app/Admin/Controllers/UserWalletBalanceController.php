@@ -122,8 +122,8 @@ class UserWalletBalanceController extends AdminController
             $show->total_balance('钱包余额')->unescape()->as(function ($total_balance) {
                 return number_format($total_balance);
             });
-            $show->lock_balance('冻结额度')->unescape()->as(function ($lock_balance) {
-                return number_format($lock_balance);
+            $show->locked_balance('冻结额度')->unescape()->as(function ($locked_balance) {
+                return number_format($locked_balance);
             });
             $show->phone('注册手机号');
             $show->register_time('注册时间');
