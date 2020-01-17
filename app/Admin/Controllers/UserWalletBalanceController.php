@@ -71,6 +71,10 @@ class UserWalletBalanceController extends AdminController
             return "<a href='/admin/wallet/user-wallet-transactions/$this->user_id' target='_blank'>查看</a>";
         });
 
+        $grid->column('操作记录')->display(function ($user_id) {
+            return "<a href='/admin/wallet/user-action-histories/$this->user_id' target='_blank'>详情</a>";
+        });
+
         $grid->filter(function($filter){
 
             // 去掉默认的id过滤器
