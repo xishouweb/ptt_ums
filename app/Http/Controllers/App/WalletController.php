@@ -266,8 +266,7 @@ class WalletController extends Controller
         \Log::info('all request = ', [$request->all()]);
         $ums_tx_id =  $request->get('ums_tx_id');
         $gas_price =  $request->get('gas_price');
-        $block_str = $request->get('data');
-        $block = json_decode($block_str, true);
+        $block = $request->get('data');
 
         \Log::info('node_tx_callback tx_id =====> ' . $ums_tx_id);
 
@@ -282,14 +281,14 @@ class WalletController extends Controller
             if(!$block['status']) throw new Exception("转账失败");
             DB::beginTransaction();
 
-            if ($record->type == 'receive') {
-                $record->fee = $block['gasUsed'] * $gas_price / 1000000000000000000;
-                $record->status = TransactionActionHistory::STATUS_SUSSESS;
-                $record->tx_hash = $block['transactionHash'];
-                $record->block_number = $block['blockNumber'];
-                $record->payload = $block_str;
-                $record->save();
-            } elseif ($record->type == 'send') {
+            $record->fee = $block['gasUsed'] * $gas_price / 1000000000000000000;
+            $record->status = TransactionActionHistory::STATUS_SUSSESS;
+            $record->tx_hash = $block['transactionHash'];
+            $record->block_number = $block['blockNumber'];
+            $record->payload = json_encode($block);
+            $record->save();
+
+            if ($record->type == 'send') {
 
                 $tx = UserWalletTransaction::find($ums_tx_id);
                 $withdrawal = UserWalletWithdrawal::whereUserWalletTransactionId($ums_tx_id)->first();
@@ -323,6 +322,7 @@ class WalletController extends Controller
                 'type' => 'callback',
                 'from' => $block['from'],
                 'to' => $block['to'],
+                'payload' => json_encode($request->all()),
             ]);
         }
 
