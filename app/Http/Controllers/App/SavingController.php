@@ -37,7 +37,7 @@ class SavingController extends Controller
 
         $user_id = $user ? $user->id : 0;
 
-        if ($is_show_savings || in_array($user_id, $whitelist))) {
+        if ($is_show_savings || in_array($user_id, $whitelist)) {
             if ($status == 0) {
                 $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
             } else if ($status == 1) {
