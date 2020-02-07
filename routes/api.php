@@ -63,6 +63,7 @@ Route::prefix('app')->group(function () {
                     $router->get('/participate', 'SavingController@participate');
                 });
             });
+            $router->post('wallet/node_tx_callback', 'WalletController@nodeTxCallback');
             Route::group(['middleware' => 'auth:api'], function() {
                 Route::prefix('wallet')->group(function (Router $router) {
                     $router->get('/total', 'WalletController@total');
