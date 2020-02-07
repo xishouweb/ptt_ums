@@ -51,7 +51,7 @@ class AggregatingPtt implements ShouldQueue
                 \Log::info('eth 余额 ====> ' . $eth_balance);
 
                 if ($eth_balance >= self::GAS_limit * $gasPrice) {
-                    $record = PttCloudAcount::sendTransaction(config('app.ptt_offline_address'), bcmul((string)$tx->amount, (string)self::DECIMALS), $gasPrice, 'ptt', [
+                    $record = PttCloudAcount::sendTransaction(config('app.ptt_offline_address'), bcmul((string)$tx->amount, (string)self::DECIMALS), 'ptt', [
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
                         'password' => decrypt($wallet->password),
@@ -72,7 +72,7 @@ class AggregatingPtt implements ShouldQueue
                     ]);
                     \Log::info('转账详情 ======> ', [$record]);
                 } else {
-                    $record = PttCloudAcount::sendTransaction($tx->address, number_format(self::GAS_limit * $gasPrice, 0, '', ''), $gasPrice);
+                    $record = PttCloudAcount::sendTransaction($tx->address, bcmul((string)self::GAS_limit, (string)$gasPrice));
                     \Log::info('gsa转账详情 ======> ', [$record]);
                     TransactionActionHistory::create([
                         'user_id' => $tx->user_id,

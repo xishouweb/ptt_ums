@@ -49,4 +49,28 @@ class UserActionHistory extends Model
         }
         return static::create($data);
     }
+
+    public function savings()
+    {
+        return $this->belongsTo(Saving::class, 'saving_id', 'id');
+    }
+
+    public function savingParticipateRecord()
+    {   
+        if ($this->saving_id) {
+            return SavingParticipateRecord::whereUserId($this->user_id)->whereSavingId($this->saving_id)->first();
+        }
+        
+        return [];
+    }
+
+    public function userWalletTransaction()
+    {
+        // if ($this->transaction_id) {
+        //     return userWalletTransaction::find($this->transaction_id);
+        // }
+        
+        // return [];
+        return $this->hasOne(UserWalletTransaction::class, 'id', 'transaction_id');
+    }
 }

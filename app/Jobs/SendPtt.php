@@ -41,7 +41,7 @@ class SendPtt implements ShouldQueue
             \Log::info('队列提币中 ***********> tx_id = ' . $tx->id . '   amount = ' . $withdrawal->amount);
 
             $gasPrice = PttCloudAcount::getGasPrice();
-            $block = PttCloudAcount::sendTransaction($withdrawal->to, bcmul((string)$withdrawal->amount, (string)1000000000000000000), $gasPrice,'ptt', [
+            $block = PttCloudAcount::sendTransaction($withdrawal->to, bcmul((string)$withdrawal->amount, (string)1000000000000000000),'ptt', [
                 'from' => config('app.ptt_master_address'),
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
@@ -90,11 +90,12 @@ class SendPtt implements ShouldQueue
             TransactionActionHistory::create([
                 'user_id' => $tx->user_id,
                 'symbol' => 'ptt',
-                'amount' => $tx->amount,
+                'amount' => $withdrawal->amount,
                 'status' => TransactionActionHistory::STATUS_FAILED,
                 'type' => 'send',
-                'from' => $tx->from,
+                'from' => config('app.ptt_master_address'),
                 'tx_id' => $tx->id,
+                'to' => $withdrawal->to,
             ]);
         }
     }

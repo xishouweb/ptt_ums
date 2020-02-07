@@ -71,6 +71,10 @@ class UserWalletBalanceController extends AdminController
             return "<a href='/admin/wallet/user-wallet-transactions/$this->user_id' target='_blank'>查看</a>";
         });
 
+        $grid->column('操作记录')->display(function ($user_id) {
+            return "<a href='/admin/wallet/user-action-histories/$this->user_id' target='_blank'>详情</a>";
+        });
+
         $grid->filter(function($filter){
 
             // 去掉默认的id过滤器
@@ -116,10 +120,10 @@ class UserWalletBalanceController extends AdminController
             $show->address('钱包地址');
             $show->symbol('币种');
             $show->total_balance('钱包余额')->unescape()->as(function ($total_balance) {
-                return number_format($total_balance);
+                return number_format($total_balance, 4);
             });
-            $show->lock_balance('冻结额度')->unescape()->as(function ($lock_balance) {
-                return number_format($lock_balance);
+            $show->locked_balance('冻结额度')->unescape()->as(function ($locked_balance) {
+                return number_format($locked_balance, 4);
             });
             $show->phone('注册手机号');
             $show->register_time('注册时间');
