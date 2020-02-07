@@ -35,7 +35,9 @@ class SavingController extends Controller
 
         $whitelist = array_filter(explode(",", Setting::retrieve('whitelist', '1,', '显示持仓活动用户ID', true)));
 
-        if ($user && ($is_show_savings || in_array($user->id, $whitelist))) {
+        $user_id = $user ? $user->id : 0;
+
+        if ($is_show_savings || in_array($user_id, $whitelist))) {
             if ($status == 0) {
                 $saving = $saving->where('status', Saving::SAVING_UNACTIVATED_STATUS);
             } else if ($status == 1) {
