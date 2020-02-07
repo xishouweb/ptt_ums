@@ -12,6 +12,7 @@ use App\Models\UserActionHistory;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
+use App\Models\TransactionActionHistory;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -265,6 +266,74 @@ class WalletController extends Controller
         if (!$result) {
             return $this->error('交易密码错误');
         }
+        return $this->success();
+    }
+
+    public function nodeTxCallback(Request $request)
+    {
+        \Log::info('all request = ', [$request->all()]);
+        $ums_tx_id =  $request->get('ums_tx_id');
+        $gas_price =  $request->get('gas_price');
+        $block_str = $request->get('data');
+        $block = json_decode($block_str, true);
+
+        \Log::info('node_tx_callback tx_id =====> ' . $ums_tx_id);
+
+        $record = TransactionActionHistory::whereTxId($ums_tx_id)->whereSymbol('ptt')->whereStatus(TransactionActionHistory::STATUS_PADDING)->first();
+        if (!$record) {
+            \Log::error('未找到该TransactionActionHistory记录', [$request->all()]);
+            return;
+        }
+
+        try {
+
+            if(!$block['status']) throw new Exception("转账失败");
+            DB::beginTransaction();
+
+            if ($record->type == 'receive') {
+                $record->fee = $block['gasUsed'] * $gas_price / 1000000000000000000;
+                $record->status = TransactionActionHistory::STATUS_SUSSESS;
+                $record->tx_hash = $block['transactionHash'];
+                $record->block_number = $block['blockNumber'];
+                $record->payload = $block_str;
+                $record->save();
+            } elseif ($record->type == 'send') {
+
+                $tx = UserWalletTransaction::find($ums_tx_id);
+                $withdrawal = UserWalletWithdrawal::whereUserWalletTransactionId($ums_tx_id)->first();
+                $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
+
+
+                $spending = $tx->fee + abs($tx->amount);
+                $balance->locked_balance -= $spending;
+                $balance->total_balance -= $spending;
+                $balance->save();
+
+                $withdrawal->status = UserWalletWithdrawal::COMPLETE_STATUS;
+                $withdrawal->from = $block['from'];
+                $withdrawal->save();
+
+                $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
+                $tx->tx_hash = $block['transactionHash'];
+                $tx->from = $block['from'];
+                $tx->completed_at = date('Y-m-d H:i:s');
+                $tx->save();
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('node_tx_callback处理失败id = '. $record->id .' ***********> ', [$e->getMessage()]);
+            TransactionActionHistory::create([
+                'user_id' => $record->user_id,
+                'symbol' => 'ptt',
+                'status' => TransactionActionHistory::STATUS_FAILED,
+                'type' => 'callback',
+                'from' => $block['from'],
+                'to' => $block['to'],
+            ]);
+        }
+
         return $this->success();
     }
 }

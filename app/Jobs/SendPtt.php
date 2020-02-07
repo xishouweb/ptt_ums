@@ -21,23 +21,21 @@ class SendPtt implements ShouldQueue
 
     protected $tx;
     protected $withdrawal;
-    protected $balance;
 
     public $timeout = 180;
 
-    public function __construct($withdrawal, $tx, $balance)
+    public function __construct($withdrawal, $tx)
 	{
 	    $this->tx = $tx;
-	    $this->withdrawal = $withdrawal;
-	    $this->balance = $balance;
+        $this->withdrawal = $withdrawal;
     }
-    
-    public function handle() 
+
+    public function handle()
 	{
-        try {
+
             $tx = $this->tx;
             $withdrawal = $this->withdrawal;
-            $balance = $this->balance;
+
             \Log::info('队列提币中 ***********> tx_id = ' . $tx->id . '   amount = ' . $withdrawal->amount);
 
             $gasPrice = PttCloudAcount::getGasPrice();
@@ -45,58 +43,18 @@ class SendPtt implements ShouldQueue
                 'from' => config('app.ptt_master_address'),
                 'keystore' => config('app.ptt_master_address_keystore'),
                 'password' => config('app.ptt_master_address_password'),
+                'ums_tx_id' => $withdrawal->user_wallet_transaction_id,
             ]);
-            \Log::info('提币详情 **********> ', [$block]);
+            \Log::info('提币详情tx_id: '. $tx->id .' **********> ', [$block]);
             TransactionActionHistory::create([
                 'user_id' => $withdrawal->user_id,
                 'symbol' => 'ptt',
                 'amount' => $withdrawal->amount,
-                'status' => TransactionActionHistory::STATUS_SUSSESS,
+                'status' => TransactionActionHistory::STATUS_PADDING,
                 'type' => 'send',
-                'to' => $block['to'],
-                'from' => $block['from'],
-                'fee' => $block['gasUsed']  * $gasPrice,
-                'tx_hash' => $block['transactionHash'],
-                'block_number' => $block['blockNumber'],
-                'payload' => json_encode($block),
+                'to' => $withdrawal->to,
+                'from' => config('app.ptt_master_address'),
                 'tx_id' => $withdrawal->user_wallet_transaction_id,
             ]);
-            
-            if(!$block['status']) throw new Exception("转账失败,请检查联系管理员");
-
-            DB::beginTransaction();
-            
-            $spending = $tx->fee + abs($tx->amount);
-            $balance->locked_balance -= $spending;
-            $balance->total_balance -= $spending;
-            $balance->save();
-
-            $withdrawal->status = UserWalletWithdrawal::COMPLETE_STATUS;
-            $withdrawal->from = $block['from'];
-            $withdrawal->save();
-
-            $tx->status = UserWalletTransaction::OUT_STATUS_TRANSFER;
-            $tx->tx_hash = $block['transactionHash'];
-            $tx->from = $block['from'];
-            $tx->completed_at = date('Y-m-d H:i:s');
-            $tx->save();
-
-            DB::commit();            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $withdrawal->status = UserWalletWithdrawal::PENDING_STATUS;
-            $withdrawal->save();
-            \Log::error('队列提币失败 tx_id = '. $tx->id .' ***********> ', [$e->getMessage()]);
-            TransactionActionHistory::create([
-                'user_id' => $tx->user_id,
-                'symbol' => 'ptt',
-                'amount' => $withdrawal->amount,
-                'status' => TransactionActionHistory::STATUS_FAILED,
-                'type' => 'send',
-                'from' => config('app.ptt_master_address'),
-                'tx_id' => $tx->id,
-                'to' => $withdrawal->to,
-            ]);
-        }
     }
 }

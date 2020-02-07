@@ -1,13 +1,13 @@
 <?php
 namespace App\Services;
- 
+
 use GuzzleHttp\Client;
 
 class PttCloudAcount {
 
     public static function sendTransaction($to, $value, $symbolName = "eth", $data = ''){
         $url = config('app.ptt_ums_node_host');
-       
+
         $client = new Client();
 
         if ($symbolName == 'eth') {
@@ -35,11 +35,10 @@ class PttCloudAcount {
                     'gas' => 60000,
                     'keystoreJson' => $data['keystore'],
                     'password' => $data['password'],
+                    'ums_tx_id' => $data['ums_tx_id'],
                 ]
             ]);
         }
-
-        
 
         $resData  = json_decode((string) $res->getBody(), true);
 
@@ -49,7 +48,7 @@ class PttCloudAcount {
 
     public static function getGasPrice(){
         $url = config('app.ptt_ums_node_host') . "/eth/gas";
-        
+
         $client = new Client();
         $res = $client->request('get', $url);
         $resData  = json_decode((string) $res->getBody());
@@ -59,11 +58,11 @@ class PttCloudAcount {
 
     public static function getBalance($address, $symbolName = ''){
         $url = config('app.ptt_ums_node_host') . "/eth/balance?account=$address";
-        
+
         if($symbolName) {
-            $url = $url .'&symbol=' . strtolower($symbolName); 
+            $url = $url .'&symbol=' . strtolower($symbolName);
         }
-        
+
         $client = new Client();
         $res = $client->request('get', $url);
         $resData  = json_decode((string) $res->getBody());
