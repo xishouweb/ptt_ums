@@ -185,7 +185,7 @@ class UserWalletWithdrawalController extends AdminController
                         <div class='container panel-body'>
                             <div class='row'>
                                 <div class='col-xs-4'>
-                                    <h3>提币订单号 : $record->id</h3>
+                                    <h3>提币订单号 : $record->user_wallet_transaction_id</h3>
                                 </div>
                                 <div class='col-xs-4'>
                                     $statusStr
