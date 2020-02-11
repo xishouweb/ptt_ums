@@ -18,7 +18,7 @@ class AggregatingPtt implements ShouldQueue
 
     protected $tx;
     protected $type;
-    
+
     const TRANSFOR_LIMIT = 1;
     const GAS_limit = 60000;
     const DECIMALS = 1000000000000000000;
@@ -30,8 +30,8 @@ class AggregatingPtt implements ShouldQueue
 	    $this->tx = $tx;
 	    $this->type = $type;
     }
-    
-    public function handle() 
+
+    public function handle()
 	{
         try {
             $tx = $this->tx;
@@ -55,43 +55,36 @@ class AggregatingPtt implements ShouldQueue
                         'from' => $tx->address,
                         'keystore' => $wallet->key_store,
                         'password' => decrypt($wallet->password),
+                        'ums_tx_id' => $tx->id,
                     ]);
                     TransactionActionHistory::create([
                         'user_id' => $tx->user_id,
                         'symbol' => 'ptt',
                         'amount' => $tx->amount,
-                        'status' => TransactionActionHistory::STATUS_SUSSESS,
+                        'status' => TransactionActionHistory::STATUS_PADDING,
                         'type' => 'receive',
                         'to' => config('app.ptt_offline_address'),
-                        'from' => $record['from'],
-                        'fee' => $record['gasUsed'] * $gasPrice,
-                        'tx_hash' => $record['transactionHash'],
-                        'block_number' => $record['blockNumber'],
-                        'payload' => json_encode($record),
+                        'from' => $tx->address,
                         'tx_id' => $tx->id,
                     ]);
-                    \Log::info('转账详情 ======> ', [$record]);
+                    \Log::info('转账详情tx_id: '. $tx->id .' ======> ', [$record]);
                 } else {
                     $record = PttCloudAcount::sendTransaction($tx->address, bcmul((string)self::GAS_limit, (string)$gasPrice));
-                    \Log::info('gsa转账详情 ======> ', [$record]);
+                    \Log::info('gsa转账详情 '. $tx->id .' ======> ', [$record]);
                     TransactionActionHistory::create([
                         'user_id' => $tx->user_id,
                         'symbol' => 'eth',
-                        'amount' => self::GAS_limit * $gasPrice,
+                        'amount' => self::GAS_limit * $gasPrice / self::DECIMALS,
                         'status' => TransactionActionHistory::STATUS_SUSSESS,
                         'type' => 'gas',
-                        'to' => config('app.ptt_offline_address'),
-                        'from' => $record['from'],
-                        'fee' => $record['gasUsed'] * $gasPrice,
-                        'tx_hash' => $record['transactionHash'],
-                        'block_number' => $record['blockNumber'],
-                        'payload' => json_encode($record),
+                        'to' => $tx->address,
+                        'from' => config('app.ptt_master_address'),
                         'tx_id' => $tx->id,
                     ]);
 
                     $this->release(3 * 60);
                 }
-            } 
+            }
         } catch (\Exception $e) {
             \Log::error('队列汇聚ptt失败 ===> ', [$e->getMessage()]);
             TransactionActionHistory::create([
@@ -100,7 +93,7 @@ class AggregatingPtt implements ShouldQueue
                 'amount' => $tx->amount,
                 'status' => TransactionActionHistory::STATUS_FAILED,
                 'type' => 'receive',
-                'from' => $tx->from,
+                'from' => $tx->address,
                 'tx_id' => $tx->id,
             ]);
         }
