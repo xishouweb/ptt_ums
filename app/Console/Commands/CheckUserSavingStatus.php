@@ -71,22 +71,22 @@ class CheckUserSavingStatus extends Command
             ->first();
         try {
             DB::beginTransaction();
+            $balance = $user_wallet->total_balance - $user_wallet->locked_balance;
             if (!$last_record) {
                 $data = [
                     'user_id' => $user_id,
                     'saving_id' => $saving->id,
                     'status' => SavingStatus::STATUS_NOT_ENOUGH,
-                    'total_balance' => $user_wallet->total_balance
+                    'total_balance' => $balance
                 ];
-                if ($user_wallet && $user_wallet->total_balance >= $saving->entry_standard) {
+                if ($user_wallet && $balance >= $saving->entry_standard) {
                     $data['status'] = SavingStatus::STATUS_ENOUGH;
                 }
                 SavingStatus::create($data);
-
             } else {
-                if ($user_wallet->total_balance < $last_record->total_balance) {
-                    $last_record->total_balance = $user_wallet->total_balance;
-                    if ($user_wallet->total_balance < $saving->entry_standard) {
+                if ($balance < $last_record->total_balance) {
+                    $last_record->total_balance = $balance;
+                    if ($balance < $saving->entry_standard) {
                         $last_record->status = SavingStatus::STATUS_NOT_ENOUGH;
                     }
                     $last_record->save();
