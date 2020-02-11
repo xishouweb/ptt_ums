@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Console\Commands\CheckUserSavingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Captcha;
 use App\Models\DataCache;
@@ -253,6 +254,21 @@ class WalletController extends Controller
             Log::error('申请提币失败');
             Log::error($e->getMessage());
             return $this->error();
+        }
+        // 查询持仓情况
+        $saving = Saving::where('type', Saving::TYPE_SAVING)
+            ->where('status', Saving::SAVING_ACTIVATED_STATUS)
+            ->where('started_at', '<=', date('Y-m-d H:i:s'))
+            ->where('ended_at', '>=', date('Y-m-d H:i:s'))
+            ->first();
+        if ($saving) {
+            $join_record = SavingParticipateRecord::where('user_id', $user->id)
+                ->where('saving_id', $saving->id)
+                ->where('status', SavingParticipateRecord::STATUS_JOIN)
+                ->count();
+            if ($join_record) {
+                CheckUserSavingStatus::checkUserSavingStatus($user->id, $saving);
+            }
         }
         return $this->success();
     }

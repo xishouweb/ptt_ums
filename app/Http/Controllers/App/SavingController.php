@@ -161,8 +161,14 @@ class SavingController extends Controller
     {
         $user = Auth::user();
         $id = $request->input('id');
-        if (!$id || !$user) {
+        $saving = Saving::where('id', $id)->first();
+        if (!$id || !$user || !$saving) {
             return $this->error();
+        }
+        // 判断余额
+        $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first();
+        if ($balance->total_balance < $saving->entry_standard) {
+            return $this->error('余额不足');
         }
         try {
             DB::beginTransaction();

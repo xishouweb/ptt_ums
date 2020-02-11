@@ -59,31 +59,44 @@ class CheckUserSavingStatus extends Command
                 ->pluck('user_id')
                 ->toArray();
             foreach ($user_ids as $user_id) {
-                $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
-                $last_record = SavingStatus::where('user_id', $user_id)
-                    ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
-                    ->first();
-                if (!$last_record) {
-                    $data = [
-                        'user_id' => $user_wallet->user_id,
-                        'saving_id' => $saving->id,
-                        'status' => SavingStatus::STATUS_NOT_ENOUGH,
-                        'total_balance' => $user_wallet->total_balance
-                    ];
-                    if ($user_wallet && $user_wallet->total_balance >= $saving->entry_standard) {
-                        $data['status'] = SavingStatus::STATUS_ENOUGH;
+                self::checkUserSavingStatus($user_id, $saving);
+            }
+        }
+    }
+
+    public static function checkUserSavingStatus($user_id, $saving) {
+        $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
+        $last_record = SavingStatus::where('user_id', $user_id)
+            ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
+            ->first();
+        try {
+            DB::beginTransaction();
+            if (!$last_record) {
+                $data = [
+                    'user_id' => $user_id,
+                    'saving_id' => $saving->id,
+                    'status' => SavingStatus::STATUS_NOT_ENOUGH,
+                    'total_balance' => $user_wallet->total_balance
+                ];
+                if ($user_wallet && $user_wallet->total_balance >= $saving->entry_standard) {
+                    $data['status'] = SavingStatus::STATUS_ENOUGH;
+                }
+                SavingStatus::create($data);
+
+            } else {
+                if ($user_wallet->total_balance < $last_record->total_balance) {
+                    $last_record->total_balance = $user_wallet->total_balance;
+                    if ($user_wallet->total_balance < $saving->entry_standard) {
+                        $last_record->status = SavingStatus::STATUS_NOT_ENOUGH;
                     }
-                    SavingStatus::create($data);
-                } else {
-                    if ($user_wallet->total_balance < $last_record->total_balance) {
-                        $last_record->total_balance = $user_wallet->total_balance;
-                        if ($user_wallet->total_balance < $saving->entry_standard) {
-                            $last_record->status = SavingStatus::STATUS_NOT_ENOUGH;
-                        }
-                        $last_record->save();
-                    }
+                    $last_record->save();
                 }
             }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('验仓出错，$user_id = ' . $user_id);
+            Log::error($e->getMessage());
         }
     }
 }
