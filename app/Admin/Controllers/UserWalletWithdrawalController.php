@@ -22,7 +22,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\SendPtt;
 
 class UserWalletWithdrawalController extends AdminController
-{   
+{
     use DispatchesJobs;
     /**
      * Title for current resource.
@@ -59,7 +59,7 @@ class UserWalletWithdrawalController extends AdminController
         $grid->model()->orderBy('status')->orderBy('id', 'desc');
 
         $grid->column('id', '提币订单号')->display(function ($id) {
-            return "<a href='/admin/wallet/user-wallet-withdrawals/$id' target='_blank'>$id</a>";
+            return "<a href='/admin/wallet/user-wallet-withdrawals/$id' target='_blank'>$this->user_wallet_transaction_id</a>";
         });
 
         $grid->column('user_id', '用户ID')->display(function ($user_id) {
@@ -143,10 +143,10 @@ class UserWalletWithdrawalController extends AdminController
         } elseif ($record->status === 3) {
             $statusStr = "<h3><span class='label label-info'>转账处理中</span></h3>
             <script>
-                function myrefresh() 
-                { 
-                window.location.reload(); 
-                } 
+                function myrefresh()
+                {
+                window.location.reload();
+                }
                 setTimeout('myrefresh()',60000);
             </script>";
         }
@@ -348,24 +348,24 @@ class UserWalletWithdrawalController extends AdminController
     }
 
     public function getApprove($id)
-    { 
+    {
             $record = UserWalletWithdrawal::findOrFail($id);
             if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
-    
+
             $tx = UserWalletTransaction::findOrFail($record->user_wallet_transaction_id);
             if(!$tx){
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
-    
+
             $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
             $spending = $tx->fee + abs($tx->amount);
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
                 admin_toastr('余额不足, 请检查账户余额','error');
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
-            
+
             $record->status = UserWalletWithdrawal::TRANSFERING_STATUS;
 
             $record->approver_id = Admin::user()->id;
