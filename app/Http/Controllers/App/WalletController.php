@@ -253,6 +253,7 @@ class WalletController extends Controller
 
             $phones = [
                 'chennan' => 18612010683,
+                'adam' => 15712896282,
             ];
 
             $message = '有一笔新的提币申请, 请及时处理';
