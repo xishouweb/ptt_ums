@@ -28,7 +28,7 @@ class UserWalletWithdrawal extends Model
     {
         $balance = UserWalletBalance::whereSymbol($symbol)->whereUserId($this->user_id)->first();
 
-        return $balance ? $balance->total_balance -$balance->lock_balance : 0;
+        return $balance ? $balance->total_balance - $balance->locked_balance : 0;
     }
 
     public function userWalletTransaction()
