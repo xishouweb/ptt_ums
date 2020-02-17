@@ -377,6 +377,8 @@ class WalletController extends Controller
             $data['user_id'] = $user->id;
             $data['device_name'] = $device_name;
             $data['info'] = $info;
+            $data['ip'] = $request->ip();
+            $data['user_agent'] = $request->userAgent();
             UserLoginInfo::create($data);
             DB::commit();
         } catch (\Exception $e) {

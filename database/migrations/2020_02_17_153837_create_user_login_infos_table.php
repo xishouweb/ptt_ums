@@ -16,8 +16,10 @@ class CreateUserLoginInfosTable extends Migration
         Schema::create('user_login_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('device_name');
-            $table->string('info');
+            $table->string('device_name')->nullable();
+            $table->string('ip')->nullable();
+            $table->string('user_agent')->nullable();
+            $table->string('info')->nullable();
             $table->timestamps();
         });
     }
