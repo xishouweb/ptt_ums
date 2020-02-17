@@ -73,6 +73,7 @@ Route::prefix('app')->group(function () {
                     $router->get('/condition', 'WalletController@condition');
                     $router->post('/withdraw', 'WalletController@withdraw');
                     $router->post('/check_trade_pwd', 'WalletController@checkTradePwd');
+                    $router->post('/login_info', 'WalletController@saveLoginInfo');
                 });
             });
         });
