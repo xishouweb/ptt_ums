@@ -250,6 +250,17 @@ class WalletController extends Controller
             UserActionHistory::record($user->id, UserActionHistory::TYPE_OUT, $transaction->id, $withdrawal->id);
 
             DB::commit();
+
+            $phones = [
+                'chennan' => 18612010683,
+                'adam' => 15712896282,
+            ];
+
+            $message = '有一笔新的提币申请, 请及时处理';
+            foreach ($phones as $key => $mobile) {
+                \App\Services\SMSSender::send($mobile, $message);
+            }
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('申请提币失败');

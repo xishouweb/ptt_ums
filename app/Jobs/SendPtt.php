@@ -46,15 +46,22 @@ class SendPtt implements ShouldQueue
                 'ums_tx_id' => $withdrawal->user_wallet_transaction_id,
             ]);
             \Log::info('提币详情tx_id: '. $tx->id .' **********> ', [$block]);
-            TransactionActionHistory::create([
-                'user_id' => $withdrawal->user_id,
-                'symbol' => 'ptt',
-                'amount' => $withdrawal->amount,
-                'status' => TransactionActionHistory::STATUS_PADDING,
-                'type' => 'send',
-                'to' => $withdrawal->to,
-                'from' => config('app.ptt_master_address'),
-                'tx_id' => $withdrawal->user_wallet_transaction_id,
-            ]);
+            $ac = TransactionActionHistory::whereTxId($withdrawal->user_wallet_transaction_id)
+                ->whereStatus(TransactionActionHistory::STATUS_PADDING)
+                ->first();
+            if (!$ac) {
+                 TransactionActionHistory::create([
+                    'user_id' => $withdrawal->user_id,
+                    'symbol' => 'ptt',
+                    'amount' => $withdrawal->amount,
+                    'status' => TransactionActionHistory::STATUS_PADDING,
+                    'type' => 'send',
+                    'to' => $withdrawal->to,
+                    'from' => config('app.ptt_master_address'),
+                    'tx_id' => $withdrawal->user_wallet_transaction_id,
+                ]);
+            }
+
+            sleep(60);
     }
 }

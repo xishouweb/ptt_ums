@@ -20,7 +20,7 @@ class AggregatingPtt implements ShouldQueue
     protected $type;
 
     const TRANSFOR_LIMIT = 1;
-    const GAS_limit = 60000;
+    const GAS_limit = 100000;
     const DECIMALS = 1000000000000000000;
 
     public $timeout = 600;
@@ -57,16 +57,22 @@ class AggregatingPtt implements ShouldQueue
                         'password' => decrypt($wallet->password),
                         'ums_tx_id' => $tx->id,
                     ]);
-                    TransactionActionHistory::create([
-                        'user_id' => $tx->user_id,
-                        'symbol' => 'ptt',
-                        'amount' => $tx->amount,
-                        'status' => TransactionActionHistory::STATUS_PADDING,
-                        'type' => 'receive',
-                        'to' => config('app.ptt_offline_address'),
-                        'from' => $tx->address,
-                        'tx_id' => $tx->id,
-                    ]);
+
+                    $ac = TransactionActionHistory::whereTxId($tx->id)
+                        ->whereStatus(TransactionActionHistory::STATUS_PADDING)
+                        ->first();
+                    if (!$ac) {
+                        TransactionActionHistory::create([
+                            'user_id' => $tx->user_id,
+                            'symbol' => 'ptt',
+                            'amount' => $tx->amount,
+                            'status' => TransactionActionHistory::STATUS_PADDING,
+                            'type' => 'receive',
+                            'to' => config('app.ptt_offline_address'),
+                            'from' => $tx->address,
+                            'tx_id' => $tx->id,
+                        ]);
+                    }
                     \Log::info('转账详情tx_id: '. $tx->id .' ======> ', [$record]);
                 } else {
                     $record = PttCloudAcount::sendTransaction($tx->address, bcmul((string)self::GAS_limit, (string)$gasPrice));

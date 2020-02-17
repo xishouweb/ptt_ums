@@ -15,7 +15,7 @@ class UserWalletWithdrawal extends Model
     const PENDING_STATUS = 0;
     const COMPLETE_STATUS = 1;
     const FAILED_STATUS = 2;
-    const TRANSFERING_STATUS = 3;
+    const TRANSFERING_STATUS = -1;
 
     const PTT_FEE = 100;
 
@@ -28,7 +28,7 @@ class UserWalletWithdrawal extends Model
     {
         $balance = UserWalletBalance::whereSymbol($symbol)->whereUserId($this->user_id)->first();
 
-        return $balance ? $balance->total_balance -$balance->lock_balance : 0;
+        return $balance ? $balance->total_balance - $balance->locked_balance : 0;
     }
 
     public function userWalletTransaction()
