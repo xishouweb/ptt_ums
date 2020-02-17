@@ -10,11 +10,11 @@ use App\Models\Saving;
 use App\Models\SavingParticipateRecord;
 use App\Models\Setting;
 use App\Models\UserActionHistory;
+use App\Models\UserLoginInfo;
 use App\Models\UserWalletBalance;
 use App\Models\UserWalletTransaction;
 use App\Models\UserWalletWithdrawal;
 use App\Models\TransactionActionHistory;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -350,6 +350,30 @@ class WalletController extends Controller
             ]);
         }
 
+        return $this->success();
+    }
+
+    public function saveLoginInfo(Request $request)
+    {
+        $user = Auth::user();
+        $info = $request->input('info');
+        $device_name = $request->input('device_name');
+        if (!$user || !$info || !$device_name) {
+            return $this->error();
+        }
+        try {
+            DB::beginTransaction();
+            $data['user_id'] = $user->id;
+            $data['device_name'] = $device_name;
+            $data['info'] = $info;
+            UserLoginInfo::create($data);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('记录登录信息');
+            Log::error($e->getMessage());
+            return $this->error();
+        }
         return $this->success();
     }
 }
