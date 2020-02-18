@@ -61,7 +61,5 @@ class SendPtt implements ShouldQueue
                     'tx_id' => $withdrawal->user_wallet_transaction_id,
                 ]);
             }
-
-            sleep(60);
     }
 }

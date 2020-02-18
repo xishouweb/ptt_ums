@@ -20,7 +20,7 @@ class AggregatingPtt implements ShouldQueue
     protected $type;
 
     const TRANSFOR_LIMIT = 1;
-    const GAS_limit = 100000;
+    const GAS_limit = 60000;
     const DECIMALS = 1000000000000000000;
 
     public $timeout = 600;
