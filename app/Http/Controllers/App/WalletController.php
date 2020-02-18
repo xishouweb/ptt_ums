@@ -238,7 +238,8 @@ class WalletController extends Controller
                 'to' => $address,
                 'fee' => $fee,
                 'device_info' => $device_info,
-                'user_wallet_transaction_id' => $transaction->id
+                'user_wallet_transaction_id' => $transaction->id,
+                'ptt_balance' => $available_balance
             ];
             $withdrawal = UserWalletWithdrawal::create($w_data);
 

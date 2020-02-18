@@ -74,8 +74,12 @@ class UserWalletWithdrawalController extends AdminController
             return $this->users['nickname'];
         });
 
-        $grid->column('云端钱包可用余额(PTT)')->display(function () {
+        $grid->column('当前钱包可用余额')->display(function () {
             return number_format($this->getBalanceOf('ptt'), 4);
+        });
+
+        $grid->column('提币时可用余额')->display(function () {
+            return number_format($this->ptt_balance, 4);
         });
 
         $grid->column('amount', '提币数量')->display(function ($amount) {
