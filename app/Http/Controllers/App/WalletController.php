@@ -368,7 +368,7 @@ class WalletController extends Controller
     public function saveLoginInfo(Request $request)
     {
         $user = Auth::user();
-        $info = $request->input('info');
+        $info = $request->input('device_info');
         $device_name = $request->input('device_name');
         if (!$user || !$info || !$device_name) {
             return $this->error();
