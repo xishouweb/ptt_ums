@@ -41,8 +41,8 @@ class UserWalletWithdrawalController extends AdminController
     {
         $eth = PttCloudAcount::getBalance(config('app.ptt_master_address'));
         $ptt = PttCloudAcount::getBalance(config('app.ptt_master_address'), 'ptt');
-        $eth_balance = number_format($eth_balance / 1000000000000000000, 4);
-        $ptt_balance = number_format($ptt_balance / 1000000000000000000, 4);
+        $eth_balance = number_format($eth / 1000000000000000000, 4);
+        $ptt_balance = number_format($ptt / 1000000000000000000, 4);
 
         return $content
             ->header('提币申请')
