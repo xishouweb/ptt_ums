@@ -53,10 +53,10 @@ class UserWalletWithdrawalController extends AdminController
                         <div class='container panel-body'>
                             <div class='row'>
                                 <div class='col-xs-6'>
-                                    <h3>热钱包ETH余额 : 100000</h3>
+                                    <h3>热钱包ETH余额 : $eth_balance</h3>
                                 </div>
                                 <div class='col-xs-6'>
-                                    <h3>热钱包PTT余额 : 1000001</h3>
+                                    <h3>热钱包PTT余额 : $ptt_balance</h3>
                                 </div>
                             </div>
                         </div>
