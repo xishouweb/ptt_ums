@@ -42,6 +42,8 @@ Route::group([
     $router->get('/wallet/savings/{id}/online', 'SavingController@getOnline');
     $router->get('/wallet/savings/{id}/offline', 'SavingController@getOffline');
 
+    $router->get('/wallet/user-login-infos/{id}', 'UserLoginInfoController@show');
+
     //Campaign
 
     $router->resource('user/tokens', 'UserTokenController');
