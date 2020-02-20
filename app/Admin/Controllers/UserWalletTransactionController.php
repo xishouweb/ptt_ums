@@ -27,7 +27,7 @@ class UserWalletTransactionController extends AdminController
      */
     protected function grid($user_id)
     {
-        $grid = new Grid(new UserWalletTransaction); 
+        $grid = new Grid(new UserWalletTransaction);
 
         $grid->model()->whereUserId($user_id)->orderBy('id', 'desc');
 
@@ -56,13 +56,16 @@ class UserWalletTransactionController extends AdminController
             } elseif ($status === 4) {
                 return "<span class='label label-default'>申请未通过</span>";
             }
-           
+
         });
-        
+
         $grid->amount('数量')->display(function ($amount) {
             return number_format($amount, 4);
         });
         $grid->fee('手续费')->display(function ($fee) {
+            if ($this->type == 1) {
+                return 0;
+            }
             return number_format($fee, 4);
         });
 
@@ -74,7 +77,7 @@ class UserWalletTransactionController extends AdminController
             if($this->type == 2) {
                 return "To: <a href='https://etherscan.io/address/$this->to' target='_blank'>$this->to</a>";
             }
-            
+
             return "From: <a href='https://etherscan.io/address/$this->from' target='_blank'>$this->from</a>";
         });
 
@@ -91,7 +94,7 @@ class UserWalletTransactionController extends AdminController
                 3    => '收益记录',
             ]);;
         });
-      
+
         $grid->disableCreateButton();
         $grid->disableActions();
         $grid->disableExport();
