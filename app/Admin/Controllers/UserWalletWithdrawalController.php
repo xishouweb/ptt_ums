@@ -39,10 +39,28 @@ class UserWalletWithdrawalController extends AdminController
      */
     public function index(Content $content)
     {
+        $eth = PttCloudAcount::getBalance(config('app.ptt_master_address'));
+        $ptt = PttCloudAcount::getBalance(config('app.ptt_master_address'), 'ptt');
+        $eth_balance = number_format($eth_balance / 1000000000000000000, 4);
+        $ptt_balance = number_format($ptt_balance / 1000000000000000000, 4);
+
         return $content
             ->header('提币申请')
             ->breadcrumb(
                 ['text' => '提币申请']
+            )
+            ->row("<div class='panel panel-default'>
+                        <div class='container panel-body'>
+                            <div class='row'>
+                                <div class='col-xs-6'>
+                                    <h3>热钱包ETH余额 : 100000</h3>
+                                </div>
+                                <div class='col-xs-6'>
+                                    <h3>热钱包PTT余额 : 1000001</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>"
             )
             ->body($this->grid());
     }
@@ -366,8 +384,26 @@ class UserWalletWithdrawalController extends AdminController
             $balance = UserWalletBalance::whereUserId($tx->user_id)->whereSymbol($tx->symbol)->first();
             $spending = $tx->fee + abs($tx->amount);
             if ($spending > $balance->locked_balance || $spending > $balance->total_balance) {
-                admin_toastr('余额不足, 请检查账户余额','error');
+                admin_toastr('该用户余额不足, 请检查用户账户余额','error');
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
+            }
+
+            $eth = PttCloudAcount::getBalance(config('app.ptt_master_address'));
+            $ptt = PttCloudAcount::getBalance(config('app.ptt_master_address'), 'ptt') / 1000000000000000000;
+            if ($ptt < abs($tx->amount)) {
+                admin_toastr('热钱包 PTT 不足，无法转账','error');
+                \App\Services\SMSSender::send('15712896282', '当前热钱包 PTT 不足，无法转账，请及时充值');
+                return redirect("/admin/wallet/user-wallet-withdrawals/$id");
+            } elseif ($ptt < 3000000) {
+                \App\Services\SMSSender::send('15712896282', '当前热钱包 PTT 不足，无法转账，请及时充值');
+            }
+
+            if ($eth < 100000) {
+                admin_toastr('热钱包 ETH 不足，无法转账','error');
+                \App\Services\SMSSender::send('15712896282', '当前热钱包 ETH 不足，无法转账，请及时充值');
+                return redirect("/admin/wallet/user-wallet-withdrawals/$id");
+            } else if($eth / 1000000000000000000 < 0.05) {
+                \App\Services\SMSSender::send('15712896282', '当前热钱包 ETH 不足，无法转账，请及时充值');
             }
 
             $record->status = UserWalletWithdrawal::TRANSFERING_STATUS;
