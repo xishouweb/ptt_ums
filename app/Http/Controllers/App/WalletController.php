@@ -369,7 +369,7 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         $info = $request->input('device_info');
-        $device_name = $request->header('devicename') ? $request->header('devicename')[0] : null;
+        $device_name = $request->header('devicename', null);
         if (!$user || !$info || !$device_name) {
             return $this->error();
         }
