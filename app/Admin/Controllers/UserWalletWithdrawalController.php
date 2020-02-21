@@ -115,7 +115,7 @@ class UserWalletWithdrawalController extends AdminController
             } elseif ($status == UserWalletWithdrawal::TRANSFERING_STATUS) {
                 return "<span class='label label-info'>转账处理中</span>";
             } elseif ($status == UserWalletWithdrawal::TRANSFERING_FAILED_STATUS) {
-                return "<span class='label label-info'>转账失败</span>";
+                return "<span class='label label-danger'>转账失败</span>";
             }
         });
 
@@ -396,7 +396,7 @@ class UserWalletWithdrawalController extends AdminController
     public function getApprove($id)
     {
             $record = UserWalletWithdrawal::findOrFail($id);
-            if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
+            if($record->status !== UserWalletWithdrawal::PENDING_STATUS && $record->status !== UserWalletWithdrawal::TRANSFERING_FAILED_STATUS ){
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
 
