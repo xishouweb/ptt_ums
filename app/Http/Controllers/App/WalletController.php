@@ -302,6 +302,7 @@ class WalletController extends Controller
         \Log::info('all request = ', [$request->all()]);
         $ums_tx_id =  $request->get('ums_tx_id');
         $gas_price =  $request->get('gas_price');
+        $type = $request->get('type');
         $block = $request->get('data');
 
         \Log::info('node_tx_callback tx_id =====> ' . $ums_tx_id);
@@ -310,6 +311,18 @@ class WalletController extends Controller
         if (!$record) {
             \Log::error('未找到该TransactionActionHistory记录', [$request->all()]);
             return;
+        }
+
+        if ($type == 'error') {
+            $withdrawal = UserWalletWithdrawal::whereUserWalletTransactionId($ums_tx_id)->first();
+            $withdrawal->status = UserWalletWithdrawal::TRANSFERING_FAILED_STATUS;
+            $withdrawal->save();
+
+            $record->payload = $block;
+            $record->type = 'transfor_error';
+            $record->save();
+
+            return $this->success();
         }
 
         try {
