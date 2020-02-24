@@ -255,19 +255,19 @@ class SavingController extends AdminController
         });
 
         $form->display('id', 'ID');
-        $form->text('title','活动名称');
-        $form->text('title_en', 'Activity name');
-        $form->image('icon', '图片');
-        $form->select('type', '类型')->options([1 => 'PoS 持仓活动']);
-        $form->select('yield_time', '奖励发放方式')->options([1 => '每日发放']);
+        $form->text('title','活动名称')->rules('required');
+        $form->text('title_en', 'Activity name')->rules('required');
+        $form->image('icon', '图片')->rules('required');
+        $form->select('type', '类型')->options([1 => 'PoS 持仓活动'])->rules('required');
+        $form->select('yield_time', '奖励发放方式')->options([1 => '每日发放'])->rules('required');
         $form->hidden('status')->default(Saving::SAVING_DEFAULT_AUDIT_STATUS);
-        $form->datetime('started_at','开始日期');
-        $form->datetime('ended_at','结束日期');
-        $form->number('entry_standard', '单个账号持仓最小值');
-    
-        $form->number('rate','持仓年化收益率');
-        $form->textarea('detail_rule', '规则说明');
-        $form->textarea('detail_rule_en', 'Rules');
+        $form->datetime('started_at','开始日期')->rules('required');
+        $form->datetime('ended_at','结束日期')->rules('required');
+        $form->number('entry_standard', '单个账号持仓最小值')->rules('required');
+        $form->number('saving_ceiling', '单个账号持仓最大值');
+        $form->number('rate','持仓年化收益率')->rules('required');
+        $form->textarea('detail_rule', '规则说明')->rules('required');
+        $form->textarea('detail_rule_en', 'Rules')->rules('required');
 
         $form->hidden('user_id');
         $form->saving(function (Form $form) {
