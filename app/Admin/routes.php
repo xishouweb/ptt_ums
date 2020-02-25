@@ -35,6 +35,9 @@ Route::group([
     $router->resource('/wallet/saving-awards', SavingAwardController::class);
     $router->resource('settings', SettingController::class);
     $router->resource('/wallet/user-action-histories', UserActionHistoryController::class);
+    $router->resource('/wallet/user-tags', UserTagController::class);
+    $router->resource('/wallet/tags', TagController::class);
+    $router->delete('/wallet/user-tags/{user_id}/{id}', 'UserTagController@delete');
     $router->get('/wallet/user-wallet-withdrawals/{id}/approve', 'UserWalletWithdrawalController@getApprove');
     $router->get('/wallet/user-wallet-withdrawals/{id}/decline', 'UserWalletWithdrawalController@getDecline');
     $router->get('/wallet/savings/{id}/approve', 'SavingController@getApprove');

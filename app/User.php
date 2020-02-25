@@ -261,7 +261,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(SavingParticipateRecord::class);
     }
-    
+
+    public function tags()
+    {
+        return $this->belongsToMany('App\Models\Tag', 'user_tags','user_id', 'tag_id');
+    }
+
     public function findOrCreateEthAccount()
     {
         $wallet = UserWallet::whereUserId($this->id)->first();
@@ -302,7 +307,7 @@ class User extends Authenticatable
                 UserWalletBalance::create($user_wallet_balance);
             } else {
                 throw new \Exception("用户erc20账号创建失败");
-            }; 
+            };
         }
 
         return $wallet;
