@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\UserLoginInfo;
 use App\Models\UserWalletBalance;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -79,13 +80,18 @@ class UserWalletBalanceController extends AdminController
             return date($this->user['created_at']);
         });
 
-        $grid->column('交易记录')->display(function ($user_id) {
+        $grid->column('交易记录')->display(function () {
             return "<a href='/admin/wallet/user-wallet-transactions/$this->user_id' target='_blank'>查看</a>";
         });
 
-        $grid->column('操作记录')->display(function ($user_id) {
-            return "<a href='/admin/wallet/user-action-histories/$this->user_id' target='_blank'>详情</a>";
+        $grid->column('操作记录')->display(function () {
+            return "<a href='/admin/wallet/user-action-histories/$this->user_id' target='_blank'>查看</a>";
         });
+
+        $grid->column('登录记录')->display(function () {
+            return "<a href='/admin/wallet/user-login-infos/$this->user_id' target='_blank'>查看</a>";
+        });
+
 
         $grid->filter(function($filter){
 
@@ -121,6 +127,11 @@ class UserWalletBalanceController extends AdminController
             ->where('user_wallet_balances.user_id', $id)
             ->select('user_wallet_balances.*', 'nickname', 'avatar', 'phone', 'channel', 'users.created_at as register_time', 'last_login')
             ->first();
+        $last_login = UserLoginInfo::where('user_id', $id)->orderBy('id', 'desc')->first();
+        $user->last_login_time = '';
+        if ($last_login) {
+            $user->last_login_time = $last_login->created_at;
+        }
         return $content->breadcrumb(
             ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
             ['text' => '用户详情']
@@ -140,7 +151,8 @@ class UserWalletBalanceController extends AdminController
             $show->phone('注册手机号');
             $show->register_time('注册时间');
             $show->channel('注册渠道');
-            $show->last_login('上次登录时间');
+            $show->last_login_time('上次登录时间');
+
             $show->tags('标签')->unescape()->as(function() {
                 $labels = $this->user->tags->pluck('name');
                 $str = '';

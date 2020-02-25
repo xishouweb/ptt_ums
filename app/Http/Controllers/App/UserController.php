@@ -41,7 +41,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($phone, $country, $password = '')
+    public function store($phone, $country, $password = '', $channel = null)
     {
         if (!$password) {
             $password = Hash::make($phone);
@@ -55,6 +55,7 @@ class UserController extends Controller
             'update_key' => md5($phone . env('APP_KEY')),
             'type'       => 'wallet',
             'country'    => $country,
+            'channel'    => $channel
         ]);
 
         return $user;
@@ -207,6 +208,7 @@ class UserController extends Controller
         $captcha = $request->input('captcha');
         $country = $request->input('country');
         $password = $request->input('password');
+        $channel = $request->header('channel', null);
         if (!$phone || !$captcha || !$country || !$password) {
             return $this->error('注册失败');
         }
@@ -222,7 +224,7 @@ class UserController extends Controller
         // 判断用户是否存在
         try {
             DB::beginTransaction();
-            $user = $this->store($phone, $country, $password);
+            $user = $this->store($phone, $country, $password, $channel);
             $user->findOrCreateEthAccount();
             DB::commit();
             $data['token'] = 'Bearer ' . $user->createToken('Wallet')->accessToken;
