@@ -76,10 +76,10 @@ class SavingIssueReward extends Command
                         // 奖励金额
                         $days = date('L') == 1 ? 366 : 365;
                         Log::info($saving);
-                        Log::info($saving->holding_ceiling);
+                        Log::info($saving->saving_ceiling);
                         Log::info($saving_status->total_balance);
-                        if ($saving->holding_ceiling && $saving_status->total_balance >= $saving->holding_ceiling) {
-                            $award = round($saving->holding_ceiling * $saving->rate / $days, 8);
+                        if ($saving->saving_ceiling && $saving_status->total_balance >= $saving->saving_ceiling) {
+                            $award = round($saving->saving_ceiling * $saving->rate / $days, 8);
                         } else {
                             $award = round($saving_status->total_balance * $saving->rate / $days, 8);
                         }

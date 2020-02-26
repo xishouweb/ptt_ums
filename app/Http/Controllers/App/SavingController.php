@@ -83,9 +83,9 @@ class SavingController extends Controller
         $lang = $request->input('lang', 'cn');
         $saving = Saving::where('id', $id);
         if ($lang == 'en') {
-            $saving->select('id', 'title_en as title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule_en as detail_rule', 'entry_standard', 'holding_ceiling', 'status');
+            $saving->select('id', 'title_en as title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule_en as detail_rule', 'entry_standard', 'saving_ceiling', 'status');
         } else {
-            $saving->select('id', 'title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule', 'entry_standard', 'holding_ceiling', 'status');
+            $saving->select('id', 'title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule', 'entry_standard', 'saving_ceiling', 'status');
         }
         $saving = $saving->first();
         if (!$saving) {
