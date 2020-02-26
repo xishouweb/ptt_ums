@@ -87,9 +87,10 @@ class Captcha extends Model
             $clnt = YunpianClient::create(config('app.yunpian_apikey'));
             $param = [YunpianClient::MOBILE => $phone, YunpianClient::TEXT => $message];
             $r = $clnt->sms()->single_send($param);
-            if(!$r->isSucc()){
-                Log::error($r->getThrowable());
-            }
+            Log::info($r);
+//            if(!$r->isSucc()){
+//                Log::error($r->getThrowable());
+//            }
         }
 
 	}
