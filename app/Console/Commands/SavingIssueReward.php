@@ -75,12 +75,14 @@ class SavingIssueReward extends Command
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
                         $days = date('L') == 1 ? 366 : 365;
+                        Log::info($saving->holding_ceiling);
+                        Log::info($saving_status->total_balance);
                         if ($saving->holding_ceiling && $saving_status->total_balance >= $saving->holding_ceiling) {
                             $award = round($saving->holding_ceiling * $saving->rate / $days, 8);
                         } else {
                             $award = round($saving_status->total_balance * $saving->rate / $days, 8);
                         }
-
+                        Log::info($award);
                         $is_exist_tran = UserWalletTransaction::where('user_id', $user_id)
                             ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
                             ->where('type', UserWalletTransaction::AWARD_TYPE)
