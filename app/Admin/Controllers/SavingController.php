@@ -197,6 +197,9 @@ class SavingController extends AdminController
                 $show->entry_standard('单个账号持仓最小值')->as(function ($entry_standard) {
                     return number_format($entry_standard, 4);
                 });
+                $show->holding_ceiling('单个账号持仓最大值')->as(function ($holding_ceiling) {
+                    return number_format($holding_ceiling, 4);
+                });
                 $show->rate('持仓年化收益率')->as(function ($rate) {
                     return $rate * 100 . '%';
                 });
