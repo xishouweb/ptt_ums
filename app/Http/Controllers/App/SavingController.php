@@ -83,9 +83,9 @@ class SavingController extends Controller
         $lang = $request->input('lang', 'cn');
         $saving = Saving::where('id', $id);
         if ($lang == 'en') {
-            $saving->select('id', 'title_en as title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule_en as detail_rule', 'entry_standard', 'status');
+            $saving->select('id', 'title_en as title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule_en as detail_rule', 'entry_standard', 'saving_ceiling', 'status');
         } else {
-            $saving->select('id', 'title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule', 'entry_standard', 'status');
+            $saving->select('id', 'title', 'rate', 'yield_time', 'started_at', 'ended_at', 'detail_rule', 'entry_standard', 'saving_ceiling', 'status');
         }
         $saving = $saving->first();
         if (!$saving) {
@@ -116,7 +116,10 @@ class SavingController extends Controller
             $saving->already_participate = SavingParticipateRecord::where('user_id', $user->id)->where('saving_id', $saving->id)->where('status', SavingParticipateRecord::STATUS_JOIN)->count(['id']) ? true : false;
 
             $balance = UserWalletBalance::where('user_id', $user->id)->where('symbol', 'ptt')->first();
-            $saving->available_amount = $balance ? round($balance->total_balance, 4) : 0;
+            if ($balance) {
+                $balance = $balance->total_balance > $saving->saving_ceiling ? $saving->saving_ceiling : $balance->total_balance;
+            }
+            $saving->available_amount = $balance ? round($balance, 4) : 0;
         }
         return $this->apiResponse($saving);
     }

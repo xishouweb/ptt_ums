@@ -65,7 +65,6 @@ class SavingIssueReward extends Command
                     ->where('user_id', $user_id)
                     ->where('saving_id', $saving->id)
                     ->count(['id']);
-                Log::info('user_id = ' . $user_id . ' days = ' . $saving_days);
                 if ($saving_days >= Saving::SAVING_ISSUE_REWARD_DAYS) {
                     try {
                         $saving_status = SavingStatus::where('user_id', $user_id)
@@ -75,7 +74,13 @@ class SavingIssueReward extends Command
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
                         $days = date('L') == 1 ? 366 : 365;
-                        $award = round($saving_status->total_balance * $saving->rate / $days, 8);
+                        if ($saving->saving_ceiling && $saving_status->total_balance >= $saving->saving_ceiling) {
+                            $award = round($saving->saving_ceiling * $saving->rate / $days, 8);
+                            $ceiling = $saving->saving_ceiling;
+                        } else {
+                            $award = round($saving_status->total_balance * $saving->rate / $days, 8);
+                            $ceiling = $saving_status->total_balance;
+                        }
                         $is_exist_tran = UserWalletTransaction::where('user_id', $user_id)
                             ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
                             ->where('type', UserWalletTransaction::AWARD_TYPE)
@@ -102,7 +107,7 @@ class SavingIssueReward extends Command
                         $saving_award_data = [
                             'user_id'   => $user_id,
                             'saving_id' => $saving->id,
-                            'amount'    => $user_wallet->total_balance + round($award, 8),
+                            'amount'    => round($ceiling, 8),
                             'award'     => $award
                         ];
                         SavingAward::create($saving_award_data);
@@ -119,5 +124,6 @@ class SavingIssueReward extends Command
                 }
             }
         }
+        Log::info('发放持仓奖励结束');
     }
 }

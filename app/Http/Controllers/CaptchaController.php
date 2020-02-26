@@ -12,7 +12,7 @@ class CaptchaController extends Controller
     public function send(Request $request)
     {
         $data['phone'] = (string)$request->input('phone');
-        $data['country'] = (string)$request->input('country');
+        $data['country'] = (string)$request->input('country', '86');
 
         $validator = Validator::make($data, [
             'phone' => 'required|string',
