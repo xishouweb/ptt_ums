@@ -75,6 +75,7 @@ class SavingIssueReward extends Command
                         $user_wallet = UserWalletBalance::where('user_id', $user_id)->where('symbol', 'ptt')->first();
                         // 奖励金额
                         $days = date('L') == 1 ? 366 : 365;
+                        Log::info($saving);
                         Log::info($saving->holding_ceiling);
                         Log::info($saving_status->total_balance);
                         if ($saving->holding_ceiling && $saving_status->total_balance >= $saving->holding_ceiling) {
