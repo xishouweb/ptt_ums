@@ -10,6 +10,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Facades\Admin;
+use App\Models\Tag;
+use App\Admin\Extensions\Tools\CustomButton;
 
 class UserWalletBalanceController extends AdminController
 {
@@ -18,7 +20,7 @@ class UserWalletBalanceController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\UserWalletBalance'; 
+    protected $title = '用户管理';
 
        /**
      * Index interface.
@@ -42,7 +44,7 @@ class UserWalletBalanceController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new UserWalletBalance); 
+        $grid = new Grid(new UserWalletBalance);
 
         $grid->model()->orderBy('id', 'desc');
 
@@ -50,22 +52,33 @@ class UserWalletBalanceController extends AdminController
             return "<a href='/admin/wallet/user-wallet-balances/$user_id' target='_blank'>$user_id</a>";
         });
         $grid->column('用户昵称')->display(function () {
-            return $this->users['nickname'];
+            return $this->user['nickname'];
         });
+
+        $grid->column('标签')->display(function() {
+            $labels = $this->user->tags->pluck('name');
+            $str = '';
+            foreach ($labels as $key => $value) {
+                $str .= "<span class='label label-success'>$value</span> ";
+            }
+
+            return "<a href='/admin/wallet/user-tags/$this->user_id' target='_blank'>$str</a>";
+        });
+
         $grid->column('手机号')->display(function () {
-            return $this->users['phone'];
+            return $this->user['phone'];
         });
-        
+
         $grid->total_balance('云端钱包余额(PTT)')->display(function ($total_balance) {
             return number_format($total_balance);
         });
 
         $grid->column('注册渠道')->display(function () {
-            return $this->users['channel'];
+            return $this->user['channel'];
         });
 
         $grid->column('注册时间')->display(function () {
-            return date($this->users['created_at']);
+            return date($this->user['created_at']);
         });
 
         $grid->column('交易记录')->display(function () {
@@ -98,6 +111,19 @@ class UserWalletBalanceController extends AdminController
         $grid->disableActions();
         $grid->batchActions(function ($batch) {
             $batch->disableDelete();
+        });
+
+        $grid->tools(function ($tools) {
+            $url = "/admin/wallet/user-tags/create";
+            $icon = "fa-plus";
+            $text = "标记用户";
+            $class = 'btn-danger';
+            $tools->append(new CustomButton($url,$icon,$text, $class));
+
+            $url = "/admin/wallet/tags/create";
+            $icon = "fa-plus";
+            $text = "创建标签";
+            $tools->append(new CustomButton($url,$icon,$text));
         });
 
         return $grid;
@@ -141,10 +167,21 @@ class UserWalletBalanceController extends AdminController
             $show->channel('注册渠道');
             $show->last_login_time('上次登录时间');
 
+            $show->tags('标签')->unescape()->as(function() {
+                $labels = $this->user->tags->pluck('name');
+                $str = '';
+                foreach ($labels as $key => $value) {
+                    $str .= "<span class='label label-success'>$value</span> ";
+                }
+
+                return "<a href='/admin/wallet/user-tags/$this->user_id' target='_blank'>$str</a>";
+            });
+            $show->note('备注');
+
             $show->panel()
                 ->title('用户详情')
                 ->tools(function ($tools) {
-                    $tools->disableEdit();
+                    // $tools->disableEdit();
                     $tools->disableList();
                     $tools->disableDelete();
                 });
@@ -158,23 +195,38 @@ class UserWalletBalanceController extends AdminController
      */
     protected function form()
     {
- 
+
 
         $form = new Form(new UserWalletBalance);
+
+        $form->text('note');
 
         $form->tools(function (Form\Tools $tools) {
 
             // 去掉`列表`按钮
             $tools->disableList();
-        
+
             // 去掉`删除`按钮
             $tools->disableDelete();
-        
+
             // 去掉`查看`按钮
             $tools->disableView();
-        
+
             // // 添加一个按钮, 参数可以是字符串, 或者实现了Renderable或Htmlable接口的对象实例
             // $tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
+        });
+
+        $form->footer(function ($footer) {
+
+            // 去掉`查看`checkbox
+            $footer->disableViewCheck();
+
+            // 去掉`继续编辑`checkbox
+            $footer->disableEditingCheck();
+
+            // 去掉`继续创建`checkbox
+            $footer->disableCreatingCheck();
+
         });
 
         return $form;

@@ -29,7 +29,7 @@ class UserWalletWithdrawalController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\UserWalletWithdrawal';
+    protected $title = '提币管理';
 
           /**
      * Index interface.
@@ -114,6 +114,8 @@ class UserWalletWithdrawalController extends AdminController
                 return "<span class='label label-default'>已拒绝</span>";
             } elseif ($status == UserWalletWithdrawal::TRANSFERING_STATUS) {
                 return "<span class='label label-info'>转账处理中</span>";
+            } elseif ($status == UserWalletWithdrawal::TRANSFERING_FAILED_STATUS) {
+                return "<span class='label label-danger'>转账失败</span>";
             }
         });
 
@@ -156,25 +158,9 @@ class UserWalletWithdrawalController extends AdminController
     {
         $record = UserWalletWithdrawal::findOrFail($id);
         $statusStr = '';
-        if ($record->status === 0) {
-            $statusStr = "<h3><span class='label label-warning'>申请中</span></h3>";
-        } elseif ($record->status === 1) {
-            $statusStr = "<h3><span class='label label-success'>已通过</span></h3>";
-        } elseif ($record->status === 2) {
-            $statusStr = "<h3><span class='label label-default'>已拒绝</span></h3>";
-        } elseif ($record->status === 3) {
-            $statusStr = "<h3><span class='label label-info'>转账处理中</span></h3>
-            <script>
-                function myrefresh()
-                {
-                window.location.reload();
-                }
-                setTimeout('myrefresh()',60000);
-            </script>";
-        }
-
         $actionStr = '';
-        if($record->status === UserWalletWithdrawal::PENDING_STATUS) {
+        if ($record->status === UserWalletWithdrawal::PENDING_STATUS) {
+            $statusStr = "<h3><span class='label label-warning'>申请中</span></h3>";
             $actionStr = "<div class='col-xs-4'>
                             <div class='row'>
                                 <div class='col-xs-3 col-xs-offset-3'>
@@ -197,7 +183,45 @@ class UserWalletWithdrawalController extends AdminController
                                 </div>
                             </div>
                         </div>";
+        } elseif ($record->status === UserWalletWithdrawal::COMPLETE_STATUS) {
+            $statusStr = "<h3><span class='label label-success'>已通过</span></h3>";
+        } elseif ($record->status === UserWalletWithdrawal::FAILED_STATUS) {
+            $statusStr = "<h3><span class='label label-default'>已拒绝</span></h3>";
+        } elseif ($record->status === UserWalletWithdrawal::TRANSFERING_STATUS) {
+            $statusStr = "<h3><span class='label label-info'>转账处理中</span></h3>
+            <script>
+                function myrefresh()
+                {
+                window.location.reload();
+                }
+                setTimeout('myrefresh()',60000);
+            </script>";
+        } elseif ($record->status === UserWalletWithdrawal::TRANSFERING_FAILED_STATUS) {
+            $statusStr = "<h3><span class='label label-danger'>转账失败</span></h3>";
+            $actionStr = "<div class='col-xs-4'>
+                            <div class='row'>
+                                <div class='col-xs-3 col-xs-offset-3'>
+                                    <h3><a id='decline' class='btn btn-warning' href='/admin/wallet/user-wallet-withdrawals/$id/decline'>拒绝</a></h3>
+                                    <script>
+                                        $('a').click(function(){
+                                            $('#approve').addClass('disabled');
+                                            $('#decline').addClass('disabled');
+                                        });
+                                    </script>
+                                </div>
+                                <div class='col-xs-3'>
+                                    <h3><a id='approve' class='btn btn-success' href='/admin/wallet/user-wallet-withdrawals/$id/approve'>重试</a></h3>
+                                    <script>
+                                        $('a').click(function(){
+                                            $('#approve').addClass('disabled');
+                                            $('#decline').addClass('disabled');
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>";
         }
+
         $content->header('提币详情')
             ->breadcrumb(
                 ['text' => '提币申请', 'url' => '/wallet/user-wallet-withdrawals'],
@@ -372,7 +396,7 @@ class UserWalletWithdrawalController extends AdminController
     public function getApprove($id)
     {
             $record = UserWalletWithdrawal::findOrFail($id);
-            if($record->status !== UserWalletWithdrawal::PENDING_STATUS){
+            if($record->status !== UserWalletWithdrawal::PENDING_STATUS && $record->status !== UserWalletWithdrawal::TRANSFERING_FAILED_STATUS ){
                 return redirect("/admin/wallet/user-wallet-withdrawals/$id");
             }
 
@@ -410,6 +434,7 @@ class UserWalletWithdrawalController extends AdminController
 
             $record->approver_id = Admin::user()->id;
             $record->save();
+
 
             $this->dispatch((new SendPtt($record, $tx, $balance))->onQueue('send_ptt'));
 

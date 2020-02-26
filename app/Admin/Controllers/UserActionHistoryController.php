@@ -20,7 +20,7 @@ class UserActionHistoryController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\UserActionHistory';
+    protected $title = '操作记录';
 
     /**
      * Make a grid builder.
@@ -30,9 +30,9 @@ class UserActionHistoryController extends AdminController
     protected function grid($user_id)
     {
         $grid = new Grid(new UserActionHistory);
-        
+
         $grid->model()->whereUserId($user_id)->orderBy('id', 'desc');
-        
+
         $grid->column('id', 'ID');
         $grid->column('type', '操作类型')->display(function($type){
             if ($type === 1) {
@@ -47,13 +47,13 @@ class UserActionHistoryController extends AdminController
         });
 
         $grid->column('状态')->display(function(){
-            
+
             if ($this->type === 1) {
                 if ($this->userWalletTransaction->status === UserWalletTransaction::IN_STATUS_PADDING) {
                     return '区块确认中';
                 } elseif ($this->userWalletTransaction->status === UserWalletTransaction::IN_STATUS_SUCCESS) {
                     return '已完成';
-                } 
+                }
             } elseif ($this->type === 2) {
                 if ($this->userWalletTransaction->status === UserWalletTransaction::OUT_STATUS_PADDING) {
                     return '申请中';
@@ -63,15 +63,15 @@ class UserActionHistoryController extends AdminController
                     return '转账中';
                 } elseif ($this->userWalletTransaction->status === UserWalletTransaction::OUT_STATUS_FAIL) {
                     return '已拒绝';
-                } 
+                }
             } elseif ($this->type === 3) {
                 return "-";
             } elseif ($this->type === 4) {
                 return "-";
             }
         });
-        
-        $grid->column('数量(PTT)')->display(function() {    
+
+        $grid->column('数量(PTT)')->display(function() {
             if ($this->type === 1) {
                 return number_format($this->userWalletTransaction->amount);
             } elseif ($this->type === 2) {
@@ -83,7 +83,7 @@ class UserActionHistoryController extends AdminController
             }
         });
 
-        $grid->column('手续费(PTT)')->display(function() {    
+        $grid->column('手续费(PTT)')->display(function() {
             if ($this->type === 1) {
                 return number_format($this->userWalletTransaction->fee);
             } elseif ($this->type === 2) {
@@ -95,7 +95,7 @@ class UserActionHistoryController extends AdminController
             }
         });
 
-        $grid->column('时间)')->display(function() {    
+        $grid->column('时间)')->display(function() {
             if ($this->type === 1) {
                 $created_at =$this->userWalletTransaction->created_at;
                 $completed_at = $this->userWalletTransaction->completed_at;
@@ -110,11 +110,11 @@ class UserActionHistoryController extends AdminController
                 return "开始时间: - </br> 结束时间: $this->created_at";
             }
         });
-        
+
         $grid->column('balance', '钱包余额(PTT)')->display(function($balance) {
             return number_format($balance);
         });
-        
+
         $grid->column('持仓活动名称')->display(function($balance) {
             if ($this->saving_id) {
                 $saving_title = $this->savings->title;
@@ -172,7 +172,7 @@ class UserActionHistoryController extends AdminController
             ->first();
 
         return $content
-        ->header('交易记录')
+        ->header('操作记录')
         ->breadcrumb(
             ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
             ['text' => '操作记录']
