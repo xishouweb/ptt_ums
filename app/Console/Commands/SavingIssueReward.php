@@ -107,7 +107,7 @@ class SavingIssueReward extends Command
                         $saving_award_data = [
                             'user_id'   => $user_id,
                             'saving_id' => $saving->id,
-                            'amount'    => $ceiling + round($award, 8),
+                            'amount'    => round($ceiling, 8),
                             'award'     => $award
                         ];
                         SavingAward::create($saving_award_data);
