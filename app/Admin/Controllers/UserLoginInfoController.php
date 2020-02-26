@@ -16,7 +16,7 @@ class UserLoginInfoController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\UserLoginInfo';
+    protected $title = '登录记录';
 
     /**
      * Make a grid builder.
@@ -85,7 +85,7 @@ class UserLoginInfoController extends AdminController
         ->header('交易记录')
         ->breadcrumb(
             ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
-            ['text' => '交易记录']
+            ['text' => '登录记录']
         )
         ->row("<div class='panel panel-default'>
                     <div class='panel-body container'>
