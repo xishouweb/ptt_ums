@@ -18,7 +18,7 @@ class UserWalletTransactionController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\UserWalletTransaction';
+    protected $title = '交易管理';
 
     /**
      * Make a grid builder.

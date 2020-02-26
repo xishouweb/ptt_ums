@@ -29,7 +29,7 @@ class UserWalletWithdrawalController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\UserWalletWithdrawal';
+    protected $title = '提币管理';
 
           /**
      * Index interface.
@@ -434,6 +434,7 @@ class UserWalletWithdrawalController extends AdminController
 
             $record->approver_id = Admin::user()->id;
             $record->save();
+
 
             $this->dispatch((new SendPtt($record, $tx, $balance))->onQueue('send_ptt'));
 
