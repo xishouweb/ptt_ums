@@ -46,7 +46,7 @@ class UserWalletBalanceController extends AdminController
     {
         $grid = new Grid(new UserWalletBalance);
 
-        $grid->model()->orderBy('id', 'desc');
+        $grid->model()->orderBy('user_id', 'desc');
 
         $grid->column('user_id', '用户ID')->display(function ($user_id) {
             return "<a href='/admin/wallet/user-wallet-balances/$user_id' target='_blank'>$user_id</a>";
