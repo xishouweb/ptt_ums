@@ -81,16 +81,18 @@ class Captcha extends Model
             // luosimao
             SMSSender::send($mobile, $message);
         } else {
-            $phone = '+' . $country . $mobile;
+            $phone = $country . $mobile;
+            if (strpos($phone, '+') === false) {
+                $phone = '+' . $phone;
+            }
             $message = '【Proton Chain】your verification code is: '.$code;
             // yunpian
             $clnt = YunpianClient::create(config('app.yunpian_apikey'));
             $param = [YunpianClient::MOBILE => $phone, YunpianClient::TEXT => $message];
             $r = $clnt->sms()->single_send($param);
-            Log::info($r);
-//            if(!$r->isSucc()){
-//                Log::error($r->getThrowable());
-//            }
+            if(!$r->isSucc()){
+                Log::info($r);
+            }
         }
 
 	}
