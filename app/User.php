@@ -15,6 +15,7 @@ use App\Models\UserWallet;
 use App\Models\UserWalletTransaction;
 use App\Models\WechatOpenid;
 use App\Models\UserWalletBalance;
+use App\Models\UserTag;
 use App\Services\QrCode;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Hash;
@@ -264,7 +265,12 @@ class User extends Authenticatable
 
     public function tags()
     {
-        return $this->belongsToMany('App\Models\Tag', 'user_tags','user_id', 'tag_id');
+        // return $this->belongsToMany('App\Models\Tag', 'user_tags','user_id', 'tag_id');
+        return UserTag::leftJoin('tags', 'user_tags.tag_id', '=', 'tags.id')
+            ->whereNull('user_tags.deleted_at')
+            ->where('user_tags.user_id', '=', $this->id)
+            ->select('tags.*')
+            ->get();
     }
 
     public function findOrCreateEthAccount()
