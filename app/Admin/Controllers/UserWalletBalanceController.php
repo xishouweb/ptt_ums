@@ -11,6 +11,7 @@ use Encore\Admin\Show;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Facades\Admin;
 use App\Models\Tag;
+use App\Admin\Extensions\Tools\CustomButton;
 
 class UserWalletBalanceController extends AdminController
 {
@@ -110,6 +111,19 @@ class UserWalletBalanceController extends AdminController
         $grid->disableActions();
         $grid->batchActions(function ($batch) {
             $batch->disableDelete();
+        });
+
+        $grid->tools(function ($tools) {
+            $url = "/admin/wallet/user-tags/create";
+            $icon = "fa-plus";
+            $text = "标记用户";
+            $class = 'btn-danger';
+            $tools->append(new CustomButton($url,$icon,$text, $class));
+
+            $url = "/admin/wallet/tags/create";
+            $icon = "fa-plus";
+            $text = "创建标签";
+            $tools->append(new CustomButton($url,$icon,$text));
         });
 
         return $grid;
