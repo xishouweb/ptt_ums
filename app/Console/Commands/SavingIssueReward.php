@@ -79,7 +79,7 @@ class SavingIssueReward extends Command
                             $ceiling = $saving->saving_ceiling;
                         } else {
                             $award = round($saving_status->total_balance * $saving->rate / $days, 8);
-                            $ceiling = $user_wallet->total_balance;
+                            $ceiling = $saving_status->total_balance;
                         }
                         $is_exist_tran = UserWalletTransaction::where('user_id', $user_id)
                             ->whereBetween('created_at', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])
