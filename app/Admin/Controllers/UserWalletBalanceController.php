@@ -56,7 +56,7 @@ class UserWalletBalanceController extends AdminController
         });
 
         $grid->column('标签')->display(function() {
-            $labels = $this->user->tags->pluck('name');
+            $labels = $this->user->tags()->pluck('name');
             $str = '';
             foreach ($labels as $key => $value) {
                 $str .= "<span class='label label-success'>$value</span> ";
