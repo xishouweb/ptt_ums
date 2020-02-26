@@ -58,6 +58,7 @@ class UserTagController extends AdminController
             $actions->disableView();
             if (\request('_scope_') == 'trashed') {
                 $actions->add(new Restore());
+                $actions->disableDelete();
             }
         });
 
