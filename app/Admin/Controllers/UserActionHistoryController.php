@@ -111,7 +111,7 @@ class UserActionHistoryController extends AdminController
             }
         });
 
-        $grid->column('balance', '钱包余额(PTT)')->display(function($balance) {
+        $grid->column('balance', '钱包可用余额(PTT)')->display(function($balance) {
             return number_format($balance);
         });
 

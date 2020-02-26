@@ -45,7 +45,7 @@ class UserActionHistory extends Model
         // 查询余额
         $balance_model = UserWalletBalance::where('user_id', $user_id)->where('symbol', $symbol)->first();
         if ($balance_model) {
-            $data['balance'] = $balance_model->total_balance;
+            $data['balance'] = $balance_model->total_balance - $balance_model->locked_balance;
         }
         return static::create($data);
     }
