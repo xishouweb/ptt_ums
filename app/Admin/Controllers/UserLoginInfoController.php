@@ -82,7 +82,7 @@ class UserLoginInfoController extends AdminController
             ->first();
 
         return $content
-        ->header('交易记录')
+        ->header('登录记录')
         ->breadcrumb(
             ['text' => '用户列表', 'url' => '/wallet/user-wallet-balances'],
             ['text' => '登录记录']
